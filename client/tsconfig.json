@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "paths": {
+    "@fretboard/shared": ["../shared/src/index.ts"]
+  }
+}

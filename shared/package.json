@@ -1,0 +1,19 @@
+{
+  "name": "@fretboard/shared",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "contract:emit": "prisma contract emit"
+  },
+  "devDependencies": {
+    "@prisma/cli-engine": "^0.2.3",
+    "@types/node": "^25.6.0",
+    "prisma": "^8.0.0-rc.10"
+  },
+  "dependencies": {
+    "@prisma/orm-postgres": "^8.0.0-rc.9",
+    "dotenv": "^17.4.2"
+  }
+}
