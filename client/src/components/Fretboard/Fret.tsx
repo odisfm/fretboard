@@ -2,6 +2,8 @@ import type {Scale, ScalePosition, ScaleShape} from "@fretboard/shared/src/types
 import {useTuning} from "../../contexts/tuning/useTuning.ts";
 import {useMemo} from "react";
 import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
+import StringVisual from "./StringVisual.tsx";
+import FretVisual from "./FretVisual.tsx";
 
 type Props = {
     fretNumber: number,
@@ -34,34 +36,55 @@ export default function Fret(
         return arr
     }, [tuning, highlightedShape, fretNumber])
 
+    const unitLength = 80; // px, along the orientation axis
+    const unitWidth = 40;  // px, across strings
     return (
-        <div
-            className={`grid min-w-15`}
-            style={{
-                gridTemplateRows: `repeat(${orientation === "horizontal" ? boardUnits : 1}, 1fr)`,
-                gridTemplateColumns: `repeat(${orientation === "vertical" ? boardUnits : 1}, 1fr)`,
-            }}
-        >
-            <div><span>{fretNumber}</span></div>
-            {inShape.map((_, i) => {
-                let stringIdx: number
-                if (orientation === "horizontal") {
-                    stringIdx = tuning.strings.length - 1 - i
-                } else {
-                    stringIdx = i
-                }
-                const p = inShape[stringIdx]
-                const pitch = tuning.strings[stringIdx] + fretNumber
-                let visibility: DotVisibility
-                if (zeroFret) {
-                    visibility = "zeroFret"
-                } else {
-                    visibility = p ? "highlight" : "none"
-                }
-                return (
-                    <NoteDot pitch={pitch} visibility={visibility}/>
-                )
-            })}
+    <div
+        className="grid"
+        style={{
+            "--unit-length": `${unitLength}px`,
+            "--unit-width": `${unitWidth}px`,
+            gridTemplateRows: orientation === "horizontal"
+                ? `repeat(${boardUnits}, var(--unit-width))`
+                : `var(--unit-length)`,
+            gridTemplateColumns: orientation === "horizontal"
+                ? `var(--unit-length)`
+                : `repeat(${boardUnits}, var(--unit-width))`,
+        } as React.CSSProperties}
+    >
+            <div className={`w-full h-full flex ${orientation === "horizontal" && "flex-col"} items-center`}>
+                <span>{fretNumber}</span>
+            </div>
+
+            <>
+                {inShape.map((_, i) => {
+                    let stringIdx: number
+                    if (orientation === "horizontal") {
+                        stringIdx = tuning.strings.length - 1 - i
+                    } else {
+                        stringIdx = i
+                    }
+                    const p = inShape[stringIdx]
+                    const pitch = tuning.strings[stringIdx] + fretNumber
+                    let visibility: DotVisibility
+                    if (p) {
+                        visibility = "highlight"
+                    } else {
+                        visibility = zeroFret ? "zeroFret" : "none"
+                    }
+                    return (
+                        <div
+                            key={stringIdx}
+                            className="relative flex items-center justify-center p-2"
+                        >
+                            {!zeroFret && <FretVisual orientation={orientation}/>}
+                            <StringVisual orientation={orientation}/>
+                            <NoteDot pitch={pitch} visibility={visibility}/>
+                        </div>
+                    )
+                })}
+            </>
+
             <div><span></span></div>
         </div>
     )

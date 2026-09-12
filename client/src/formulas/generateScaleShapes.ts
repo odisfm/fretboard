@@ -20,7 +20,7 @@ const defaultOptions: GenerateScaleShapesOptionsConsolidated = {
     maxFretSpan: 4,
     minPerString: 2,
     maxPerString: 3,
-    minOctaves: 2
+    minOctaves: 1
 }
 
 function consolidateOptions(userOptions: GenerateScaleShapesOptions): GenerateScaleShapesOptionsConsolidated {

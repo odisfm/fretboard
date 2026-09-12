@@ -27,16 +27,16 @@ export default function Fretboard(
     if (orientation === "horizontal") {
         orientationClasses = `w-lg overflow-x-scroll `
     } else {
-        orientationClasses = `h-lg flex-col overflow-y-scroll`
+        orientationClasses = `max-h-[60vh] flex-col overflow-y-scroll`
     }
 
     return (
-        <div className={`flex`}>
+        <div className={`flex ${orientation === "vertical" && `flex-col`}`}>
             {renderZeroFret &&
                 <Fret
                     fretNumber={0}
                     scale={scale}
-                    zoom={zoom}
+                    zoom={1}
                     zeroFret={true}
                     orientation={orientation}
                     highlightedShape={highlightedShape}
