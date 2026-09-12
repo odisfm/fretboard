@@ -26,6 +26,9 @@ export function ScaleDemo() {
         })
     }
 
+    const buttonGroupStyles = `bg-black rounded-md p-[0.5] self-start`
+    const buttonStyles = `px-4`
+
     return (
         <div className={`flex flex-col gap-2 bg-neutral-900 rounded-md p-4`}>
             <div className={`w-xs flex flex-wrap gap-1`}>
@@ -54,28 +57,54 @@ export function ScaleDemo() {
                 ))}
             </select>
             <div
-                className={`flex`}
+                className={`flex ${buttonGroupStyles}`}
             >
                 <Button
                     onClick={() => {scaleContext.setAccidentalPref("flats")}}
                     variant={scaleContext.accidentalPref === "flats" ? "default" : "subtle"}
+                    styles={buttonStyles}
                 >
                     ♭
                 </Button>
                 <Button
                     onClick={() => {scaleContext.setAccidentalPref(null)}}
                     variant={scaleContext.accidentalPref === null ? "default" : "subtle"}
-
+                    styles={buttonStyles}
                 >
                     ♭|♯
                 </Button>
                 <Button
                     onClick={() => {scaleContext.setAccidentalPref("sharps")}}
                     variant={scaleContext.accidentalPref === "sharps" ? "default" : "subtle"}
+                    styles={buttonStyles}
                 >
                     ♯
                 </Button>
-
+            </div>
+            <div
+                className={`flex ${buttonGroupStyles}`}
+            >
+                <Button
+                    onClick={() => {scaleContext.setIntervalPref("nashville")}}
+                    variant={scaleContext.intervalPref === "nashville" ? "default" : "subtle"}
+                    styles={buttonStyles}
+                >
+                    ♮
+                </Button>
+                <Button
+                    onClick={() => {scaleContext.setIntervalPref(null)}}
+                    variant={scaleContext.intervalPref === null ? "default" : "subtle"}
+                    styles={buttonStyles}
+                >
+                    ♪
+                </Button>
+                <Button
+                    onClick={() => {scaleContext.setIntervalPref("interval")}}
+                    variant={scaleContext.intervalPref === "interval" ? "default" : "subtle"}
+                    styles={buttonStyles}
+                >
+                    I
+                </Button>
             </div>
         </div>
     )
