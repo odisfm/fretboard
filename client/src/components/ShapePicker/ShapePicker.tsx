@@ -5,16 +5,20 @@ import type {ScaleShape} from "@fretboard/shared/src/types/scale.ts";
 type Props = {
     scaleShapes: ScaleShape[],
     active: number,
-    onClick: (idx: number) => void
+    onClick: (idx: number) => void,
+    setScrollToFret: (fretNumber: number) => void,
 }
 
-export default function ShapePicker({scaleShapes, onClick, active}: Props) {
+export default function ShapePicker({scaleShapes, onClick, active, setScrollToFret}: Props) {
     return (
         <div className={`flex w-full p-2 gap-4 overflow-x-scroll`}>
             {scaleShapes.map((s, i) => {
                 return (
                     <Button
-                        onClick={() => onClick(i)}
+                        onClick={() => {
+                            onClick(i)
+                            setScrollToFret(s.lowFret)
+                        }}
                         variant={active === i ? "default" : "subtle"}
                     >
                         <div

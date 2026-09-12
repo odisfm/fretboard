@@ -1,5 +1,6 @@
 import type {Scale, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
 import Fret from "./Fret.tsx";
+import {useEffect, useRef} from "react";
 
 export type FretboardVariant = "main" | "preview"
 
@@ -11,7 +12,8 @@ type Props = {
     scale: Scale;
     zoom: number;
     renderZeroFret: boolean;
-    variant: FretboardVariant
+    variant: FretboardVariant,
+    scrollToFret: number | null
 }
 
 export default function Fretboard(
@@ -23,9 +25,12 @@ export default function Fretboard(
         scale,
         zoom,
         renderZeroFret,
-        variant
+        variant,
+        scrollToFret
     }: Props) {
     const fretsToRender = (endFret - startFret) + 1
+    const fretRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     let orientationClasses: string
     if (orientation === "horizontal") {
@@ -36,6 +41,38 @@ export default function Fretboard(
     } else {
         orientationClasses = `max-h-[60vh] flex-col overflow-y-scroll`
     }
+
+    useEffect(() => {
+        if (scrollToFret === null) return;
+
+        const index = scrollToFret - startFret;
+
+
+        if (scrollToFret === 0) {
+            if (!containerRef.current) {
+                return;
+            }
+            if (orientation === "horizontal") {
+                containerRef.current.scrollTo({
+                    left: 0,
+                    behavior: "smooth",
+                });
+            } else {
+                containerRef.current.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+            }
+        } else {
+            const el = fretRefs.current[index];
+            if (!el) return;
+            el.scrollIntoView({
+                behavior: "smooth",
+                block: orientation === "vertical" ? "start" : "nearest",
+                inline: orientation === "horizontal" ? "start" : "nearest",
+            });
+        }
+    }, [scrollToFret, orientation, startFret]);
 
     return (
         <div className={`flex ${orientation === "vertical" && `flex-col w-md`}`}>
@@ -48,21 +85,29 @@ export default function Fretboard(
                     orientation={orientation}
                     highlightedShape={highlightedShape}
                     variant={variant}
+                    ref={(el) => { fretRefs.current[0] = el; }}
+
                 />
             }
-            <div className={`flex ${orientationClasses}`}>
-                {Array(fretsToRender).fill(null).map((_, i) => (
-                    <Fret
-                        key={i}
-                        orientation={orientation}
-                        fretNumber={i + startFret}
-                        scale={scale}
-                        highlightedShape={highlightedShape}
-                        zoom={zoom}
-                        zeroFret={false}
-                        variant={variant}
-                    />
-                ))}
+            <div className={`flex ${orientationClasses}`} ref={containerRef}>
+                {Array(fretsToRender).fill(null).map((_, i) => {
+                    const refIdx = renderZeroFret ? i + 1 : i
+                    return (
+                        <Fret
+                            key={i}
+                            orientation={orientation}
+                            fretNumber={i + startFret}
+                            scale={scale}
+                            highlightedShape={highlightedShape}
+                            zoom={zoom}
+                            zeroFret={false}
+                            variant={variant}
+                            ref={(el) => {
+                                fretRefs.current[refIdx] = el;
+                            }}
+                        />
+                    )
+                })}
             </div>
         </div>
     )

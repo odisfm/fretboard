@@ -13,7 +13,8 @@ type Props = {
     zoom: number,
     zeroFret: boolean,
     orientation: "horizontal" | "vertical"
-    variant: FretboardVariant
+    variant: FretboardVariant,
+    ref?: React.Ref<HTMLDivElement>;
 }
 
 export default function Fret(
@@ -22,7 +23,8 @@ export default function Fret(
         highlightedShape,
         zeroFret,
         orientation,
-        variant
+        variant,
+        ref
     }: Props) {
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
@@ -54,6 +56,7 @@ export default function Fret(
     return (
     <div
         className="grid"
+        ref={ref}
         style={{
             "--unit-length": `${unitLength}px`,
             "--unit-width": `${unitWidth}px`,
