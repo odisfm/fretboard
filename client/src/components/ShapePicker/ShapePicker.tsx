@@ -33,7 +33,11 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
                         <div
                             className={`flex flex-col`}
                         >
-                            <span className={`self-end`}>{`#${i+1}`}</span>
+                            <div
+                                className={`self-end px-2 rounded-md text-xs ${active === i ? "bg-black" : ""}`}
+                            >
+                                <span className={`self-end`}><sup>#</sup>{`${i + 1}`}</span>
+                            </div>
                             <ShapePreview shape={s}/>
                         </div>
                     </Button>
