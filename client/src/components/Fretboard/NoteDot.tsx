@@ -31,9 +31,11 @@ export default function NoteDot(
         case "highlight":
             switch(degreeName) {
                 case "1":
+                case "P1":
                     theseClasses += "bg-red-500"
                     break
                 case "5":
+                case "P5":
                     theseClasses += "bg-amber-600"
                     break
                 default:

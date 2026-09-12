@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { type Scale } from "@fretboard/shared/src/types/scale.ts"
 
 export type AccidentalPrefType = null | "sharps" | "flats"
+export type IntervalPrefType = null | "nashville" | "interval"
 
 type ScaleContextValue = {
     scale: Scale;
@@ -10,6 +11,8 @@ type ScaleContextValue = {
     setAccidentalPref: (pref: AccidentalPrefType) => void;
     degreesToPitches: Set<number>[],
     degreeNumbers: string[],
+    intervalPref: IntervalPrefType,
+    setIntervalPref: (pref: IntervalPrefType) => void,
 }
 
 export const ScaleContext = createContext<ScaleContextValue | null>(null)
