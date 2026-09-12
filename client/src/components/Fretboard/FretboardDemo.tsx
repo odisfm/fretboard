@@ -7,6 +7,7 @@ import ShapePicker from "../ShapePicker/ShapePicker.tsx";
 import {useState} from "react";
 import Button from "../generic/Button.tsx";
 import {FaRotate} from "react-icons/fa6";
+import {sortScaleShapes} from "../../formulas/sortScaleShapes.ts";
 
 const gMajor = {
     name: "G Major",
@@ -19,10 +20,11 @@ export default function FretboardDemo() {
     const tuning = tuningContext.tuning
     const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number>(0);
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
-    const scaleShapes = generateScaleShapes(
+    let scaleShapes = generateScaleShapes(
         tuning,
         gMajor
     )
+    scaleShapes = sortScaleShapes(scaleShapes, "lowToHighFretToString")
 
     function _setActiveScaleShape(idx: number) {
         setActiveScaleShapeIdx(idx)
