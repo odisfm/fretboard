@@ -5,6 +5,8 @@ import {generateScaleShapes} from "../../formulas/generateScaleShapes.ts";
 import type {NoteName} from "@fretboard/shared/src/types/scale.ts";
 import DirtyScaleChooser from "./DirtyScaleChooser.tsx";
 import {useState} from "react";
+import Button from "../generic/Button.tsx";
+import {FaRotate} from "react-icons/fa6";
 
 const gMajor = {
     name: "G Major",
@@ -16,6 +18,7 @@ export default function FretboardDemo() {
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
     const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number>(0);
+    const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const scaleShapes = generateScaleShapes(
         tuning,
         gMajor
@@ -30,8 +33,13 @@ export default function FretboardDemo() {
     return (
         <>
             <TuningDemo/>
+            <Button
+                onClick={() => setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
+            >
+                <FaRotate/>
+            </Button>
             <Fretboard
-                orientation={"horizontal"}
+                orientation={orientation}
                 startFret={1}
                 endFret={24}
                 scale={gMajor}

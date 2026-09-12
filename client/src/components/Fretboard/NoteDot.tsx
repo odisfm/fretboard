@@ -16,7 +16,7 @@ export default function NoteDot(
     const highlightClasses = `bg-cyan-500`
     const dimClasses = `bg-cyan-800`
     const noneClasses = `bg-transparent invisible`
-    const zeroFretClasses = `bg-white/50`
+    const zeroFretClasses = `bg-neutral-700/75`
 
     let theseClasses = ""
     switch (visibility) {
@@ -35,10 +35,10 @@ export default function NoteDot(
     }
 
     return (
-        <div
-            className={`flex rounded-full p-2 ${theseClasses} text-xs h-10 w-10`}
-        >
-            <span className={``}>{midiPitchToNoteName(pitch, false)}</span>
+        <div className={``}>
+            <div className={`flex items-center justify-center rounded-full ${theseClasses} text-xs h-7 w-7`}>
+                <span>{midiPitchToNoteName(pitch, false)}</span>
+            </div>
         </div>
     )
 }
