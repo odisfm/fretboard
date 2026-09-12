@@ -55,11 +55,11 @@ export default function NoteDot(
     const textDisplay: "note" | "degree" = "degree"
     let text: string
     if (visibility === "zeroFret") {
-        text = midiPitchToNoteName(pitch, false)
+        text = midiPitchToNoteName(pitch, false, scaleContext.accidentalPref || "sharps")
     } else {
         switch (textDisplay) {
             case "note":
-                text = midiPitchToNoteName(pitch, false)
+                text = midiPitchToNoteName(pitch, false, scaleContext.accidentalPref || "sharps")
                 break
             case "degree":
                 if (degree === false) {
