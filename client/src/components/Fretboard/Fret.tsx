@@ -59,8 +59,6 @@ export default function Fret(
         return arr
     }, [scaleContext, fretNumber, tuning.strings])
 
-    console.log(inScale)
-
     const unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
     const unitWidth = variant === "main" ? 40: 20;  // px, across strings
 

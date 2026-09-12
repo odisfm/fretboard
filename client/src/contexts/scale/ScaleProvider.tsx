@@ -30,8 +30,6 @@ export function ScaleProvider({children}: {children: React.ReactNode}) {
         return arr
     }, [scale])
 
-    console.log(degreesToPitches)
-
     return (
         <ScaleContext value={{
             scale,
