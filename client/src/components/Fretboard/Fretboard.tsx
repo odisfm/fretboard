@@ -91,7 +91,6 @@ export default function Fretboard(
             }
             <div className={`flex ${orientationClasses}`} ref={containerRef}>
                 {Array(fretsToRender).fill(null).map((_, i) => {
-                    const refIdx = renderZeroFret ? i + 1 : i
                     return (
                         <Fret
                             key={i}
@@ -103,7 +102,7 @@ export default function Fretboard(
                             zeroFret={false}
                             variant={variant}
                             ref={(el) => {
-                                fretRefs.current[refIdx] = el;
+                                fretRefs.current[i] = el;
                             }}
                         />
                     )
