@@ -1,12 +1,23 @@
 import {useScale} from "../../contexts/scale/useScale.ts";
 import {demoScales} from "./demoScales.ts";
-import {TONES_FLAT, TONES_SHARP} from "@fretboard/shared/src/consts.ts";
+import {TONES_FLAT, TONES_SHARP, TONES} from "@fretboard/shared/src/consts.ts";
 import type {NoteName} from "@fretboard/shared/src/types/scale.ts";
 import Button from "../generic/Button.tsx";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
-    const tones = scaleContext.accidentalPref === "flats" ? TONES_FLAT : TONES_SHARP
+    let tones: string[]
+    switch(scaleContext.accidentalPref) {
+        case "sharps":
+            tones = TONES_SHARP
+            break;
+        case "flats":
+            tones = TONES_FLAT
+            break;
+        case null:
+            tones = TONES
+            break;
+    }
 
     function setTonic(tonic: NoteName) {
         scaleContext.setScale({
@@ -42,6 +53,30 @@ export function ScaleDemo() {
                     <option value={i}>{scale.name}</option>
                 ))}
             </select>
+            <div
+                className={`flex`}
+            >
+                <Button
+                    onClick={() => {scaleContext.setAccidentalPref("flats")}}
+                    variant={scaleContext.accidentalPref === "flats" ? "default" : "subtle"}
+                >
+                    ♭
+                </Button>
+                <Button
+                    onClick={() => {scaleContext.setAccidentalPref(null)}}
+                    variant={scaleContext.accidentalPref === null ? "default" : "subtle"}
+
+                >
+                    ♭|♯
+                </Button>
+                <Button
+                    onClick={() => {scaleContext.setAccidentalPref("sharps")}}
+                    variant={scaleContext.accidentalPref === "sharps" ? "default" : "subtle"}
+                >
+                    ♯
+                </Button>
+
+            </div>
         </div>
     )
 }

@@ -4,7 +4,7 @@ const TONE_COUNT = TONES_SHARP.length // 12
 export function midiPitchToNoteName(
     midiPitch: number,
     useOctave: boolean = true,
-    accidentals: "sharp" | "flat" = "sharp"
+    accidentals: "sharps" | "flats" = "sharps"
 ): string {
     if (!Number.isInteger(midiPitch)) {
         throw new Error("midiPitch must be integer")
@@ -13,7 +13,7 @@ export function midiPitchToNoteName(
         throw new Error("midiPitch must be between 0-127 inclusive")
     }
     let tones;
-    tones = accidentals === "sharp" ? TONES_SHARP : TONES_FLAT;
+    tones = accidentals === "sharps" ? TONES_SHARP : TONES_FLAT;
     const toneIdx = midiPitch % TONE_COUNT;
     const octave =  Math.floor(midiPitch / TONE_COUNT) - 1;
 

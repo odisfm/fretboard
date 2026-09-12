@@ -1,6 +1,7 @@
 import {FaMinusCircle, FaPlusCircle, FaTrash} from "react-icons/fa"
 import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
 import Button from "../generic/Button.tsx";
+import {useScale} from "../../contexts/scale/useScale.ts";
 
 type Props = {
     pitch: number;
@@ -10,6 +11,7 @@ type Props = {
 }
 
 export default function StringSetter({pitch, idx, incrementPitch, deleteString}: Props) {
+    const scaleContext = useScale()
     return (
         <div className={`flex gap-2 w-full`}>
             <div className={`flex`}>
@@ -29,7 +31,7 @@ export default function StringSetter({pitch, idx, incrementPitch, deleteString}:
             <div
                 className={`font-bold ml-6`}
             >
-                <span>{midiPitchToNoteName(pitch, true)}</span>
+                <span>{midiPitchToNoteName(pitch, true, scaleContext.accidentalPref || "sharps")}</span>
             </div>
             <Button
                 onClick={() => deleteString(idx)}
