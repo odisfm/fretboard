@@ -1,4 +1,4 @@
-import FretboardDemo from "./components/Fretboard/FretboardDemo.tsx";
+import FretboardDemo from "./FretboardDemo.tsx";
 import {TuningProvider} from "./contexts/tuning/TuningProvider.tsx";
 import {ScaleProvider} from "./contexts/scale/ScaleProvider.tsx";
 
