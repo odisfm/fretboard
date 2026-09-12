@@ -2,8 +2,8 @@ import type {Scale, ScalePosition, ScaleShape} from "@fretboard/shared/src/types
 import {useTuning} from "../../contexts/tuning/useTuning.ts";
 import {useMemo} from "react";
 import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
-import StringVisual from "./StringVisual.tsx";
-import FretVisual from "./FretVisual.tsx";
+import StringVisual from "./decorations/StringVisual.tsx";
+import FretVisual from "./decorations/FretVisual.tsx";
 import type {FretboardVariant} from "./Fretboard.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
 
