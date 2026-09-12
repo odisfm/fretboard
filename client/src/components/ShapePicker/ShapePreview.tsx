@@ -21,6 +21,7 @@ export default function ShapePreview(
                 renderZeroFret={false}
                 highlightedShape={shape}
                 variant={"preview"}
+                scrollToFret={null}
             />
         </>
     )
