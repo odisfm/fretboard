@@ -20,6 +20,7 @@ export default function FretboardDemo() {
     const tuning = tuningContext.tuning
     const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number>(0);
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
+    const [scrollToFret, setScrollToFret] = useState<null | number>(null);
     let scaleShapes = generateScaleShapes(
         tuning,
         gMajor
@@ -49,12 +50,14 @@ export default function FretboardDemo() {
                 renderZeroFret={true}
                 highlightedShape={scaleShapes[activeScaleShapeIdx]}
                 variant={"main"}
+                scrollToFret={scrollToFret}
             />
 
             <ShapePicker
                 onClick={_setActiveScaleShape}
                 active={activeScaleShapeIdx}
                 scaleShapes={scaleShapes}
+                setScrollToFret={setScrollToFret}
             />
         </>
     )
