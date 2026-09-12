@@ -31,7 +31,6 @@ export default function FretboardDemo() {
         setActiveScaleShapeIdx(idx)
     }
 
-    console.log(JSON.stringify(scaleShapes[activeScaleShapeIdx]))
 
     return (
         <div className={`flex flex-col gap-2`}>
