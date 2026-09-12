@@ -1,6 +1,8 @@
 import type {Scale, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
 import Fret from "./Fret.tsx";
 
+export type FretboardVariant = "main" | "preview"
+
 type Props = {
     orientation: "horizontal" | "vertical";
     startFret: number;
@@ -8,7 +10,8 @@ type Props = {
     highlightedShape?: ScaleShape;
     scale: Scale;
     zoom: number;
-    renderZeroFret: boolean
+    renderZeroFret: boolean;
+    variant: FretboardVariant
 }
 
 export default function Fretboard(
@@ -19,19 +22,23 @@ export default function Fretboard(
         highlightedShape,
         scale,
         zoom,
-        renderZeroFret
+        renderZeroFret,
+        variant
     }: Props) {
     const fretsToRender = (endFret - startFret) + 1
 
     let orientationClasses: string
     if (orientation === "horizontal") {
-        orientationClasses = `w-lg overflow-x-scroll `
+        orientationClasses = `overflow-x-scroll `
+        if (variant === "main") {
+            orientationClasses += ""
+        }
     } else {
         orientationClasses = `max-h-[60vh] flex-col overflow-y-scroll`
     }
 
     return (
-        <div className={`flex ${orientation === "vertical" && `flex-col`}`}>
+        <div className={`flex ${orientation === "vertical" && `flex-col w-md`}`}>
             {renderZeroFret &&
                 <Fret
                     fretNumber={0}
@@ -40,6 +47,7 @@ export default function Fretboard(
                     zeroFret={true}
                     orientation={orientation}
                     highlightedShape={highlightedShape}
+                    variant={variant}
                 />
             }
             <div className={`flex ${orientationClasses}`}>
@@ -52,6 +60,7 @@ export default function Fretboard(
                         highlightedShape={highlightedShape}
                         zoom={zoom}
                         zeroFret={false}
+                        variant={variant}
                     />
                 ))}
             </div>

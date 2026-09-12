@@ -3,7 +3,7 @@ import Fretboard from "./Fretboard.tsx";
 import {useTuning} from "../../contexts/tuning/useTuning.ts";
 import {generateScaleShapes} from "../../formulas/generateScaleShapes.ts";
 import type {NoteName} from "@fretboard/shared/src/types/scale.ts";
-import DirtyScaleChooser from "./DirtyScaleChooser.tsx";
+import ShapePicker from "../ShapePicker/ShapePicker.tsx";
 import {useState} from "react";
 import Button from "../generic/Button.tsx";
 import {FaRotate} from "react-icons/fa6";
@@ -46,12 +46,13 @@ export default function FretboardDemo() {
                 zoom={1}
                 renderZeroFret={true}
                 highlightedShape={scaleShapes[activeScaleShapeIdx]}
+                variant={"main"}
             />
 
-            <DirtyScaleChooser
-                count={scaleShapes.length}
+            <ShapePicker
                 onClick={_setActiveScaleShape}
                 active={activeScaleShapeIdx}
+                scaleShapes={scaleShapes}
             />
         </>
     )

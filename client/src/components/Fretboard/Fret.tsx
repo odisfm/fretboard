@@ -4,6 +4,7 @@ import {useMemo} from "react";
 import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
 import StringVisual from "./StringVisual.tsx";
 import FretVisual from "./FretVisual.tsx";
+import type {FretboardVariant} from "./Fretboard.tsx";
 
 type Props = {
     fretNumber: number,
@@ -12,6 +13,7 @@ type Props = {
     zoom: number,
     zeroFret: boolean,
     orientation: "horizontal" | "vertical"
+    variant: FretboardVariant
 }
 
 export default function Fret(
@@ -20,6 +22,7 @@ export default function Fret(
         highlightedShape,
         zeroFret,
         orientation,
+        variant
     }: Props) {
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
@@ -36,8 +39,18 @@ export default function Fret(
         return arr
     }, [tuning, highlightedShape, fretNumber])
 
-    const unitLength = 80; // px, along the orientation axis
-    const unitWidth = 40;  // px, across strings
+    const unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
+    const unitWidth = variant === "main" ? 40: 20;  // px, across strings
+
+    let showFretNumber = false
+    if (variant === "main") {
+        showFretNumber = true
+    } else {
+        if (highlightedShape && fretNumber === highlightedShape.lowFret) {
+            showFretNumber = true
+        }
+    }
+
     return (
     <div
         className="grid"
@@ -53,7 +66,10 @@ export default function Fret(
         } as React.CSSProperties}
     >
             <div className={`w-full h-full flex ${orientation === "horizontal" && "flex-col"} items-center`}>
-                <span>{fretNumber}</span>
+                {showFretNumber &&
+                    <span className={`${variant === "main" ? "text-md" : "text-xs"}`}>
+                        {fretNumber}
+                    </span>}
             </div>
 
             <>
@@ -77,9 +93,9 @@ export default function Fret(
                             key={stringIdx}
                             className="relative flex items-center justify-center p-2"
                         >
-                            {!zeroFret && <FretVisual orientation={orientation}/>}
-                            <StringVisual orientation={orientation}/>
-                            <NoteDot pitch={pitch} visibility={visibility}/>
+                            {!zeroFret && variant === "main" && <FretVisual orientation={orientation}/>}
+                            {variant === "main" && <StringVisual orientation={orientation}/>}
+                            <NoteDot pitch={pitch} visibility={visibility} variant={variant}/>
                         </div>
                     )
                 })}
