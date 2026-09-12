@@ -1,5 +1,6 @@
 import {FaMinusCircle, FaPlusCircle, FaTrash} from "react-icons/fa"
 import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
+import Button from "../generic/Button.tsx";
 
 type Props = {
     pitch: number;
@@ -11,31 +12,32 @@ type Props = {
 export default function StringSetter({pitch, idx, incrementPitch, deleteString}: Props) {
     return (
         <div className={`flex gap-2 w-full`}>
-            <div className={`flex gap-1`}>
-                <button
-                    className={``}
+            <div className={`flex`}>
+                <Button
+                    variant={"subtle"}
                     onClick={() => incrementPitch(idx, -1)}
                 >
                     <FaMinusCircle/>
-                </button>
-                <button
-                    className={``}
+                </Button>
+                <Button
+                    variant={"subtle"}
                     onClick={() => incrementPitch(idx, 1)}
                 >
                     <FaPlusCircle/>
-                </button>
+                </Button>
             </div>
             <div
                 className={`font-bold ml-6`}
             >
                 <span>{midiPitchToNoteName(pitch, true)}</span>
             </div>
-            <button
+            <Button
                 onClick={() => deleteString(idx)}
-                className={`ml-auto`}
+                variant={"warning"}
+                styles={`ml-auto`}
             >
                 <FaTrash/>
-            </button>
+            </Button>
         </div>
     )
 }
