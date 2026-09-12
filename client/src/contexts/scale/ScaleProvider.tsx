@@ -4,6 +4,7 @@ import {type AccidentalPrefType, ScaleContext} from "./ScaleContext.ts";
 import {allIndicesForNoteName} from "@fretboard/shared/src/utils/allIndicesForNoteName.ts";
 import {indexForNoteName} from "@fretboard/shared/src/utils/indexForNoteName.ts";
 import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
+import getScaleDegreeNumbers from "../../formulas/getScaleDegreeNumbers.ts";
 
 const cMajor: Scale = {
     name: "C Major",
@@ -30,13 +31,18 @@ export function ScaleProvider({children}: {children: React.ReactNode}) {
         return arr
     }, [scale])
 
+    const degreeNumbers: string[] = useMemo(() => {
+        return getScaleDegreeNumbers(scale.intervals)
+    }, [scale.intervals])
+
     return (
         <ScaleContext value={{
             scale,
             setScale,
             accidentalPref,
             setAccidentalPref,
-            degreesToPitches
+            degreesToPitches,
+            degreeNumbers
         }}>
             {children}
         </ScaleContext>

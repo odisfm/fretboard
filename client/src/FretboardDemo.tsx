@@ -14,7 +14,7 @@ export default function FretboardDemo() {
     const scaleContext = useScale()
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
-    const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number>(0);
+    const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number | null>(null);
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
 
@@ -27,7 +27,7 @@ export default function FretboardDemo() {
         return scaleShapes
     }, [scaleContext.scale, tuning])
 
-    function _setActiveScaleShape(idx: number) {
+    function _setActiveScaleShape(idx: number | null) {
         setActiveScaleShapeIdx(idx)
     }
 
@@ -51,7 +51,7 @@ export default function FretboardDemo() {
                 scale={scaleContext.scale}
                 zoom={1}
                 renderZeroFret={true}
-                highlightedShape={scaleShapes[activeScaleShapeIdx]}
+                highlightedShape={activeScaleShapeIdx !== null ? scaleShapes[activeScaleShapeIdx] : undefined}
                 variant={"main"}
                 scrollToFret={scrollToFret}
             />

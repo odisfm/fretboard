@@ -43,20 +43,22 @@ export default function Fret(
         return arr
     }, [tuning, highlightedShape, fretNumber])
 
-    const inScale: (false | number)[] = useMemo(() => {
-        const arr = Array(tuning.strings.length).fill(false)
+    const {inScale, inDegree} = useMemo(() => {
+        const inScale = Array(tuning.strings.length).fill(false)
+        const inDegree = Array(tuning.strings.length).fill(false)
         for (let i = 0; i < tuning.strings.length; i++) {
             const zeroFret = tuning.strings[i];
             const pitch = zeroFret + fretNumber
             for (let j = 0; j < scaleContext.degreesToPitches.length; j++) {
                 const degreeSet = scaleContext.degreesToPitches[j]
                 if (degreeSet.has(pitch)) {
-                    arr[i] = pitch
+                    inScale[i] = pitch
+                    inDegree[i] = j
                     break
                 }
             }
         }
-        return arr
+        return {inScale, inDegree}
     }, [scaleContext, fretNumber, tuning.strings])
 
     const unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
@@ -104,15 +106,28 @@ export default function Fret(
                     const p = inShape[stringIdx]
                     const pitch = tuning.strings[stringIdx] + fretNumber
                     let visibility: DotVisibility
+                    const degree = p ? p.scaleIndex : inDegree[stringIdx]
                     if (p) {
                         visibility = "highlight"
                     } else {
-                        if (zeroFret) {
-                            visibility = "zeroFret"
-                        } else if (inScale[stringIdx] !== false) {
-                            visibility = "dim"
+                        if (highlightedShape) {
+                            if (zeroFret) {
+                                visibility = "zeroFret"
+                            } else if (inScale[stringIdx] !== false) {
+                                visibility = "dim"
+                            } else {
+                                visibility = "none"
+                            }
                         } else {
-                            visibility = "none"
+                            if (inScale[stringIdx] !== false) {
+                                visibility = "highlight"
+                            } else {
+                                if (zeroFret) {
+                                    visibility = "zeroFret"
+                                } else {
+                                    visibility = "none"
+                                }
+                            }
                         }
                     }
                     return (
@@ -122,7 +137,7 @@ export default function Fret(
                         >
                             {!zeroFret && <FretVisual orientation={orientation}/>}
                             {<StringVisual orientation={orientation}/>}
-                            <NoteDot pitch={pitch} visibility={visibility} variant={variant}/>
+                            <NoteDot pitch={pitch} visibility={visibility} variant={variant} degree={degree}/>
                         </div>
                     )
                 })}
