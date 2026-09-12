@@ -76,7 +76,7 @@ export function generateScaleShapes(
                 const thisFret = lastPos.fret + thisFretJump
 
                 if (thisFret > tuning.fretCount) break
-                if (thisFret - prevShape.lowFret > options.maxFretSpan) break
+                if (thisFret - prevShape.lowFret >= options.maxFretSpan) break
 
                 const thisPos: ScalePosition = {
                     fret: thisFret, scaleIndex: thisScaleIndex, stringIndex: s
@@ -143,8 +143,9 @@ export function generateScaleShapes(
                 const thisVal = tuning.strings[lastPos.stringIndex] + lastPos.fret + thisJump
                 const thisFret = thisVal - zeroFret
 
-                if (thisShape.highFret - thisFret > options.maxFretSpan || thisFret - thisShape.lowFret > options.maxFretSpan) {
+                if (thisShape.highFret - thisFret >= options.maxFretSpan || thisFret - thisShape.lowFret >= options.maxFretSpan) {
                     // need to check lowFret too in case this string is tuned higher than the last
+                    nextBaseShapes.push(thisShape)
                     continue
                 }
 
@@ -170,7 +171,7 @@ export function generateScaleShapes(
                         break
                     }
 
-                    if (thisShape.highFret - thisFret > options.maxFretSpan || thisFret - thisShape.lowFret > options.maxFretSpan) {
+                    if (thisShape.highFret - thisFret >= options.maxFretSpan || thisFret - thisShape.lowFret >= options.maxFretSpan) {
                         break
                     }
 
@@ -206,6 +207,14 @@ export function generateScaleShapes(
     finalShapes = finalShapes.filter(s => {
         if (options.minOctaves === 0) return true
         return s.shape.length >= octaveRequiredPositions
+    })
+
+    const seen = new Set<string>()
+    finalShapes = finalShapes.filter(sh => {
+        const key = sh.shape.map(p => `${p.stringIndex}:${p.fret}`).join(',')
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
     })
 
     return finalShapes
