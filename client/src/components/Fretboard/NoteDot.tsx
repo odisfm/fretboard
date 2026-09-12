@@ -45,7 +45,9 @@ export default function NoteDot(
             }
             break;
         case "dim":
-            theseClasses = dimClasses
+            if (variant !== "preview") {
+                theseClasses = dimClasses
+            }
             break;
         case "none":
             theseClasses = noneClasses
