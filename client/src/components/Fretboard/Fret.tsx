@@ -6,6 +6,7 @@ import StringVisual from "./decorations/StringVisual.tsx";
 import FretVisual from "./decorations/FretVisual.tsx";
 import type {FretboardVariant} from "./Fretboard.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
+import {FretDotSide} from "./decorations/FretDotSide.tsx";
 
 type Props = {
     fretNumber: number,
@@ -71,6 +72,17 @@ export default function Fret(
         if (highlightedShape && fretNumber === highlightedShape.lowFret) {
             showFretNumber = true
         }
+    }
+
+    let dotStyle: "single" | "double" | null
+    if (variant === "preview") {
+        dotStyle = null
+    } else if ([12, 24].includes(fretNumber)) {
+        dotStyle = "double"
+    } else if ([3, 5, 7, 9, 15, 17, 19, 21].includes(fretNumber)) {
+        dotStyle = "single"
+    } else {
+        dotStyle = null
     }
 
     return (
@@ -143,7 +155,9 @@ export default function Fret(
                 })}
             </>
 
-            <div><span></span></div>
+            <div>
+                <FretDotSide style={dotStyle} orientation={orientation}/>
+            </div>
         </div>
     )
 
