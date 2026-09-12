@@ -25,7 +25,7 @@ export default function FretboardDemo() {
         )
         scaleShapes = sortScaleShapes(scaleShapes, "lowToHighFretToString")
         return scaleShapes
-    }, [scaleContext.scale, tuning, tuning.strings])
+    }, [scaleContext.scale, tuning])
 
     function _setActiveScaleShape(idx: number) {
         setActiveScaleShapeIdx(idx)
