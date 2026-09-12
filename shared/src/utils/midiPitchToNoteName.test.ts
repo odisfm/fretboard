@@ -7,19 +7,19 @@ describe("midiPitchToNoteName()", () => {
             midiPitchToNoteName(
                 0
             )
-        ).toEqual("C-2")
+        ).toEqual("C-1")
 
         expect(
             midiPitchToNoteName(
                 36
             )
-        ).toEqual("C1")
+        ).toEqual("C2")
 
         expect(
             midiPitchToNoteName(
                 37
             )
-        ).toEqual("C#1")
+        ).toEqual("C#2")
 
         expect(
             midiPitchToNoteName(
@@ -27,7 +27,7 @@ describe("midiPitchToNoteName()", () => {
                 true,
                 "flat"
             )
-        ).toEqual("Db1")
+        ).toEqual("Db2")
 
         expect(
             midiPitchToNoteName(
