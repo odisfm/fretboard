@@ -8,6 +8,7 @@ type ScaleContextValue = {
     setScale: (scale: Scale) => void;
     accidentalPref: AccidentalPrefType
     setAccidentalPref: (pref: AccidentalPrefType) => void;
+    degreesToPitches: Set<number>[]
 }
 
 export const ScaleContext = createContext<ScaleContextValue | null>(null)

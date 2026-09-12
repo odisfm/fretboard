@@ -5,6 +5,7 @@ import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
 import StringVisual from "./StringVisual.tsx";
 import FretVisual from "./FretVisual.tsx";
 import type {FretboardVariant} from "./Fretboard.tsx";
+import {useScale} from "../../contexts/scale/useScale.ts";
 
 type Props = {
     fretNumber: number,
@@ -26,6 +27,7 @@ export default function Fret(
         variant,
         ref
     }: Props) {
+    const scaleContext = useScale()
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
     const boardUnits = tuning.strings.length + 2 // 1 for fret #s, 1 for fret dots
@@ -40,6 +42,24 @@ export default function Fret(
         }
         return arr
     }, [tuning, highlightedShape, fretNumber])
+
+    const inScale: (false | number)[] = useMemo(() => {
+        const arr = Array(tuning.strings.length).fill(false)
+        for (let i = 0; i < tuning.strings.length; i++) {
+            const zeroFret = tuning.strings[i];
+            const pitch = zeroFret + fretNumber
+            for (let j = 0; j < scaleContext.degreesToPitches.length; j++) {
+                const degreeSet = scaleContext.degreesToPitches[j]
+                if (degreeSet.has(pitch)) {
+                    arr[i] = pitch
+                    break
+                }
+            }
+        }
+        return arr
+    }, [scaleContext, fretNumber, tuning.strings])
+
+    console.log(inScale)
 
     const unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
     const unitWidth = variant === "main" ? 40: 20;  // px, across strings
@@ -89,7 +109,13 @@ export default function Fret(
                     if (p) {
                         visibility = "highlight"
                     } else {
-                        visibility = zeroFret ? "zeroFret" : "none"
+                        if (zeroFret) {
+                            visibility = "zeroFret"
+                        } else if (inScale[stringIdx] !== false) {
+                            visibility = "dim"
+                        } else {
+                            visibility = "none"
+                        }
                     }
                     return (
                         <div
