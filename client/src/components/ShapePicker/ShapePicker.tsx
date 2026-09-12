@@ -20,6 +20,7 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
                             setScrollToFret(s.lowFret)
                         }}
                         variant={active === i ? "default" : "subtle"}
+                        styles={`z-30`}
                     >
                         <div
                             className={`flex flex-col`}

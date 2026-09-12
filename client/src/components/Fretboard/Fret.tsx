@@ -96,8 +96,8 @@ export default function Fret(
                             key={stringIdx}
                             className="relative flex items-center justify-center p-2"
                         >
-                            {!zeroFret && variant === "main" && <FretVisual orientation={orientation}/>}
-                            {variant === "main" && <StringVisual orientation={orientation}/>}
+                            {!zeroFret && <FretVisual orientation={orientation}/>}
+                            {<StringVisual orientation={orientation}/>}
                             <NoteDot pitch={pitch} visibility={visibility} variant={variant}/>
                         </div>
                     )
