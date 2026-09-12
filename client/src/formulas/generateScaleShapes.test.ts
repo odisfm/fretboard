@@ -2,6 +2,7 @@ import {test, expect, describe} from "vitest"
 import {eStandardTuning, type Tuning} from "@fretboard/shared/src/types/tuning.ts";
 import type {Scale, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
 import {generateScaleShapes} from "./generateScaleShapes";
+import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
 
 function simplifySingleStringShape(shape: ScaleShape): number[] {
     return shape.shape.map(pos => {
@@ -35,6 +36,16 @@ function isSameShape(shapeA: ScaleShape, shapeB: ScaleShape): boolean {
     }
 
     return true;
+}
+
+function shapeHasAllNotes(shape: ScaleShape): boolean {
+    const noteNames: Set<string> = new Set();
+    for (const p of shape.shape) {
+        const name = midiPitchToNoteName(shape.tuning.strings[p.stringIndex] + p.fret, false)
+        noteNames.add(name)
+    }
+
+    return noteNames.size === shape.scale.intervals.length
 }
 
 describe("single-string tests", () => {
@@ -192,6 +203,10 @@ describe("multi-string tests", () => {
 
         expect(isShapeInShapes(searchShape, results)).toEqual(true)
 
+        for (const s of results) {
+            expect(shapeHasAllNotes(s)).toEqual(true)
+        }
+
     })
     test("Classic E Minor", () => {
         const tuning = eStandardTuning
@@ -292,5 +307,9 @@ describe("multi-string tests", () => {
         }
 
         expect(isShapeInShapes(searchShape, results)).toBe(true)
+
+        for (const s of results) {
+            expect(shapeHasAllNotes(s)).toEqual(true)
+        }
     })
 })
