@@ -16,4 +16,9 @@ export const demoScales: Scale[] = [
         intervals: [3, 2, 2, 3, 2],
         tonic: "C"
     },
+    {
+        name: "Dorian",
+        intervals: [2, 1, 2, 2, 2, 1, 2],
+        tonic: "C"
+    },
 ]
