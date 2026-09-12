@@ -10,7 +10,7 @@ export type Tuning = {
     instrument?: string,
 }
 
-export const eStandardTuning = {
+export const eStandardTuning: Tuning = {
     name: "Standard",
     strings: [40, 45, 50, 55, 59, 64],
     capo: [0, 0, 0, 0, 0, 0],
