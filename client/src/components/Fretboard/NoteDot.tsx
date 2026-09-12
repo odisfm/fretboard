@@ -29,6 +29,7 @@ export default function NoteDot(
     let theseClasses = ""
     switch (visibility) {
         case "highlight":
+            theseClasses += "font-bold "
             switch(degreeName) {
                 case "1":
                 case "P1":
