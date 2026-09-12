@@ -4,14 +4,22 @@ import type {ScaleShape} from "@fretboard/shared/src/types/scale.ts";
 
 type Props = {
     scaleShapes: ScaleShape[],
-    active: number,
-    onClick: (idx: number) => void,
+    active: number | null,
+    onClick: (idx: number | null) => void,
     setScrollToFret: (fretNumber: number) => void,
 }
 
 export default function ShapePicker({scaleShapes, onClick, active, setScrollToFret}: Props) {
     return (
         <div className={`flex w-full p-2 gap-4 overflow-x-scroll`}>
+            <Button
+                onClick={() => {
+                    onClick(null)
+                }}
+                variant={active === null ? "default" : "subtle"}
+            >
+                {"Whole fretboard"}
+            </Button>
             {scaleShapes.map((s, i) => {
                 return (
                     <Button
@@ -20,6 +28,7 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
                             setScrollToFret(s.lowFret)
                         }}
                         variant={active === i ? "default" : "subtle"}
+                        styles={`z-30`}
                     >
                         <div
                             className={`flex flex-col`}

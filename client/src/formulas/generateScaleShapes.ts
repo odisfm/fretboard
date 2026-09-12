@@ -145,6 +145,7 @@ export function generateScaleShapes(
 
                 if (thisShape.highFret - thisFret > options.maxFretSpan || thisFret - thisShape.lowFret > options.maxFretSpan) {
                     // need to check lowFret too in case this string is tuned higher than the last
+                    nextBaseShapes.push(thisShape)
                     continue
                 }
 
@@ -206,6 +207,14 @@ export function generateScaleShapes(
     finalShapes = finalShapes.filter(s => {
         if (options.minOctaves === 0) return true
         return s.shape.length >= octaveRequiredPositions
+    })
+
+    const seen = new Set<string>()
+    finalShapes = finalShapes.filter(sh => {
+        const key = sh.shape.map(p => `${p.stringIndex}:${p.fret}`).join(',')
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
     })
 
     return finalShapes

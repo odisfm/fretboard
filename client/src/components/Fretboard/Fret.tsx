@@ -5,6 +5,7 @@ import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
 import StringVisual from "./StringVisual.tsx";
 import FretVisual from "./FretVisual.tsx";
 import type {FretboardVariant} from "./Fretboard.tsx";
+import {useScale} from "../../contexts/scale/useScale.ts";
 
 type Props = {
     fretNumber: number,
@@ -26,6 +27,7 @@ export default function Fret(
         variant,
         ref
     }: Props) {
+    const scaleContext = useScale()
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
     const boardUnits = tuning.strings.length + 2 // 1 for fret #s, 1 for fret dots
@@ -40,6 +42,24 @@ export default function Fret(
         }
         return arr
     }, [tuning, highlightedShape, fretNumber])
+
+    const {inScale, inDegree} = useMemo(() => {
+        const inScale = Array(tuning.strings.length).fill(false)
+        const inDegree = Array(tuning.strings.length).fill(false)
+        for (let i = 0; i < tuning.strings.length; i++) {
+            const zeroFret = tuning.strings[i];
+            const pitch = zeroFret + fretNumber
+            for (let j = 0; j < scaleContext.degreesToPitches.length; j++) {
+                const degreeSet = scaleContext.degreesToPitches[j]
+                if (degreeSet.has(pitch)) {
+                    inScale[i] = pitch
+                    inDegree[i] = j
+                    break
+                }
+            }
+        }
+        return {inScale, inDegree}
+    }, [scaleContext, fretNumber, tuning.strings])
 
     const unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
     const unitWidth = variant === "main" ? 40: 20;  // px, across strings
@@ -86,19 +106,38 @@ export default function Fret(
                     const p = inShape[stringIdx]
                     const pitch = tuning.strings[stringIdx] + fretNumber
                     let visibility: DotVisibility
+                    const degree = p ? p.scaleIndex : inDegree[stringIdx]
                     if (p) {
                         visibility = "highlight"
                     } else {
-                        visibility = zeroFret ? "zeroFret" : "none"
+                        if (highlightedShape) {
+                            if (zeroFret) {
+                                visibility = "zeroFret"
+                            } else if (inScale[stringIdx] !== false) {
+                                visibility = "dim"
+                            } else {
+                                visibility = "none"
+                            }
+                        } else {
+                            if (inScale[stringIdx] !== false) {
+                                visibility = "highlight"
+                            } else {
+                                if (zeroFret) {
+                                    visibility = "zeroFret"
+                                } else {
+                                    visibility = "none"
+                                }
+                            }
+                        }
                     }
                     return (
                         <div
                             key={stringIdx}
                             className="relative flex items-center justify-center p-2"
                         >
-                            {!zeroFret && variant === "main" && <FretVisual orientation={orientation}/>}
-                            {variant === "main" && <StringVisual orientation={orientation}/>}
-                            <NoteDot pitch={pitch} visibility={visibility} variant={variant}/>
+                            {!zeroFret && <FretVisual orientation={orientation}/>}
+                            {<StringVisual orientation={orientation}/>}
+                            <NoteDot pitch={pitch} visibility={visibility} variant={variant} degree={degree}/>
                         </div>
                     )
                 })}
