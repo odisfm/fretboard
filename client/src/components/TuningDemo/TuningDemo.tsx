@@ -1,6 +1,7 @@
 import {useTuning} from "../../contexts/tuning/useTuning.ts";
 import {FaPlusCircle} from "react-icons/fa"
 import StringSetter from "./StringSetter.tsx";
+import Button from "../generic/Button.tsx";
 
 export default function TuningDemo() {
     const tuningContext = useTuning()
@@ -43,11 +44,11 @@ export default function TuningDemo() {
     return (
         <div className={`flex flex-col gap-2 items-center w-sm p-2 bg-neutral-900`}>
             <span className={`font-bold`}>{tuning.name || "Unnamed tuning"}</span>
-            <button
+            <Button
                 onClick={() => insertString("bottom")}
             >
                 <FaPlusCircle/>
-            </button>
+            </Button>
             <div className={`flex flex-col gap-1 w-full`}>
                 {tuning.strings.map((s, i) => {
                     return (
@@ -60,11 +61,11 @@ export default function TuningDemo() {
                     )
                 })}
             </div>
-            <button
+            <Button
                 onClick={() => insertString("top")}
             >
                 <FaPlusCircle/>
-            </button>
+            </Button>
         </div>
     )
 }
