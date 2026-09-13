@@ -11,9 +11,24 @@ testUserDataRouter.get("/:userId", async (c) => {
     const userRecord = await db.user.findUnique({
         where: {id: userId},
         include: {
-            scales: true,
-            tunings: true,
-            shapes: true
+            scales: {
+                orderBy: {
+                    order: "desc",
+                    createdAt: "asc"
+                }
+            },
+            tunings: {
+                orderBy: {
+                    order: "desc",
+                    createdAt: "asc"
+                }
+            },
+            shapes: {
+                orderBy: {
+                    order: "desc",
+                    createdAt: "asc"
+                }
+            },
         }
     })
     if (!userRecord) {
