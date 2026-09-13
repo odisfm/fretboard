@@ -6,14 +6,8 @@ import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import getScaleDegreeNumbers from "../../formulas/getScaleDegreeNumbers.ts";
 
-const cMajor: Scale = {
-    name: "C Major",
-    intervals: [2, 2, 1, 2, 2, 2, 1],
-    tonic: "C"
-}
-
-export function ScaleProvider({children}: {children: React.ReactNode}) {
-    const [scale, setScale] = useState<Scale>(cMajor)
+export function ScaleProvider({initialScale, children}: {initialScale: Scale, children: React.ReactNode}) {
+    const [scale, setScale] = useState<Scale>(initialScale)
     const [accidentalPref, setAccidentalPref] = useState<AccidentalPrefType>(null);
     const [intervalPref, setIntervalPref] = useState<IntervalPrefType>(null);
 
