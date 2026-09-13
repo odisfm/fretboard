@@ -6,6 +6,8 @@ type UserDataContextValue = {
     scales: Scale[]
     tunings: Tuning[]
     shapes: ScaleShape[]
+    connectionStatus: boolean
+    initialised: boolean
 }
 
 export const UserDataContext = createContext<UserDataContextValue | null>(null)

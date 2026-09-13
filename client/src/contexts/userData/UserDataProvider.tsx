@@ -3,6 +3,8 @@ import {type TestUserDataResponse} from "@fretboard/shared/types/apiResponses"
 import type {Scale} from "@fretboard/shared/types/scale";
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import {UserDataContext} from "./UserDataContext.ts";
+import {TuningProvider} from "../tuning/TuningProvider.tsx";
+import {ScaleProvider} from "../scale/ScaleProvider.tsx";
 
 const TEST_USER_ID = import.meta.env.VITE_TEST_USER_ID;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -10,6 +12,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 export function UserDataProvider({children}: {children: React.ReactNode}) {
     const [scales, setScales] = useState<Scale[]>([])
     const [tunings, setTunings] = useState<Tuning[]>([])
+    const [connectionStatus, setConnectionStatus] = useState<boolean>(false)
+    const [initialised, setInitialised] = useState<boolean>(false)
 
     useEffect(() => {
         (async function () {
@@ -23,6 +27,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             console.log(data)
             setScales(data.scales)
             setTunings(data.tunings)
+            setInitialised(true)
         })()
 
     }, [])
@@ -32,8 +37,20 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             scales,
             tunings,
             shapes: []
+            connectionStatus,
+            initialised
         }}>
-            {children}
+            {initialised &&
+                <>
+                    <TuningProvider initialTuning={tunings[0]}>
+                        <ScaleProvider initialScale={scales[0]}>
+                            {children}
+                        </ScaleProvider>
+                    </TuningProvider>
+                </>
+            }
+            {!initialised && <span>loading...</span>}
+
         </UserDataContext>
     )
 }
