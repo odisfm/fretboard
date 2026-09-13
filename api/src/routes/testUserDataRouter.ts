@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { db } from "@fretboard/shared/db"
 import type {TestUserDataResponse} from "@fretboard/shared/types/apiResponses";
-import {ScaleSchema} from "@fretboard/shared/types/scale";
+import {ScaleSchema, ScaleShapeSchema} from "@fretboard/shared/types/scale";
 import {TuningSchema} from "@fretboard/shared/types/tuning";
 import {sortByLexorank} from "@fretboard/shared/utils/sortByLexorank";
 
@@ -55,9 +55,20 @@ testUserDataRouter.get("/:userId", async (c) => {
         return sortByLexorank(a, b)
     })
 
+    let shapes = userRecord.shapes.map((s) => {
+        const obj = {
+            ...s.data as object,
+            id: s.id,
+        }
+        return ScaleShapeSchema.parse(obj)
+    })
+    shapes = shapes.sort((a, b) => {
+        return sortByLexorank(a, b)
+    })
+
     console.log(tunings)
 
-    return c.json({scales, tunings, shapes: []} satisfies TestUserDataResponse, 200)
+    return c.json({scales, tunings, shapes: shapes} satisfies TestUserDataResponse, 200)
 
 
 })

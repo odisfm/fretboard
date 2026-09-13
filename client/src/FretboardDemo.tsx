@@ -9,8 +9,12 @@ import {FaRotate} from "react-icons/fa6";
 import {sortScaleShapes} from "./formulas/sortScaleShapes.ts";
 import {ScaleDemo} from "./components/ScaleDemo/ScaleDemo.tsx";
 import {useScale} from "./contexts/scale/useScale.ts";
+import type {ScaleShape} from "@fretboard/shared/types/scale";
+import {useUserData} from "./contexts/userData/useUserData.tsx";
+import {isSameScale, isSameShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 
 export default function FretboardDemo() {
+    const userDataContext = useUserData();
     const scaleContext = useScale()
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
@@ -18,7 +22,7 @@ export default function FretboardDemo() {
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
 
-    const scaleShapes = useMemo(() => {
+    const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
             tuning,
             scaleContext.scale
@@ -26,6 +30,34 @@ export default function FretboardDemo() {
         scaleShapes = sortScaleShapes(scaleShapes, "lowToHighFretToString")
         return scaleShapes
     }, [scaleContext.scale, tuning])
+
+    const relevantSavedShapes: ScaleShape[] = useMemo(() => {
+        const relevant: ScaleShape[] = []
+
+        for (const s of userDataContext.shapes) {
+            if (!isSameScale(s.scale, scaleContext.scale, true)) continue
+            if (!isSameTuning(s.tuning, tuning)) continue
+            relevant.push(s)
+        }
+
+        return relevant
+    }, [userDataContext.shapes, tuning, scaleContext.scale])
+
+    const scaleShapes: ScaleShape[] = useMemo(() => {
+        const shapes: ScaleShape[] = [...relevantSavedShapes]
+        for (const gs of generatedShapes) {
+            let isSame = false;
+            for (const rs of relevantSavedShapes) {
+                if (isSameShape(gs, rs)) {
+                    isSame = true;
+                    break
+                }
+            }
+            if (!isSame) shapes.push(gs)
+        }
+
+        return shapes
+    }, [relevantSavedShapes, generatedShapes])
 
     function _setActiveScaleShape(idx: number | null) {
         setActiveScaleShapeIdx(idx)

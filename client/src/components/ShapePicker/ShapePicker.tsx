@@ -1,6 +1,6 @@
 import Button from "../generic/Button.tsx";
-import ShapePreview from "./ShapePreview.tsx";
 import type {ScaleShape} from "@fretboard/shared/types/scale";
+import ShapeButton from "./ShapeButton.tsx";
 
 type Props = {
     scaleShapes: ScaleShape[],
@@ -22,25 +22,7 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
             </Button>
             {scaleShapes.map((s, i) => {
                 return (
-                    <Button
-                        onClick={() => {
-                            onClick(i)
-                            setScrollToFret(s.lowFret)
-                        }}
-                        variant={active === i ? "default" : "subtle"}
-                        styles={`z-30`}
-                    >
-                        <div
-                            className={`flex flex-col`}
-                        >
-                            <div
-                                className={`self-end px-2 rounded-md text-xs ${active === i ? "bg-black" : ""}`}
-                            >
-                                <span className={`self-end`}><sup>#</sup>{`${i + 1}`}</span>
-                            </div>
-                            <ShapePreview shape={s}/>
-                        </div>
-                    </Button>
+                    <ShapeButton scaleShape={s} index={i} active={active} onClick={onClick} setScrollToFret={setScrollToFret} />
                 )
             })}
         </div>
