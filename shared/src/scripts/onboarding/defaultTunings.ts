@@ -1,6 +1,6 @@
 import {type Tuning} from "../../types/tuning";
 
-type NewTuning = Omit<Tuning, "id">
+type NewTuning = Omit<Tuning, "id" | "order">
 
 export const defaultTunings: NewTuning[] = [
     {

@@ -2,6 +2,7 @@ import {db} from "../../db"
 import {defaultScales} from "./defaultScales";
 import {defaultTunings} from "./defaultTunings";
 import commandLineArgs from 'command-line-args'
+import {LexoRank} from "@dalet-oss/lexorank";
 
 const optionDefinitions = [
     {name: "userId", alias: "u", type: String, required: true},
@@ -23,8 +24,10 @@ async function createUserDefaults(userId: string) {
         throw new Error(`No user with id "${userId}"`)
     }
 
+    let lastRank = LexoRank.middle()
     const userScales = defaultScales.map((s) => {
-        return {data: s, userId}
+        lastRank = lastRank.genNext()
+        return {data: {...s, order: lastRank["value"]}, userId}
     })
 
     const scaleInsert = await db.scale.createMany({
@@ -32,8 +35,10 @@ async function createUserDefaults(userId: string) {
         userScales
     })
 
+    lastRank = LexoRank.middle()
     const userTunings = defaultTunings.map((t) => {
-        return {data: t, userId}
+        lastRank = lastRank.genNext()
+        return {data: {...t, order: lastRank["value"]}, userId}
     })
 
     const tuningInsert = await db.tuning.createMany({
