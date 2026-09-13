@@ -5,6 +5,7 @@ import type {Tuning} from "@fretboard/shared/types/tuning";
 type UserDataContextValue = {
     scales: Scale[]
     tunings: Tuning[]
+    updateTuning: (tuning: Tuning) => void
     shapes: ScaleShape[]
     connectionStatus: boolean
     initialised: boolean

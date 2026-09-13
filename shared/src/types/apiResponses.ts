@@ -6,3 +6,7 @@ export type TestUserDataResponse = {
     tunings: Tuning[],
     shapes: ScaleShape[]
 }
+
+export type TuningResponse = {
+    tuning: Tuning
+}
