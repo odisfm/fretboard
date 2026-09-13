@@ -4,18 +4,16 @@ import {useMemo} from "react";
 import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
 import StringVisual from "./decorations/StringVisual.tsx";
 import FretVisual from "./decorations/FretVisual.tsx";
-import type {FretboardVariant} from "./Fretboard.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
 import {FretDotSide} from "./decorations/FretDotSide.tsx";
+import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
 
 type Props = {
     fretNumber: number,
     scale: Scale,
     highlightedShape?: ScaleShape,
-    zoom: number,
     zeroFret: boolean,
     orientation: "horizontal" | "vertical"
-    variant: FretboardVariant,
     ref?: React.Ref<HTMLDivElement>;
 }
 
@@ -25,10 +23,9 @@ export default function Fret(
         highlightedShape,
         zeroFret,
         orientation,
-        variant,
         ref,
-        zoom
     }: Props) {
+    const fdContext = useFretboardDisplay()
     const scaleContext = useScale()
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
@@ -63,18 +60,18 @@ export default function Fret(
         return {inScale, inDegree}
     }, [scaleContext, fretNumber, tuning.strings])
 
-    let unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
-    let unitWidth = variant === "main" ? 40: 20;  // px, across strings
+    let unitLength = fdContext.variant === "main" ? 80 : 40; // px, along the orientation axis
+    let unitWidth = fdContext.variant === "main" ? 40: 20;  // px, across strings
     if (orientation === "horizontal") {
-        unitLength *= zoom
-        unitWidth *= (zoom * .7)
+        unitLength *= fdContext.zoom
+        unitWidth *= (fdContext.zoom * .7)
     } else if (orientation === "vertical") {
-        unitWidth *= zoom
-        unitLength *= (zoom * .7)
+        unitWidth *= fdContext.zoom
+        unitLength *= (fdContext.zoom * .7)
     }
 
     let showFretNumber = false
-    if (variant === "main") {
+    if (fdContext.variant === "main") {
         showFretNumber = true
     } else {
         if (highlightedShape && fretNumber === highlightedShape.lowFret) {
@@ -83,7 +80,7 @@ export default function Fret(
     }
 
     let dotStyle: "single" | "double" | null
-    if (variant === "preview") {
+    if (fdContext.variant === "preview") {
         dotStyle = null
     } else if ([12, 24].includes(fretNumber)) {
         dotStyle = "double"
@@ -110,7 +107,7 @@ export default function Fret(
     >
             <div className={`w-full h-full flex ${orientation === "horizontal" && "flex-col"} items-center`}>
                 {showFretNumber &&
-                    <span className={`${variant === "main" ? "text-md" : "text-xs"}`}>
+                    <span className={`${fdContext.variant === "main" ? "text-md" : "text-xs"}`}>
                         {fretNumber}
                     </span>}
             </div>
@@ -157,7 +154,7 @@ export default function Fret(
                         >
                             {!zeroFret && <FretVisual orientation={orientation}/>}
                             {<StringVisual orientation={orientation}/>}
-                            <NoteDot pitch={pitch} visibility={visibility} variant={variant} degree={degree}/>
+                            <NoteDot pitch={pitch} visibility={visibility} variant={fdContext.variant} degree={degree}/>
                         </div>
                     )
                 })}

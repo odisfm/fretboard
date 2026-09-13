@@ -18,6 +18,7 @@ import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameScale, isSameShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 import {ShapeGenFilter} from "./components/Fretboard/ShapeGenFilter.tsx";
 import {fitShapeToNewTonic} from "./formulas/fitShapeToNewTonic.ts";
+import {FretboardDisplayContext} from "./contexts/fretboardDisplay/FretboardDisplayContext.ts";
 
 function dedupeShapes(shapes: ScaleShape[]): ScaleShape[] {
     const result: ScaleShape[] = []
@@ -137,17 +138,19 @@ export default function FretboardDemo() {
                 setFitSavedShapes={setFitSavedShapes}
             />
 
-            <Fretboard
-                orientation={orientation}
-                startFret={1}
-                endFret={24}
-                scale={scaleContext.scale}
-                zoom={fretboardZoom}
-                renderZeroFret={true}
-                highlightedShape={activeScaleShapeIdx !== null ? scaleShapes[activeScaleShapeIdx] : undefined}
-                variant={"main"}
-                scrollToFret={scrollToFret}
-            />
+            <FretboardDisplayContext
+                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity: .5}}
+            >
+                <Fretboard
+                    orientation={orientation}
+                    startFret={1}
+                    endFret={24}
+                    scale={scaleContext.scale}
+                    renderZeroFret={true}
+                    highlightedShape={activeScaleShapeIdx !== null ? scaleShapes[activeScaleShapeIdx] : undefined}
+                    scrollToFret={scrollToFret}
+                />
+            </FretboardDisplayContext>
 
             <ShapePicker
                 onClick={_setActiveScaleShape}

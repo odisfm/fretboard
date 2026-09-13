@@ -1,6 +1,7 @@
 import type {FretboardVariant} from "./Fretboard.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
+import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
 
 export type DotVisibility = "highlight" | "dim" | "none" | "zeroFret"
 
@@ -19,8 +20,9 @@ export default function NoteDot(
         degree
     }: Props) {
 
+    const fdContext = useFretboardDisplay()
     const scaleContext = useScale()
-    const dimClasses = `bg-white/50 text-black`
+    const dimClasses = `bg-white text-black`
     const noneClasses = `bg-transparent invisible`
     const zeroFretClasses = `bg-neutral-700/75`
     const diameter = variant === "main" ? 30 : 15
@@ -84,7 +86,8 @@ export default function NoteDot(
             }
                 style={{
                     height: `${diameter}px`,
-                    width: `${diameter}px`
+                    width: `${diameter}px`,
+                    opacity: `${visibility === "dim" ? fdContext.outShapeOpacity * 100 : 100}%`
                 }}
             >
                 {variant === "main" && <span>{text}</span>}
