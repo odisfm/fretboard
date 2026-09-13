@@ -1,4 +1,4 @@
-import type {Scale, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
+import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import Fret from "./Fret.tsx";
 import {useEffect, useRef} from "react";
 

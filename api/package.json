@@ -1,20 +1,19 @@
 {
   "name": "@fretboard/api",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "tsx src/server.ts",
     "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
+    "@fretboard/shared": "*",
     "@hono/node-server": "^1.19.14",
     "hono": "^4.12.14"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "tsx": "^4.7.1"
   }
 }

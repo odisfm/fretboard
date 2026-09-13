@@ -1,4 +1,4 @@
-import type {ScaleShape} from "@fretboard/shared/src/types/scale.ts";
+import type {ScaleShape} from "@fretboard/shared/types/scale";
 
 export type SortScaleShapesStrategy =
     "lowToHighFretToString" | "lowToHighStringToFret"

@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { type Tuning } from "@fretboard/shared/src/types/tuning"
+import { type Tuning } from "@fretboard/shared/types/tuning"
 
 type TuningContextValue = {
     tuning: Tuning;

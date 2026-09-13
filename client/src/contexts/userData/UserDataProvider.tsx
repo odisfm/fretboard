@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
-import {type TestUserDataResponse} from "@fretboard/shared/src/types/apiResponses.ts"
-import type {Scale} from "@fretboard/shared/src/types/scale.ts";
-import type {Tuning} from "@fretboard/shared/src/types/tuning.ts";
+import {type TestUserDataResponse} from "@fretboard/shared/types/apiResponses"
+import type {Scale} from "@fretboard/shared/types/scale";
+import type {Tuning} from "@fretboard/shared/types/tuning";
 import {UserDataContext} from "./UserDataContext.ts";
 
 const TEST_USER_ID = import.meta.env.VITE_TEST_USER_ID;

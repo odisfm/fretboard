@@ -1,9 +1,9 @@
 import {useMemo, useState} from "react";
-import type {NoteName, Scale} from "@fretboard/shared/src/types/scale.ts";
+import type {NoteName, Scale} from "@fretboard/shared/types/scale";
 import {type AccidentalPrefType, type IntervalPrefType, ScaleContext} from "./ScaleContext.ts";
-import {allIndicesForNoteName} from "@fretboard/shared/src/utils/allIndicesForNoteName.ts";
-import {indexForNoteName} from "@fretboard/shared/src/utils/indexForNoteName.ts";
-import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
+import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName";
+import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
+import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import getScaleDegreeNumbers from "../../formulas/getScaleDegreeNumbers.ts";
 
 const cMajor: Scale = {

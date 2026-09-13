@@ -1,16 +1,10 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
     "module": "preserve",
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
+    "lib": ["ES2023"],
+    "types": ["node"]
   },
-
-  "exclude": ["node_modules"]
+  "include": ["src", "prisma.config.ts"]
 }

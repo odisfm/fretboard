@@ -1,25 +1,30 @@
 {
-  "name": "change-me",
+  "name": "fretboard",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "workspaces": [
     "api",
     "client",
     "shared"
   ],
-  "type": "module",
   "scripts": {
     "api:dev": "dotenv -e .env -- sh -c 'npm run dev --workspace api'",
-    "client:dev": "dotenv -e .env -- sh -c 'npm run dev --workspace client'"
+    "client:dev": "dotenv -e .env -- sh -c 'npm run dev --workspace client'",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "@types/node": "^25.9.6",
     "@vitest/coverage-v8": "^4.1.4",
     "dotenv-cli": "^11.0.0",
+    "eslint": "^9.39.4",
     "jsdom": "^29.0.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.4"
-  },
-  "dependencies": {
-    "prisma": "^7.10.0"
   }
 }

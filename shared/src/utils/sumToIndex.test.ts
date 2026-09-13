@@ -1,5 +1,5 @@
 import {expect, test} from "vitest";
-import sumToIndex from "./sumToIndex.ts";
+import sumToIndex from "./sumToIndex.js";
 
 test("sumToIndex", () => {
     expect(

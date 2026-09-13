@@ -1,4 +1,4 @@
-import type {Scale, ScalePosition, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
+import type {Scale, ScalePosition, ScaleShape} from "@fretboard/shared/types/scale";
 import {useTuning} from "../../contexts/tuning/useTuning.ts";
 import {useMemo} from "react";
 import NoteDot, {type DotVisibility} from "./NoteDot.tsx";
