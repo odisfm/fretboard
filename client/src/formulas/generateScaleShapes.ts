@@ -1,6 +1,7 @@
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import {type Scale, type ScalePosition, type ScaleShape} from "@fretboard/shared/types/scale"
 import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName"
+import { v4 as createUuid } from "uuid"
 
 export type GenerateScaleShapesOptions = {
     maxFretSpan?: number,
@@ -53,6 +54,7 @@ export function generateScaleShapes(
             }
 
             let thisFretScaleShapes: ScaleShape[] = [{
+                id: createUuid(),
                 scale,
                 shape: [{
                     stringIndex: s,

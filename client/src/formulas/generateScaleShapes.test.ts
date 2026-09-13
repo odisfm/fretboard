@@ -3,6 +3,7 @@ import {eStandardTuning, type Tuning} from "@fretboard/shared/types/tuning";
 import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import {generateScaleShapes} from "./generateScaleShapes";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
+import { v4 as createUuid } from "uuid"
 
 function simplifySingleStringShape(shape: ScaleShape): number[] {
     return shape.shape.map(pos => {
@@ -51,10 +52,10 @@ function shapeHasAllNotes(shape: ScaleShape): boolean {
 describe("single-string tests", () => {
     test("G major", () => {
         const tuning: Tuning = {
-            capo: [0], fretCount: 24, strings: [40]
+            capo: [0], fretCount: 24, strings: [40], id: createUuid()
         }
         const scale: Scale = {
-            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G"
+            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G", id: createUuid()
         }
 
         const result = generateScaleShapes(
@@ -78,10 +79,10 @@ describe("single-string tests", () => {
 
     test("G minor", () => {
         const tuning: Tuning = {
-            capo: [0], fretCount: 24, strings: [40]
+            capo: [0], fretCount: 24, strings: [40], id: createUuid()
         }
         const scale: Scale = {
-            intervals: [2, 1, 2, 2, 1, 2, 2], name: "G Minor", tonic: "G"
+            intervals: [2, 1, 2, 2, 1, 2, 2], name: "G Minor", tonic: "G", id: createUuid()
         }
 
         const result = generateScaleShapes(
@@ -108,13 +109,13 @@ describe("multi-string tests", () => {
     test("Classic G Major", () => {
         const tuning = eStandardTuning
         const scale: Scale = {
-            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G"
+            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G", id: createUuid()
         }
 
         const results = generateScaleShapes(tuning, scale)
 
         const searchShape: ScaleShape = {
-            highFret: 5, lowFret: 2, shape: [
+            highFret: 5, lowFret: 2, id: createUuid(), shape: [
                 {
                     stringIndex: 0,
                     fret: 3,
@@ -211,13 +212,13 @@ describe("multi-string tests", () => {
     test("Classic E Minor", () => {
         const tuning = eStandardTuning
         const scale: Scale = {
-            intervals: [2, 1, 2, 2, 1, 2, 2], name: "E Minor", tonic: "E"
+            intervals: [2, 1, 2, 2, 1, 2, 2], name: "E Minor", tonic: "E", id: createUuid()
         }
 
         const results = generateScaleShapes(tuning, scale)
 
         const searchShape: ScaleShape = {
-            lowFret: 12, highFret: 16, tuning, scale, shape: [
+            lowFret: 12, highFret: 16, tuning, scale, id: createUuid(), shape: [
                 {
                     stringIndex: 0,
                     fret: 12,
