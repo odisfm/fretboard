@@ -28,6 +28,7 @@ export default function FretboardDemo() {
         minPerString: 1,
         minOctaves: 1
     });
+    const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
 
     const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
@@ -84,12 +85,20 @@ export default function FretboardDemo() {
                     <FaRotate/>
                 </Button>
             </div>
+
+            <ShapeGenFilter
+                shapeGenOptions={shapeGenOptions}
+                setShapeGenOptions={setShapeGenOptions}
+                fretboardZoom={fretboardZoom}
+                setFretboardZoom={setFretboardZoom}
+            />
+
             <Fretboard
                 orientation={orientation}
                 startFret={1}
                 endFret={24}
                 scale={scaleContext.scale}
-                zoom={1}
+                zoom={fretboardZoom}
                 renderZeroFret={true}
                 highlightedShape={activeScaleShapeIdx !== null ? scaleShapes[activeScaleShapeIdx] : undefined}
                 variant={"main"}
@@ -102,8 +111,6 @@ export default function FretboardDemo() {
                 scaleShapes={scaleShapes}
                 setScrollToFret={setScrollToFret}
             />
-
-            <ShapeGenFilter shapeGenOptions={shapeGenOptions} setShapeGenOptions={setShapeGenOptions} />
         </div>
     )
 }

@@ -11,16 +11,25 @@ type Props = {
     upperBound?: number
     displayStyles?: string
     buttonStyles?: string
+    valueDisplayFn?: (value: unknown) => string
 }
 
 export function NumberStepper(
     {
-        display, value, incrementFn, decrementFn, variant, upperBound, lowerBound, displayStyles, buttonStyles
+        display, value, incrementFn, decrementFn, variant, upperBound, lowerBound, displayStyles, buttonStyles, valueDisplayFn
     }: Props) {
     const canIncrement =
         typeof value !== "number" || (typeof upperBound === "number" && value < upperBound);
     const canDecrement =
         typeof value === "number" && (typeof lowerBound === "number" && value > lowerBound);
+
+    let text: string
+    if (valueDisplayFn) {
+        text = valueDisplayFn(value)
+    } else {
+        text = String(value)
+    }
+
     return (
         <div className={`flex`}>
             <Button
@@ -33,7 +42,7 @@ export function NumberStepper(
             </Button>
             { display &&
                 <div className={`flex items-center px-4 ${displayStyles}`}>
-                    <span>{value}</span>
+                    <span>{text}</span>
                 </div>
             }
             <Button

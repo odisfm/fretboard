@@ -4,6 +4,8 @@ import type {GenerateScaleShapesOptions} from "../../formulas/generateScaleShape
 type Props = {
     shapeGenOptions: GenerateScaleShapesOptions
     setShapeGenOptions: (o: GenerateScaleShapesOptions) => void;
+    fretboardZoom: number
+    setFretboardZoom: (val: number) => void;
 }
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
@@ -11,7 +13,7 @@ const MIN_PER_STRING_BOUNDS = [0, 4]
 const MAX_PER_STRING_BOUNDS = [1, 5]
 const MAX_FRET_SPAN_BOUNDS = [2, 8]
 
-export function ShapeGenFilter({shapeGenOptions, setShapeGenOptions}: Props) {
+export function ShapeGenFilter({shapeGenOptions, setShapeGenOptions, fretboardZoom, setFretboardZoom}: Props) {
 
     function incrementMinOctaves(inc: number) {
         const current = shapeGenOptions.minOctaves!
@@ -59,6 +61,12 @@ export function ShapeGenFilter({shapeGenOptions, setShapeGenOptions}: Props) {
             ...shapeGenOptions,
             maxFretSpan: newValue,
         })
+    }
+
+    function incrementFretboardZoom(direction: -1 | 1) {
+        const step = .1
+        const val = step * direction
+        setFretboardZoom(fretboardZoom + val)
     }
 
     const displayStyles = `bg-neutral-800`
@@ -118,6 +126,23 @@ export function ShapeGenFilter({shapeGenOptions, setShapeGenOptions}: Props) {
                     displayStyles={displayStyles}
                 />
                 <legend className={legendStyles}>Maximum fret span</legend>
+            </div>
+            <div className={containerStyles}>
+                <NumberStepper
+                    display={true}
+                    value={fretboardZoom}
+                    incrementFn={() => incrementFretboardZoom(1)}
+                    decrementFn={() => incrementFretboardZoom(-1)}
+                    variant={"subtle"}
+                    lowerBound={1}
+                    upperBound={2}
+                    displayStyles={displayStyles}
+                    valueDisplayFn={(value): string => {
+                        const num = value as number;
+                        return num.toFixed(1)
+                    }}
+                />
+                <legend className={legendStyles}>Fretboard zoom</legend>
             </div>
         </div>
     )
