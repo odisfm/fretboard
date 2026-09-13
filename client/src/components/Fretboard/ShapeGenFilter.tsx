@@ -1,6 +1,7 @@
 import {NumberStepper} from "../generic/NumberStepper.tsx";
 import type {GenerateScaleShapesOptions} from "../../formulas/generateScaleShapes.ts";
 import {BinaryToggle} from "../generic/BinaryToggle.tsx";
+import Tooltip from "../generic/Tooltip.tsx";
 
 type Props = {
     shapeGenOptions: GenerateScaleShapesOptions
@@ -80,11 +81,11 @@ export function ShapeGenFilter(
     }
 
     const displayStyles = `bg-neutral-800`
-    const legendStyles = `text-sm text-white/80 max-w-20`
+    const legendStyles = `text-sm text-white/80 flex gap-1 max-w-30`
     const containerStyles = `flex flex-col gap-3`
 
     return (
-        <div className={`flex flex-wrap gap-2 p-4 rounded-md bg-neutral-950`}>
+        <div className={`flex flex-wrap gap-4 p-4 rounded-md bg-neutral-950`}>
             <div className={containerStyles}>
                 <NumberStepper
                     display={true}
@@ -156,11 +157,15 @@ export function ShapeGenFilter(
             </div>
             <div className={containerStyles}>
                 <BinaryToggle state={filterSavedShapes} fn={(newState) => setFilterSavedShapes(newState)}/>
-                <legend className={legendStyles}>Filter saved shapes</legend>
+                <div className={legendStyles}><span>Filter saved shapes</span>
+                    <Tooltip text={"Only show saved shapes that meet these requirements"}/>
+                </div>
             </div>
             <div className={containerStyles}>
                 <BinaryToggle state={fitSavedShapes} fn={(newState) => setFitSavedShapes(newState)}/>
-                <legend className={legendStyles}>Transpose saved shapes</legend>
+                <div className={legendStyles}><span>Transpose saved shapes</span>
+                    <Tooltip text={"Where possible, transpose shapes that were saved in a different key"}/>
+                </div>
             </div>
         </div>
     )
