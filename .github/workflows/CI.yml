@@ -34,7 +34,7 @@ jobs:
       - run: npm ci
       - run: |
           cd shared
-          npx prisma contract emit
+          npx prisma generate
       - run: npm run test -w shared
       - run: npm run typecheck -w shared
 
@@ -49,7 +49,7 @@ jobs:
       - run: npm ci
       - run: |
           cd shared
-          npx prisma contract emit
+          npx prisma generate
       - run: npm run test -w client
       - run: npm run typecheck -w client
 
@@ -64,7 +64,7 @@ jobs:
       - run: npm ci
       - run: |
           cd shared
-          npx prisma contract emit
+          npx prisma generate
       - run: npm run test -w api
       - run: npm run typecheck -w api
 
