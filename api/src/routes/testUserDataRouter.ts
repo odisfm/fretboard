@@ -3,6 +3,7 @@ import { db } from "@fretboard/shared/db"
 import type {TestUserDataResponse} from "@fretboard/shared/types/apiResponses";
 import {ScaleSchema} from "@fretboard/shared/types/scale";
 import {TuningSchema} from "@fretboard/shared/types/tuning";
+import {sortByLexorank} from "@fretboard/shared/utils/sortByLexorank";
 
 export const testUserDataRouter = new Hono()
 
@@ -13,19 +14,16 @@ testUserDataRouter.get("/:userId", async (c) => {
         include: {
             scales: {
                 orderBy: [
-                    {order: "desc"},
                     {createdAt: "asc"}
                 ]
             },
             tunings: {
                 orderBy: [
-                    {order: "desc"},
                     {createdAt: "asc"}
                 ]
             },
             shapes: {
                 orderBy: [
-                    {order: "desc"},
                     {createdAt: "asc"}
                 ]
             },
@@ -35,20 +33,29 @@ testUserDataRouter.get("/:userId", async (c) => {
         return c.json({error: 'User not found'}, 404)
     }
 
-    const scales = userRecord.scales.map((s) => {
+    let scales = userRecord.scales.map((s) => {
         const obj = {
             ...s.data as object,
             id: s.id,
         }
         return ScaleSchema.parse(obj)
     })
-    const tunings = userRecord.tunings.map((t) => {
+    scales = scales.sort((a, b) => {
+        return sortByLexorank(a, b)
+    })
+
+    let tunings = userRecord.tunings.map((t) => {
         const obj = {
             ...t.data as object,
             id: t.id,
         }
         return TuningSchema.parse(obj)
     })
+    tunings = tunings.sort((a, b) => {
+        return sortByLexorank(a, b)
+    })
+
+    console.log(tunings)
 
     return c.json({scales, tunings, shapes: []} satisfies TestUserDataResponse, 200)
 

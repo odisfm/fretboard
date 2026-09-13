@@ -23,7 +23,6 @@ model Tuning {
   userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id])
   data      Json
-  order     String? /// lexo-rank
   createdAt DateTime @default(now())
 }
 
@@ -32,7 +31,6 @@ model Scale {
   userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id])
   data      Json
-  order     String? /// lexo-rank
   createdAt DateTime @default(now())
 }
 
@@ -41,6 +39,5 @@ model Shape {
   userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id])
   data      Json
-  order     String? /// lexo-rank
   createdAt DateTime @default(now())
 }

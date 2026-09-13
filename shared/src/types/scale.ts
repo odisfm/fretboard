@@ -15,6 +15,7 @@ export const ScaleSchema = z.object({
      * starting from the second degree and ending with the return to the tonic */
     intervals: z.array(z.number()),
     name: z.string(),
+    order: z.string()
 })
 
 export type Scale = z.infer<typeof ScaleSchema>;
@@ -36,6 +37,7 @@ export const ScaleShapeSchema = z.object({
     tuning: TuningSchema,
     lowFret: z.number(),
     highFret: z.number(),
+    order: z.string().optional(),
 })
 
 export type ScaleShape = z.infer<typeof ScaleShapeSchema>;

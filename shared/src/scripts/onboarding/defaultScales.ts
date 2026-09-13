@@ -1,6 +1,6 @@
 import {type Scale} from "../../types/scale"
 
-type NewScale = Omit<Scale, "id">
+type NewScale = Omit<Scale, "id" | "order">
 
 export const defaultScales: NewScale[] = [
     {
