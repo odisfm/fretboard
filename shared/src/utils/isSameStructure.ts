@@ -16,14 +16,30 @@ export function isSameScale(a: Scale, b: Scale, includeTonic: boolean): boolean 
     return true
 }
 
-export function isSameTuning(a: Tuning, b: Tuning): boolean {
-    if (a.strings.length !== b.strings.length) return false
-    for (let i = 0; i < a.strings.length; i++) {
-        if (a.strings[i] !== b.strings[i]) {
-            return false
+export function isSameTuning(a: Tuning, b: Tuning, includeSuperset = false): boolean {
+    /** includeSuperset checks if a has all the pitches of b contiguously **/
+    if (!includeSuperset) {
+        if (a.strings.length !== b.strings.length) return false
+        for (let i = 0; i < a.strings.length; i++) {
+            if (a.strings[i] !== b.strings[i]) return false
         }
+        return true
     }
-    return true
+
+    const longer = a.strings
+    const shorter = b.strings
+
+    if (shorter.length === 0) return true
+    if (shorter.length > longer.length) return false
+
+    const maxStart = longer.length - shorter.length
+    outer: for (let start = 0; start <= maxStart; start++) {
+        for (let j = 0; j < shorter.length; j++) {
+            if (longer[start + j] !== shorter[j]) continue outer
+        }
+        return true
+    }
+    return false
 }
 
 export function isSameShape(a: ScaleShape, b: ScaleShape): boolean {

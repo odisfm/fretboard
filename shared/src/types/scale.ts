@@ -38,6 +38,7 @@ export const ScaleShapeSchema = z.object({
     lowFret: z.number(),
     highFret: z.number(),
     order: z.string().optional(),
+    isAdjusted: z.boolean().optional()
 })
 
 export type ScaleShape = z.infer<typeof ScaleShapeSchema>;
