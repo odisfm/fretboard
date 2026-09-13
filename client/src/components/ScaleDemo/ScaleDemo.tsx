@@ -1,11 +1,12 @@
 import {useScale} from "../../contexts/scale/useScale.ts";
-import {demoScales} from "./demoScales.ts";
 import {TONES_FLAT, TONES_SHARP, TONES} from "@fretboard/shared/src/consts.ts";
 import type {NoteName} from "@fretboard/shared/src/types/scale.ts";
 import Button from "../generic/Button.tsx";
+import {useUserData} from "../../contexts/userData/useUserData.tsx";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
+    const userDataContext = useUserData()
     let tones: string[]
     switch(scaleContext.accidentalPref) {
         case "sharps":
@@ -49,10 +50,10 @@ export function ScaleDemo() {
                 className={`self-start bg-black px-2 py-1 rounded-md`}
                 onChange={(e) => {
                     const idx = Number(e.target.value);
-                    scaleContext.setScale(demoScales[idx])
+                    scaleContext.setScale(userDataContext.scales[idx])
                 }}
             >
-                {demoScales.map((scale, i) => (
+                {userDataContext.scales.map((scale, i) => (
                     <option value={i}>{scale.name}</option>
                 ))}
             </select>

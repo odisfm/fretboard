@@ -11,10 +11,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "outDir": "./dist",
-    "paths": {
-      "@fretboard/shared": ["../shared/src/index.ts"]
-    }
   },
-
+  "references": [{ "path": "../shared" }],
   "exclude": ["node_modules"]
 }

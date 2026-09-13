@@ -5,16 +5,18 @@
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint .",
-    "test": "vitest run",
-    "contract:emit": "prisma contract emit"
+    "test": "vitest run"
   },
   "devDependencies": {
-    "@prisma/cli-engine": "^0.2.3",
+    "@prisma/language-server": "^31.0.0",
+    "@types/command-line-args": "^5.2.3",
     "@types/node": "^25.6.0",
-    "prisma": "^8.0.0-rc.10"
+    "prisma": "^7"
   },
   "dependencies": {
-    "@prisma/orm-postgres": "^8.0.0-rc.9",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "command-line-args": "^6.0.2",
     "dotenv": "^17.4.2"
   }
 }
