@@ -48,6 +48,7 @@ export default function FretboardDemo() {
         minOctaves: 1
     });
     const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
+    const [outShapeOpacity, setOutShapeOpacity] = useState<number>(.5)
     const [filterSavedShapes, setFilterSavedShapes] = useState(false)
     const [fitSavedShapes, setFitSavedShapes] = useState(true)
 
@@ -136,10 +137,12 @@ export default function FretboardDemo() {
                 setFilterSavedShapes={setFilterSavedShapes}
                 fitSavedShapes={fitSavedShapes}
                 setFitSavedShapes={setFitSavedShapes}
+                outShapeOpacity={outShapeOpacity}
+                setOutShapeOpacity={setOutShapeOpacity}
             />
 
             <FretboardDisplayContext
-                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity: .5}}
+                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity}}
             >
                 <Fretboard
                     orientation={orientation}
