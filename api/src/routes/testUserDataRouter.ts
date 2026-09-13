@@ -1,5 +1,8 @@
 import { Hono } from 'hono'
 import { db } from "@fretboard/shared/db"
+import type {TestUserDataResponse} from "@fretboard/shared/types/apiResponses";
+import {ScaleSchema} from "@fretboard/shared/types/scale";
+import {TuningSchema} from "@fretboard/shared/types/tuning";
 
 export const testUserDataRouter = new Hono()
 
@@ -18,15 +21,21 @@ testUserDataRouter.get("/:userId", async (c) => {
     }
 
     const scales = userRecord.scales.map((s) => {
-        const data = s.data
-        return {...data as object}
+        const obj = {
+            ...s.data as object,
+            id: s.id,
+        }
+        return ScaleSchema.parse(obj)
     })
-    const tunings = userRecord.tunings.map((s) => {
-        const data = s.data
-        return {...data as object}
+    const tunings = userRecord.tunings.map((t) => {
+        const obj = {
+            ...t.data as object,
+            id: t.id,
+        }
+        return TuningSchema.parse(obj)
     })
 
-    return c.json({scales, tunings, shapes: []}, 200)
+    return c.json({scales, tunings, shapes: []} satisfies TestUserDataResponse, 200)
 
 
 })
