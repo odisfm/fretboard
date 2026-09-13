@@ -12,6 +12,8 @@ type Props = {
     setFilterSavedShapes: (bool: boolean) => void,
     fitSavedShapes: boolean,
     setFitSavedShapes: (bool: boolean) => void,
+    outShapeOpacity: number,
+    setOutShapeOpacity: (val: number) => void,
 }
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
@@ -23,7 +25,7 @@ export function ShapeGenFilter(
     {
         shapeGenOptions, setShapeGenOptions, fretboardZoom,
         setFretboardZoom, filterSavedShapes, setFilterSavedShapes,
-        fitSavedShapes, setFitSavedShapes
+        fitSavedShapes, setFitSavedShapes, outShapeOpacity, setOutShapeOpacity
     }: Props) {
 
     function incrementMinOctaves(inc: number) {
@@ -78,6 +80,17 @@ export function ShapeGenFilter(
         const step = .1
         const val = step * direction
         setFretboardZoom(fretboardZoom + val)
+    }
+
+    function incrementOutShapeOpacity(direction: -1 | 1) {
+        const step = .1
+        let val = (step * direction) + outShapeOpacity
+        if (val > 1) {
+            val = 1
+        } else if (val < 0) {
+            val = 0
+        }
+        setOutShapeOpacity(val)
     }
 
     const displayStyles = `bg-neutral-800`
@@ -154,6 +167,23 @@ export function ShapeGenFilter(
                     }}
                 />
                 <legend className={legendStyles}>Fretboard zoom</legend>
+            </div>
+            <div className={containerStyles}>
+                <NumberStepper
+                    display={true}
+                    value={outShapeOpacity}
+                    incrementFn={() => incrementOutShapeOpacity(1)}
+                    decrementFn={() => incrementOutShapeOpacity(-1)}
+                    variant={"subtle"}
+                    lowerBound={0}
+                    upperBound={1}
+                    displayStyles={displayStyles}
+                    valueDisplayFn={(value): string => {
+                        const num = value as number;
+                        return num.toFixed(1)
+                    }}
+                />
+                <legend className={legendStyles}>Out-of-shape opacity</legend>
             </div>
             <div className={containerStyles}>
                 <BinaryToggle state={filterSavedShapes} fn={(newState) => setFilterSavedShapes(newState)}/>
