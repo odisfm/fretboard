@@ -1,16 +1,18 @@
-export type Tuning = {
-    id?: string;
-    name?: string;
-    /** MIDI note numbers top-to-bottom / low-to-high pitch */
-    strings: number[],
-    /** Supports partial capo. `0` for un-capoed strings, all `0`s for no capo */
-    capo: number[],
-    fretCount: number,
-    /** e.g. `guitar`, `bass` `ukulele`. To allow user sorting */
-    instrument?: string,
-}
+import * as z from "zod";
+
+export const TuningSchema = z.object({
+    id: z.uuidv4(),
+    name: z.string().optional(),
+    strings: z.array(z.number()),
+    capo: z.array(z.number()),
+    fretCount: z.number(),
+    instrument: z.string().optional(),
+})
+
+export type Tuning = z.infer<typeof TuningSchema>
 
 export const eStandardTuning: Tuning = {
+    id: "158376bd-a42b-4c7e-bd54-e3f8a0a4ac37",
     name: "Standard",
     strings: [40, 45, 50, 55, 59, 64],
     capo: [0, 0, 0, 0, 0, 0],
