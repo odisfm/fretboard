@@ -59,11 +59,11 @@ export default function NoteDot(
 
     let text: string
     if (visibility === "zeroFret") {
-        text = midiPitchToNoteName(pitch, false, scaleContext.accidentalPref || "sharps")
+        text = midiPitchToNoteName(pitch, false, scaleContext.scaleSpelling)
     } else {
         switch (scaleContext.intervalPref) {
             case null:
-                text = midiPitchToNoteName(pitch, false, scaleContext.accidentalPref || "sharps")
+                text = midiPitchToNoteName(pitch, false, scaleContext.scaleSpelling)
                 break
             case "nashville":
             case "interval":

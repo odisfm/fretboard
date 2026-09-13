@@ -51,6 +51,11 @@ export function ScaleProvider({initialScale, children}: {initialScale: Scale, ch
         setAccidentalPref(accidentalPref)
     }
 
+    const scaleSpelling = useMemo(() => {
+        if (scale.tonic.includes("b")) return "flats"
+        return "sharps"
+    }, [scale.tonic])
+
     return (
         <ScaleContext value={{
             scale,
@@ -60,7 +65,8 @@ export function ScaleProvider({initialScale, children}: {initialScale: Scale, ch
             degreesToPitches,
             degreeNumbers,
             intervalPref,
-            setIntervalPref
+            setIntervalPref,
+            scaleSpelling
         }}>
             {children}
         </ScaleContext>

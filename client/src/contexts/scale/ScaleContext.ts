@@ -13,6 +13,7 @@ type ScaleContextValue = {
     degreeNumbers: string[],
     intervalPref: IntervalPrefType,
     setIntervalPref: (pref: IntervalPrefType) => void,
+    scaleSpelling: "sharps" | "flats"
 }
 
 export const ScaleContext = createContext<ScaleContextValue | null>(null)
