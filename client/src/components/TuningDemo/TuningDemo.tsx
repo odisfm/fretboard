@@ -2,8 +2,10 @@ import {useTuning} from "../../contexts/tuning/useTuning.ts";
 import {FaPlusCircle} from "react-icons/fa"
 import StringSetter from "./StringSetter.tsx";
 import Button from "../generic/Button.tsx";
+import {useUserData} from "../../contexts/userData/useUserData.tsx";
 
 export default function TuningDemo() {
+    const userDataContext = useUserData()
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
 
@@ -43,7 +45,17 @@ export default function TuningDemo() {
 
     return (
         <div className={`flex flex-col gap-2 items-center w-sm p-2 bg-neutral-900`}>
-            <span className={`font-bold`}>{tuning.name || "Unnamed tuning"}</span>
+            <select
+                onChange={(event) => {
+                    tuningContext.setTuning(userDataContext.tunings[Number(event.target.value)])
+                }}
+            >
+                {userDataContext.tunings.map((tuning, i) => {
+                    return <option value={i}>
+                        {`${tuning.name || "unnamed tuning"}${tuning.instrument && ` (${tuning.instrument})`}`}
+                    </option>
+                })}
+            </select>
             <Button
                 onClick={() => insertString("bottom")}
             >
