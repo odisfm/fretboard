@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {type TestUserDataResponse, type TuningResponse} from "@fretboard/shared/types/apiResponses"
-import type {Scale} from "@fretboard/shared/types/scale";
+import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import {UserDataContext} from "./UserDataContext.ts";
 import {TuningProvider} from "../tuning/TuningProvider.tsx";
@@ -12,6 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export function UserDataProvider({children}: {children: React.ReactNode}) {
     const [scales, setScales] = useState<Scale[]>([])
     const [tunings, setTunings] = useState<Tuning[]>([])
+    const [shapes, setShapes] = useState<ScaleShape[]>([])
     const [connectionStatus, setConnectionStatus] = useState<boolean>(false)
     const [initialised, setInitialised] = useState<boolean>(false)
 
@@ -27,6 +28,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             console.log(data)
             setScales(data.scales)
             setTunings(data.tunings)
+            setShapes(data.shapes)
             setInitialised(true)
         })()
 
@@ -62,18 +64,59 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         }
     }
 
+    async function toggleSavedShape(shape: ScaleShape) {
+        let res: Response
+        if (shapes.includes(shape)) {
+            try {
+                res = await fetch(`${API_URL}/shape`, {
+                    method: "DELETE",
+                    body: JSON.stringify(shape),
+                })
+            } catch (e) {
+                console.error(e)
+                // todo:
+                return
+            }
+            if (!res.ok) {
+                console.error(res);
+                return;
+            }
+            const newShapes = [...shapes].toSpliced(shapes.indexOf(shape), 1);
+            setShapes(newShapes)
+
+        } else {
+            try {
+                res = await fetch(`${API_URL}/shape`, {
+                    method: "PUT",
+                    body: JSON.stringify(shape),
+                })
+            } catch (e) {
+                console.error(e)
+                return
+            }
+            if (!res.ok) {
+                console.error(res);
+                return;
+            }
+            const newShapes = [...shapes, shape]
+            setShapes(newShapes)
+        }
+    }
+
     useEffect(() => {
         localStorage.setItem("tunings", JSON.stringify(tunings))
-    }, [tunings]);
+        localStorage.setItem("shapes", JSON.stringify(shapes))
+    }, [tunings, shapes]);
 
     return (
         <UserDataContext value={{
             scales,
             tunings,
-            shapes: [],
+            shapes,
             updateTuning,
             connectionStatus,
-            initialised
+            initialised,
+            toggleSavedShape,
         }}>
             {initialised &&
                 <>

@@ -8,7 +8,8 @@ type UserDataContextValue = {
     updateTuning: (tuning: Tuning) => void
     shapes: ScaleShape[]
     connectionStatus: boolean
-    initialised: boolean
+    initialised: boolean,
+    toggleSavedShape: (shape: ScaleShape) => void
 }
 
 export const UserDataContext = createContext<UserDataContextValue | null>(null)

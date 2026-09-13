@@ -10,3 +10,7 @@ export type TestUserDataResponse = {
 export type TuningResponse = {
     tuning: Tuning
 }
+
+export type ShapeResponse = {
+    shape: ScaleShape,
+}
