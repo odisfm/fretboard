@@ -1,6 +1,7 @@
 import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import Fret from "./Fret.tsx";
 import {useEffect, useRef} from "react";
+import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
 
 export type FretboardVariant = "main" | "preview"
 
@@ -10,9 +11,7 @@ type Props = {
     endFret: number;
     highlightedShape?: ScaleShape;
     scale: Scale;
-    zoom: number;
     renderZeroFret: boolean;
-    variant: FretboardVariant,
     scrollToFret: number | null
 }
 
@@ -23,11 +22,10 @@ export default function Fretboard(
         endFret,
         highlightedShape,
         scale,
-        zoom,
         renderZeroFret,
-        variant,
         scrollToFret
     }: Props) {
+    const fdContext = useFretboardDisplay()
     const fretsToRender = (endFret - startFret) + 1
     const fretRefs = useRef<(HTMLDivElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -35,7 +33,7 @@ export default function Fretboard(
     let orientationClasses: string
     if (orientation === "horizontal") {
         orientationClasses = `overflow-x-scroll `
-        if (variant === "main") {
+        if (fdContext.variant === "main") {
             orientationClasses += ""
         }
     } else {
@@ -80,11 +78,9 @@ export default function Fretboard(
                 <Fret
                     fretNumber={0}
                     scale={scale}
-                    zoom={zoom}
                     zeroFret={true}
                     orientation={orientation}
                     highlightedShape={highlightedShape}
-                    variant={variant}
                     ref={(el) => { fretRefs.current[0] = el; }}
 
                 />
@@ -98,9 +94,7 @@ export default function Fretboard(
                             fretNumber={i + startFret}
                             scale={scale}
                             highlightedShape={highlightedShape}
-                            zoom={zoom}
                             zeroFret={false}
-                            variant={variant}
                             ref={(el) => {
                                 fretRefs.current[i] = el;
                             }}

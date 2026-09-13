@@ -17,10 +17,8 @@ export default function ShapePreview(
                 startFret={shape.lowFret}
                 endFret={shape.highFret}
                 scale={shape.scale}
-                zoom={1}
                 renderZeroFret={false}
                 highlightedShape={shape}
-                variant={"preview"}
                 scrollToFret={null}
             />
         </>
