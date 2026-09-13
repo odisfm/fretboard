@@ -25,7 +25,8 @@ export default function NoteDot(
     const dimClasses = `bg-white text-black`
     const noneClasses = `bg-transparent invisible`
     const zeroFretClasses = `bg-neutral-700/75`
-    const diameter = variant === "main" ? 30 : 15
+    let diameter = variant === "main" ? 30 : 15
+    diameter = diameter * (fdContext.zoom * .7)
     const degreeName = degree !== false ? scaleContext.degreeNumbers[degree] : ""
 
     let theseClasses = ""
