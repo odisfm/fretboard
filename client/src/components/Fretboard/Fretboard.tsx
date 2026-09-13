@@ -32,12 +32,12 @@ export default function Fretboard(
 
     let orientationClasses: string
     if (orientation === "horizontal") {
-        orientationClasses = `overflow-x-scroll `
+        orientationClasses = `${fdContext.variant === "main" && `overflow-x-scroll`} `
         if (fdContext.variant === "main") {
             orientationClasses += ""
         }
     } else {
-        orientationClasses = `max-h-[60vh] flex-col overflow-y-scroll`
+        orientationClasses = `max-h-[60vh] flex-col ${fdContext.variant === "main" && `overflow-y-scroll`}`
     }
 
     useEffect(() => {
