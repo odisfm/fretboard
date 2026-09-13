@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { db } from "@fretboard/shared/src/db.js"
+import { db } from "@fretboard/shared/db"
 
 export const testUserDataRouter = new Hono()
 

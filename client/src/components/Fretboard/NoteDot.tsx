@@ -1,6 +1,6 @@
 import type {FretboardVariant} from "./Fretboard.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
-import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
+import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 
 export type DotVisibility = "highlight" | "dim" | "none" | "zeroFret"
 

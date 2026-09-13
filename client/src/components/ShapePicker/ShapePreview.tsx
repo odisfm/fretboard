@@ -1,5 +1,5 @@
 import Fretboard from "../Fretboard/Fretboard.tsx";
-import type {ScaleShape} from "@fretboard/shared/src/types/scale.ts";
+import type {ScaleShape} from "@fretboard/shared/types/scale";
 
 type Props = {
     shape: ScaleShape

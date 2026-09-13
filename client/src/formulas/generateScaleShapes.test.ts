@@ -1,8 +1,8 @@
 import {test, expect, describe} from "vitest"
-import {eStandardTuning, type Tuning} from "@fretboard/shared/src/types/tuning.ts";
-import type {Scale, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
+import {eStandardTuning, type Tuning} from "@fretboard/shared/types/tuning";
+import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import {generateScaleShapes} from "./generateScaleShapes";
-import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
+import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 
 function simplifySingleStringShape(shape: ScaleShape): number[] {
     return shape.shape.map(pos => {

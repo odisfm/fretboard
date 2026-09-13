@@ -1,5 +1,5 @@
 import {FaMinusCircle, FaPlusCircle, FaTrash} from "react-icons/fa"
-import {midiPitchToNoteName} from "@fretboard/shared/src/utils/midiPitchToNoteName.ts";
+import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import Button from "../generic/Button.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
 

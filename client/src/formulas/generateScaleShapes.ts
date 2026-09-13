@@ -1,6 +1,6 @@
-import type {Tuning} from "@fretboard/shared/src/types/tuning.ts";
-import {type Scale, type ScalePosition, type ScaleShape} from "@fretboard/shared/src/types/scale.ts"
-import {allIndicesForNoteName} from "@fretboard/shared/src/utils/allIndicesForNoteName.ts"
+import type {Tuning} from "@fretboard/shared/types/tuning";
+import {type Scale, type ScalePosition, type ScaleShape} from "@fretboard/shared/types/scale"
+import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName"
 
 export type GenerateScaleShapesOptions = {
     maxFretSpan?: number,

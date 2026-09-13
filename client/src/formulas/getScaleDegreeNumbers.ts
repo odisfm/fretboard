@@ -1,4 +1,4 @@
-import sumToIndex from "@fretboard/shared/src/utils/sumToIndex.ts"
+import sumToIndex from "@fretboard/shared/utils/sumToIndex"
 
 const MAJOR_SCALE_FORMULA = [2, 2, 1, 2, 2, 2, 1]
 const MAJOR_SCALE_FORMULA_FROM_TONIC = [2, 4, 5, 7, 9, 11, 12]

@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import type {Scale, ScaleShape} from "@fretboard/shared/src/types/scale.ts";
-import type {Tuning} from "@fretboard/shared/src/types/tuning.ts";
+import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
+import type {Tuning} from "@fretboard/shared/types/tuning";
 
 type UserDataContextValue = {
     scales: Scale[]

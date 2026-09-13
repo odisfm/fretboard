@@ -1,6 +1,6 @@
 import {useScale} from "../../contexts/scale/useScale.ts";
-import {TONES_FLAT, TONES_SHARP, TONES} from "@fretboard/shared/src/consts.ts";
-import type {NoteName} from "@fretboard/shared/src/types/scale.ts";
+import {TONES_FLAT, TONES_SHARP, TONES} from "@fretboard/shared/consts";
+import type {NoteName} from "@fretboard/shared/types/scale";
 import Button from "../generic/Button.tsx";
 import {useUserData} from "../../contexts/userData/useUserData.tsx";
 

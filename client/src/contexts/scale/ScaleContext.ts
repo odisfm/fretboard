@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { type Scale } from "@fretboard/shared/src/types/scale.ts"
+import { type Scale } from "@fretboard/shared/types/scale"
 
 export type AccidentalPrefType = null | "sharps" | "flats"
 export type IntervalPrefType = null | "nashville" | "interval"

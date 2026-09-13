@@ -1,6 +1,6 @@
 import Button from "../generic/Button.tsx";
 import ShapePreview from "./ShapePreview.tsx";
-import type {ScaleShape} from "@fretboard/shared/src/types/scale.ts";
+import type {ScaleShape} from "@fretboard/shared/types/scale";
 
 type Props = {
     scaleShapes: ScaleShape[],
