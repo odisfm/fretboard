@@ -1,7 +1,7 @@
 import TuningDemo from "./components/TuningDemo/TuningDemo.tsx";
 import Fretboard from "./components/Fretboard/Fretboard.tsx";
 import {useTuning} from "./contexts/tuning/useTuning.ts";
-import {generateScaleShapes} from "./formulas/generateScaleShapes.ts";
+import {generateScaleShapes, type GenerateScaleShapesOptions} from "./formulas/generateScaleShapes.ts";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
@@ -12,6 +12,7 @@ import {useScale} from "./contexts/scale/useScale.ts";
 import type {ScaleShape} from "@fretboard/shared/types/scale";
 import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameScale, isSameShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
+import {ShapeGenFilter} from "./components/Fretboard/ShapeGenFilter.tsx";
 
 export default function FretboardDemo() {
     const userDataContext = useUserData();
@@ -21,15 +22,22 @@ export default function FretboardDemo() {
     const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number | null>(null);
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
+    const [shapeGenOptions, setShapeGenOptions] = useState<GenerateScaleShapesOptions>({
+        maxPerString: 3,
+        maxFretSpan: 4,
+        minPerString: 1,
+        minOctaves: 1
+    });
 
     const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
             tuning,
-            scaleContext.scale
+            scaleContext.scale,
+            shapeGenOptions
         )
         scaleShapes = sortScaleShapes(scaleShapes, "lowToHighFretToString")
         return scaleShapes
-    }, [scaleContext.scale, tuning])
+    }, [scaleContext.scale, tuning, shapeGenOptions])
 
     const relevantSavedShapes: ScaleShape[] = useMemo(() => {
         const relevant: ScaleShape[] = []
@@ -94,6 +102,8 @@ export default function FretboardDemo() {
                 scaleShapes={scaleShapes}
                 setScrollToFret={setScrollToFret}
             />
+
+            <ShapeGenFilter shapeGenOptions={shapeGenOptions} setShapeGenOptions={setShapeGenOptions} />
         </div>
     )
 }

@@ -1,9 +1,11 @@
 import Spinner from "./Spinner.tsx";
 
+export type ButtonVariant = "default" | "warning" | "subtle" | "unstyled"
+
 type Props = {
     disabled?: boolean
     loading?: boolean
-    variant?: "default" | "warning" | "subtle" | "unstyled"
+    variant?: ButtonVariant
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     children?: React.ReactNode;
     styles?: string
