@@ -12,22 +12,22 @@ testUserDataRouter.get("/:userId", async (c) => {
         where: {id: userId},
         include: {
             scales: {
-                orderBy: {
-                    order: "desc",
-                    createdAt: "asc"
-                }
+                orderBy: [
+                    {order: "desc"},
+                    {createdAt: "asc"}
+                ]
             },
             tunings: {
-                orderBy: {
-                    order: "desc",
-                    createdAt: "asc"
-                }
+                orderBy: [
+                    {order: "desc"},
+                    {createdAt: "asc"}
+                ]
             },
             shapes: {
-                orderBy: {
-                    order: "desc",
-                    createdAt: "asc"
-                }
+                orderBy: [
+                    {order: "desc"},
+                    {createdAt: "asc"}
+                ]
             },
         }
     })
