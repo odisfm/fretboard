@@ -205,11 +205,7 @@ export function generateScaleShapes(
     }
 
     // filter shapes not meeting octave requirement
-    const octaveRequiredPositions = (scaleDegreeCount * options.minOctaves) + 1
-    finalShapes = finalShapes.filter(s => {
-        if (options.minOctaves === 0) return true
-        return s.shape.length >= octaveRequiredPositions
-    })
+    finalShapes = filterByMinOctaves(finalShapes, options.minOctaves, scaleDegreeCount)
 
     const seen = new Set<string>()
     finalShapes = finalShapes.filter(sh => {
@@ -225,4 +221,42 @@ export function generateScaleShapes(
     })
 
     return finalShapes
+}
+
+export function filterByMinOctaves(shapes: ScaleShape[], minOctaves: number, numIntervals: number) {
+    if (minOctaves === 0) return shapes
+    const octaveRequiredPositions = (numIntervals * minOctaves) + 1
+    return shapes.filter(s => {
+        return s.shape.length >= octaveRequiredPositions
+    })
+}
+
+export function filterByOptions(shapes: ScaleShape[], options: GenerateScaleShapesOptions) {
+    const minPerString = options.minPerString
+    const maxFretSpan = options.maxFretSpan
+    const maxPerString = options.maxPerString
+    return shapes.filter(shape => {
+        if (maxFretSpan !== undefined && shape.highFret - shape.lowFret > maxFretSpan) return false
+        if (minPerString !== undefined || maxPerString !== undefined) {
+            let lastStringIndex = null
+            let thisStringCount = 0
+            for (const pos of shape.shape) {
+                if (lastStringIndex === null) {
+                    lastStringIndex = pos.stringIndex
+                    thisStringCount++
+                } else {
+                    if (lastStringIndex !== pos.stringIndex) {
+                        if ((minPerString !== undefined && thisStringCount < minPerString) ||
+                            (maxPerString !== undefined && thisStringCount > maxPerString)) return false
+
+                        lastStringIndex = pos.stringIndex
+                        thisStringCount = 1
+                    }
+                }
+            }
+            if ((minPerString !== undefined && thisStringCount < minPerString) ||
+                (maxPerString !== undefined && thisStringCount > maxPerString)) return false
+        }
+        return true
+    })
 }

@@ -1,11 +1,14 @@
 import {NumberStepper} from "../generic/NumberStepper.tsx";
 import type {GenerateScaleShapesOptions} from "../../formulas/generateScaleShapes.ts";
+import {BinaryToggle} from "../generic/BinaryToggle.tsx";
 
 type Props = {
     shapeGenOptions: GenerateScaleShapesOptions
     setShapeGenOptions: (o: GenerateScaleShapesOptions) => void;
     fretboardZoom: number
     setFretboardZoom: (val: number) => void;
+    filterSavedShapes: boolean,
+    setFilterSavedShapes: (bool: boolean) => void,
 }
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
@@ -13,7 +16,11 @@ const MIN_PER_STRING_BOUNDS = [0, 4]
 const MAX_PER_STRING_BOUNDS = [1, 5]
 const MAX_FRET_SPAN_BOUNDS = [2, 8]
 
-export function ShapeGenFilter({shapeGenOptions, setShapeGenOptions, fretboardZoom, setFretboardZoom}: Props) {
+export function ShapeGenFilter(
+    {
+        shapeGenOptions, setShapeGenOptions, fretboardZoom,
+        setFretboardZoom, filterSavedShapes, setFilterSavedShapes
+    }: Props) {
 
     function incrementMinOctaves(inc: number) {
         const current = shapeGenOptions.minOctaves!
@@ -143,6 +150,10 @@ export function ShapeGenFilter({shapeGenOptions, setShapeGenOptions, fretboardZo
                     }}
                 />
                 <legend className={legendStyles}>Fretboard zoom</legend>
+            </div>
+            <div className={containerStyles}>
+                <BinaryToggle state={filterSavedShapes} fn={(newState) => setFilterSavedShapes(newState)}/>
+                <legend className={legendStyles}>Filter saved shapes</legend>
             </div>
         </div>
     )

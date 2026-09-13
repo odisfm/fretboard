@@ -1,7 +1,11 @@
 import TuningDemo from "./components/TuningDemo/TuningDemo.tsx";
 import Fretboard from "./components/Fretboard/Fretboard.tsx";
 import {useTuning} from "./contexts/tuning/useTuning.ts";
-import {generateScaleShapes, type GenerateScaleShapesOptions} from "./formulas/generateScaleShapes.ts";
+import {
+    filterByMinOctaves, filterByOptions,
+    generateScaleShapes,
+    type GenerateScaleShapesOptions
+} from "./formulas/generateScaleShapes.ts";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
@@ -29,6 +33,7 @@ export default function FretboardDemo() {
         minOctaves: 1
     });
     const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
+    const [filterSavedShapes, setFilterSavedShapes] = useState(false)
 
     const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
@@ -41,7 +46,7 @@ export default function FretboardDemo() {
     }, [scaleContext.scale, tuning, shapeGenOptions])
 
     const relevantSavedShapes: ScaleShape[] = useMemo(() => {
-        const relevant: ScaleShape[] = []
+        let relevant: ScaleShape[] = []
 
         for (const s of userDataContext.shapes) {
             if (!isSameScale(s.scale, scaleContext.scale, true)) continue
@@ -49,8 +54,13 @@ export default function FretboardDemo() {
             relevant.push(s)
         }
 
+        if (filterSavedShapes) {
+            relevant = filterByMinOctaves(relevant, shapeGenOptions.minOctaves || 0, scaleContext.scale.intervals.length)
+            relevant = filterByOptions(relevant, shapeGenOptions)
+        }
+
         return relevant
-    }, [userDataContext.shapes, tuning, scaleContext.scale])
+    }, [userDataContext.shapes, tuning, scaleContext.scale, filterSavedShapes, shapeGenOptions])
 
     const scaleShapes: ScaleShape[] = useMemo(() => {
         const shapes: ScaleShape[] = [...relevantSavedShapes]
@@ -91,6 +101,8 @@ export default function FretboardDemo() {
                 setShapeGenOptions={setShapeGenOptions}
                 fretboardZoom={fretboardZoom}
                 setFretboardZoom={setFretboardZoom}
+                filterSavedShapes={filterSavedShapes}
+                setFilterSavedShapes={setFilterSavedShapes}
             />
 
             <Fretboard
