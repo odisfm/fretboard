@@ -31,5 +31,8 @@
     "esbuild": "0.28.1",
     "deepmerge-ts": "^8.0.0",
     "mysql2": "3.24.4"
+  },
+  "dependencies": {
+    "@dalet-oss/lexorank": "^1.1.5"
   }
 }

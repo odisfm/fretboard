@@ -52,10 +52,10 @@ function shapeHasAllNotes(shape: ScaleShape): boolean {
 describe("single-string tests", () => {
     test("G major", () => {
         const tuning: Tuning = {
-            capo: [0], fretCount: 24, strings: [40], id: createUuid()
+            capo: [0], fretCount: 24, strings: [40], id: createUuid(), order: "0"
         }
         const scale: Scale = {
-            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G", id: createUuid()
+            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G", order: "0", id: createUuid()
         }
 
         const result = generateScaleShapes(
@@ -79,10 +79,10 @@ describe("single-string tests", () => {
 
     test("G minor", () => {
         const tuning: Tuning = {
-            capo: [0], fretCount: 24, strings: [40], id: createUuid()
+            capo: [0], fretCount: 24, strings: [40], order: "0", id: createUuid()
         }
         const scale: Scale = {
-            intervals: [2, 1, 2, 2, 1, 2, 2], name: "G Minor", tonic: "G", id: createUuid()
+            intervals: [2, 1, 2, 2, 1, 2, 2], name: "G Minor", tonic: "G", order: "0", id: createUuid()
         }
 
         const result = generateScaleShapes(
@@ -109,7 +109,7 @@ describe("multi-string tests", () => {
     test("Classic G Major", () => {
         const tuning = eStandardTuning
         const scale: Scale = {
-            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G", id: createUuid()
+            intervals: [2, 2, 1, 2, 2, 2, 1], name: "G Major", tonic: "G", id: createUuid(), order: "0"
         }
 
         const results = generateScaleShapes(tuning, scale)
@@ -212,13 +212,13 @@ describe("multi-string tests", () => {
     test("Classic E Minor", () => {
         const tuning = eStandardTuning
         const scale: Scale = {
-            intervals: [2, 1, 2, 2, 1, 2, 2], name: "E Minor", tonic: "E", id: createUuid()
+            intervals: [2, 1, 2, 2, 1, 2, 2], name: "E Minor", tonic: "E", id: createUuid(), order: "0"
         }
 
         const results = generateScaleShapes(tuning, scale)
 
         const searchShape: ScaleShape = {
-            lowFret: 12, highFret: 16, tuning, scale, id: createUuid(), shape: [
+            lowFret: 12, highFret: 16, tuning, scale, id: createUuid(), order: "0", shape: [
                 {
                     stringIndex: 0,
                     fret: 12,
