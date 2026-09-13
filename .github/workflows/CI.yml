@@ -36,6 +36,7 @@ jobs:
           cd shared
           npx prisma contract emit
       - run: npm run test -w shared
+      - run: npm run typecheck -w shared
 
   test-frontend:
     runs-on: ubuntu-latest
@@ -50,6 +51,7 @@ jobs:
           cd shared
           npx prisma contract emit
       - run: npm run test -w client
+      - run: npm run typecheck -w client
 
   test-backend:
     runs-on: ubuntu-latest
@@ -64,6 +66,7 @@ jobs:
           cd shared
           npx prisma contract emit
       - run: npm run test -w api
+      - run: npm run typecheck -w api
 
   audit:
     runs-on: ubuntu-latest

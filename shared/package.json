@@ -11,7 +11,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@prisma/language-server": "^31.0.0",
