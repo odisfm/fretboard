@@ -12,20 +12,24 @@ export default function TuningDemo() {
     function incrementPitch(idx: number, increment: number) {
         const strings = [...tuning.strings]
         strings[idx] = strings[idx] + increment
-        tuningContext.setTuning({
+        const newTuning = {
             ...tuning,
             strings
-        })
+        }
+        tuningContext.setTuning(newTuning)
+        userDataContext.updateTuning(newTuning)
     }
 
     function deleteString(idx: number) {
         const strings = [...tuning.strings]
         if (strings.length === 1) return
         strings.splice(idx, 1)
-        tuningContext.setTuning({
+        const newTuning = {
             ...tuning,
             strings
-        })
+        }
+        tuningContext.setTuning(newTuning)
+        userDataContext.updateTuning(newTuning)
     }
 
     function insertString(position: "bottom" | "top") {
@@ -37,17 +41,20 @@ export default function TuningDemo() {
             const neighbour = strings.at(-1)!
             strings = [...strings, neighbour + 5]
         }
-        tuningContext.setTuning({
+        const newTuning = {
             ...tuning,
             strings
-        })
+        }
+        tuningContext.setTuning(newTuning)
+        userDataContext.updateTuning(newTuning)
     }
 
     return (
         <div className={`flex flex-col gap-2 items-center w-sm p-2 bg-neutral-900`}>
             <select
                 onChange={(event) => {
-                    tuningContext.setTuning(userDataContext.tunings[Number(event.target.value)])
+                    const newTuning = userDataContext.tunings[Number(event.target.value)]
+                    tuningContext.setTuning(newTuning)
                 }}
             >
                 {userDataContext.tunings.map((tuning, i) => {
