@@ -5,6 +5,7 @@ import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteNa
 import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import getScaleDegreeNumbers from "../../formulas/getScaleDegreeNumbers.ts";
+import {TONES, TONES_FLAT, TONES_SHARP} from "@fretboard/shared/consts";
 
 export function ScaleProvider({initialScale, children}: {initialScale: Scale, children: React.ReactNode}) {
     const [scale, setScale] = useState<Scale>(initialScale)
@@ -30,12 +31,32 @@ export function ScaleProvider({initialScale, children}: {initialScale: Scale, ch
         return getScaleDegreeNumbers(scale.intervals, intervalPref || "nashville")
     }, [scale.intervals, intervalPref])
 
+    function _setAccidentalPref(accidentalPref: AccidentalPrefType) {
+        let tones: string[]
+        switch (accidentalPref) {
+            case "sharps":
+                tones = TONES_SHARP
+                break
+            case "flats":
+                tones = TONES_FLAT
+                break
+            case null:
+                tones = TONES
+        }
+        const newTonic = tones[indexForNoteName(scale.tonic)]
+        setScale({
+            ...scale,
+            tonic: newTonic as NoteName
+        })
+        setAccidentalPref(accidentalPref)
+    }
+
     return (
         <ScaleContext value={{
             scale,
             setScale,
             accidentalPref,
-            setAccidentalPref,
+            setAccidentalPref: _setAccidentalPref,
             degreesToPitches,
             degreeNumbers,
             intervalPref,
