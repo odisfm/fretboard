@@ -1,6 +1,8 @@
 import {type Tuning} from "../../types/tuning";
 
-export const defaultTunings: Tuning[] = [
+type NewTuning = Omit<Tuning, "id">
+
+export const defaultTunings: NewTuning[] = [
     {
         name: "E Standard",
         strings: [40, 45, 50, 55, 59, 64],
