@@ -54,7 +54,7 @@ export function generateScaleShapes(
             }
 
             let thisFretScaleShapes: ScaleShape[] = [{
-                id: createUuid(),
+                id: "", // this shape will likely be duplicated, we'll give it an id at the end
                 scale,
                 shape: [{
                     stringIndex: s,
@@ -217,6 +217,11 @@ export function generateScaleShapes(
         if (seen.has(key)) return false
         seen.add(key)
         return true
+    })
+
+    finalShapes = finalShapes.map((s) => {
+        s.id = createUuid()
+        return s
     })
 
     return finalShapes
