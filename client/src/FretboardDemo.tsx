@@ -17,6 +17,7 @@ import type {ScaleShape} from "@fretboard/shared/types/scale";
 import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameScale, isSameShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 import {ShapeGenFilter} from "./components/Fretboard/ShapeGenFilter.tsx";
+import {fitShapeToNewTonic} from "./formulas/fitShapeToNewTonic.ts";
 
 export default function FretboardDemo() {
     const userDataContext = useUserData();
@@ -34,6 +35,7 @@ export default function FretboardDemo() {
     });
     const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
     const [filterSavedShapes, setFilterSavedShapes] = useState(false)
+    const [fitSavedShapes, setFitSavedShapes] = useState(true)
 
     const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
@@ -49,9 +51,25 @@ export default function FretboardDemo() {
         let relevant: ScaleShape[] = []
 
         for (const s of userDataContext.shapes) {
-            if (!isSameScale(s.scale, scaleContext.scale, true)) continue
-            if (!isSameTuning(s.tuning, tuning)) continue
-            relevant.push(s)
+            if (!fitSavedShapes) {
+                if (!isSameScale(s.scale, scaleContext.scale, true)) continue
+                if (!isSameTuning(tuning, s.tuning, true)) continue
+                relevant.push(s)
+            } else {
+                if (isSameScale(s.scale, scaleContext.scale, false)){
+                    if (isSameTuning(tuning, s.tuning, true)) {
+                        if (s.scale.tonic === scaleContext.scale.tonic) {
+                            relevant.push(s)
+                            continue
+                        }
+                        const result = fitShapeToNewTonic(s, scaleContext.scale.tonic)
+                        console.log({result})
+                        if (result) {
+                            relevant.push(result)
+                        }
+                    }
+                }
+            }
         }
 
         if (filterSavedShapes) {
@@ -60,7 +78,7 @@ export default function FretboardDemo() {
         }
 
         return relevant
-    }, [userDataContext.shapes, tuning, scaleContext.scale, filterSavedShapes, shapeGenOptions])
+    }, [userDataContext.shapes, tuning, scaleContext.scale, filterSavedShapes, shapeGenOptions, fitSavedShapes])
 
     const scaleShapes: ScaleShape[] = useMemo(() => {
         const shapes: ScaleShape[] = [...relevantSavedShapes]
@@ -103,6 +121,8 @@ export default function FretboardDemo() {
                 setFretboardZoom={setFretboardZoom}
                 filterSavedShapes={filterSavedShapes}
                 setFilterSavedShapes={setFilterSavedShapes}
+                fitSavedShapes={fitSavedShapes}
+                setFitSavedShapes={setFitSavedShapes}
             />
 
             <Fretboard

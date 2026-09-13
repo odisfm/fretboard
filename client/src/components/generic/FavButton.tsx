@@ -5,14 +5,16 @@ type Props = {
     active: boolean
     onClick: (event: React.MouseEvent<HTMLElement>) => void;
     styles?: string;
+    extraHeartStyles?: string;
+    className?: string;
     children?: React.ReactNode;
 }
 
-export default function FavButton({active, onClick, styles, children}: Props) {
+export default function FavButton({active, onClick, styles, children, extraHeartStyles}: Props) {
     const commonStyles = ``
     const activeStyles = ``
     const inactiveStyles = ``
-    const heartStyles = `${commonStyles} ${active ? activeStyles : inactiveStyles}`
+    const heartStyles = `${extraHeartStyles} ${commonStyles} ${active ? activeStyles : inactiveStyles}`
     return (
         <Button
             styles={`${heartStyles} ${styles}`}
@@ -23,7 +25,7 @@ export default function FavButton({active, onClick, styles, children}: Props) {
                 <IoMdHeartEmpty className={`absolute inset-0`} />
                 <IoMdHeart className={`
                     absolute inset-0 text-red-500 transition-opacity
-                    ${active ? `opacity-100` : `opacity-0`}
+                    ${active ? `opacity-100` : `opacity-0`} ${extraHeartStyles}
                 `} />
             </div>
             {children}

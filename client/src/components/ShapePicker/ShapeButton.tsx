@@ -16,7 +16,7 @@ type Props = {
 export default function ShapeButton({onClick, setScrollToFret, scaleShape, index, active}: Props) {
     const userDataContext = useUserData()
     const isFav = useMemo(() => {
-        return userDataContext.shapes.includes(scaleShape)
+        return userDataContext.shapes.findIndex((s) => s.id === scaleShape.id) !== -1
     }, [userDataContext.shapes, scaleShape])
 
     function toggleFav(e: React.MouseEvent<HTMLElement>) {
@@ -25,13 +25,20 @@ export default function ShapeButton({onClick, setScrollToFret, scaleShape, index
         userDataContext.toggleSavedShape(scaleShape)
     }
 
+    const favShapeFitted = isFav && scaleShape?.isAdjusted
+
     return (
 
             <div
                 className={`flex flex-col gap-1`}
             >
                 <div className={`flex items-center w-full`}>
-                    <FavButton active={isFav} onClick={toggleFav} styles={`self-start`} />
+                    <FavButton
+                        active={isFav}
+                        onClick={toggleFav}
+                        styles={`self-start`}
+                        extraHeartStyles={`${favShapeFitted && `!text-lime-400`}`}
+                    />
                     <span className={`ml-auto text-xs font-bold`}><sup>#</sup>{`${index + 1}`}</span>
                 </div>
                 <Button

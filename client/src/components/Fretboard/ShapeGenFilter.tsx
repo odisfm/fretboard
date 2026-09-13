@@ -9,6 +9,8 @@ type Props = {
     setFretboardZoom: (val: number) => void;
     filterSavedShapes: boolean,
     setFilterSavedShapes: (bool: boolean) => void,
+    fitSavedShapes: boolean,
+    setFitSavedShapes: (bool: boolean) => void,
 }
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
@@ -19,7 +21,8 @@ const MAX_FRET_SPAN_BOUNDS = [2, 8]
 export function ShapeGenFilter(
     {
         shapeGenOptions, setShapeGenOptions, fretboardZoom,
-        setFretboardZoom, filterSavedShapes, setFilterSavedShapes
+        setFretboardZoom, filterSavedShapes, setFilterSavedShapes,
+        fitSavedShapes, setFitSavedShapes
     }: Props) {
 
     function incrementMinOctaves(inc: number) {
@@ -154,6 +157,10 @@ export function ShapeGenFilter(
             <div className={containerStyles}>
                 <BinaryToggle state={filterSavedShapes} fn={(newState) => setFilterSavedShapes(newState)}/>
                 <legend className={legendStyles}>Filter saved shapes</legend>
+            </div>
+            <div className={containerStyles}>
+                <BinaryToggle state={fitSavedShapes} fn={(newState) => setFitSavedShapes(newState)}/>
+                <legend className={legendStyles}>Transpose saved shapes</legend>
             </div>
         </div>
     )
