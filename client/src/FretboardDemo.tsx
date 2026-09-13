@@ -19,6 +19,19 @@ import {isSameScale, isSameShape, isSameTuning} from "@fretboard/shared/utils/is
 import {ShapeGenFilter} from "./components/Fretboard/ShapeGenFilter.tsx";
 import {fitShapeToNewTonic} from "./formulas/fitShapeToNewTonic.ts";
 
+function dedupeShapes(shapes: ScaleShape[]): ScaleShape[] {
+    const result: ScaleShape[] = []
+    for (const shape of shapes) {
+        const idx = result.findIndex(existing => isSameShape(shape, existing))
+        if (idx === -1) {
+            result.push(shape)
+        } else if (result[idx].isAdjusted && !shape.isAdjusted) {
+            result[idx] = shape
+        }
+    }
+    return result
+}
+
 export default function FretboardDemo() {
     const userDataContext = useUserData();
     const scaleContext = useScale()
@@ -81,18 +94,17 @@ export default function FretboardDemo() {
     }, [userDataContext.shapes, tuning, scaleContext.scale, filterSavedShapes, shapeGenOptions, fitSavedShapes])
 
     const scaleShapes: ScaleShape[] = useMemo(() => {
-        const shapes: ScaleShape[] = [...relevantSavedShapes]
+        const dedupedSaved = dedupeShapes(relevantSavedShapes).sort((a, b) => {
+            if (a?.isAdjusted && b?.isAdjusted) return 0
+            else if (a?.isAdjusted && !b?.isAdjusted) return 1
+            else  return -1
+        })
+        const shapes: ScaleShape[] = [...dedupedSaved]
         for (const gs of generatedShapes) {
-            let isSame = false;
-            for (const rs of relevantSavedShapes) {
-                if (isSameShape(gs, rs)) {
-                    isSame = true;
-                    break
-                }
+            if (!dedupedSaved.some(rs => isSameShape(gs, rs))) {
+                shapes.push(gs)
             }
-            if (!isSame) shapes.push(gs)
         }
-
         return shapes
     }, [relevantSavedShapes, generatedShapes])
 
