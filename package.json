@@ -26,5 +26,10 @@
     "jsdom": "^29.0.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.4"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "deepmerge-ts": "^8.0.0",
+    "mysql2": "3.24.4"
   }
 }
