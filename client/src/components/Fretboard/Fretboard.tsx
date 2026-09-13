@@ -80,7 +80,7 @@ export default function Fretboard(
                 <Fret
                     fretNumber={0}
                     scale={scale}
-                    zoom={1}
+                    zoom={zoom}
                     zeroFret={true}
                     orientation={orientation}
                     highlightedShape={highlightedShape}

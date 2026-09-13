@@ -26,7 +26,8 @@ export default function Fret(
         zeroFret,
         orientation,
         variant,
-        ref
+        ref,
+        zoom
     }: Props) {
     const scaleContext = useScale()
     const tuningContext = useTuning()
@@ -62,8 +63,15 @@ export default function Fret(
         return {inScale, inDegree}
     }, [scaleContext, fretNumber, tuning.strings])
 
-    const unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
-    const unitWidth = variant === "main" ? 40: 20;  // px, across strings
+    let unitLength = variant === "main" ? 80 : 40; // px, along the orientation axis
+    let unitWidth = variant === "main" ? 40: 20;  // px, across strings
+    if (orientation === "horizontal") {
+        unitLength *= zoom
+        unitWidth *= (zoom * .7)
+    } else if (orientation === "vertical") {
+        unitWidth *= zoom
+        unitLength *= (zoom * .7)
+    }
 
     let showFretNumber = false
     if (variant === "main") {
