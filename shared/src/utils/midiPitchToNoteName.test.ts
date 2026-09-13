@@ -25,7 +25,7 @@ describe("midiPitchToNoteName()", () => {
             midiPitchToNoteName(
                 37,
                 true,
-                "flat"
+                "flats"
             )
         ).toEqual("Db2")
 
