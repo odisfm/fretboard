@@ -2,7 +2,7 @@ import Spinner from "./Spinner.tsx";
 
 export type ButtonVariant = "default" | "warning" | "subtle" | "unstyled"
 
-type Props = {
+export type Props = {
     disabled?: boolean
     loading?: boolean
     variant?: ButtonVariant
