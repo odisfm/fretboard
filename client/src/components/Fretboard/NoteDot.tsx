@@ -23,6 +23,7 @@ export default function NoteDot(
     const audioContext = useAudio();
     const fdContext = useFretboardDisplay()
     const scaleContext = useScale()
+    if (Number.isNaN(pitch)) return <></> // weird errors happening when deleting string
     const dimClasses = `bg-white text-black`
     const noneClasses = `bg-transparent invisible`
     const zeroFretClasses = `bg-neutral-700/75`

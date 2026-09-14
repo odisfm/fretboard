@@ -47,7 +47,7 @@ export default function Tooltip({icon, children, text, iconStyles, tooltipStyles
                 {icon === "bang" && <FaExclamation  size={12}/>}
                 <div className={`
                 absolute top-full invisible group-hover:visible 
-                p-4 bg-neutral-900 text-white max-w-sm z-[1000] ${tooltipStyles}
+                p-4 bg-neutral-900 text-white z-[1000] ${tooltipStyles}
                 ${side === "left" ? `left-1` : `right-1`}
                 `}>
                     {children ? children : text}

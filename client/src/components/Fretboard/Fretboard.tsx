@@ -37,7 +37,7 @@ export default function Fretboard(
             orientationClasses += ""
         }
     } else {
-        orientationClasses = `max-h-[60vh] flex-col ${fdContext.variant === "main" && `overflow-y-scroll`}`
+        orientationClasses = `h-[90vh] flex-col ${fdContext.variant === "main" && `overflow-y-scroll`}`
     }
 
     useEffect(() => {
