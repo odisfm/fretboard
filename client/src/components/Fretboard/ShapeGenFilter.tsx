@@ -2,6 +2,7 @@ import {NumberStepper} from "../generic/NumberStepper.tsx";
 import type {GenerateScaleShapesOptions} from "../../formulas/generateScaleShapes.ts";
 import {BinaryToggle} from "../generic/BinaryToggle.tsx";
 import Tooltip from "../generic/Tooltip.tsx";
+import {sortScaleShapesStrategies, type SortScaleShapesStrategy} from "../../formulas/sortScaleShapes.ts";
 
 type Props = {
     shapeGenOptions: GenerateScaleShapesOptions
@@ -14,6 +15,8 @@ type Props = {
     setFitSavedShapes: (bool: boolean) => void,
     outShapeOpacity: number,
     setOutShapeOpacity: (val: number) => void,
+    sortScaleShapeStrategy: SortScaleShapesStrategy,
+    setSortScaleShapeStrategy: (val: SortScaleShapesStrategy) => void,
 }
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
@@ -25,7 +28,8 @@ export function ShapeGenFilter(
     {
         shapeGenOptions, setShapeGenOptions, fretboardZoom,
         setFretboardZoom, filterSavedShapes, setFilterSavedShapes,
-        fitSavedShapes, setFitSavedShapes, outShapeOpacity, setOutShapeOpacity
+        fitSavedShapes, setFitSavedShapes, outShapeOpacity, setOutShapeOpacity,
+        sortScaleShapeStrategy, setSortScaleShapeStrategy,
     }: Props) {
 
     function incrementMinOctaves(inc: number) {
@@ -156,6 +160,25 @@ export function ShapeGenFilter(
                 />
                 <div className={legendStyles}><span>Maximum fret span</span>
                 </div>
+            </div>
+            <div className={containerStyles}>
+                <select
+                    className={`bg-neutral-800 rounded-md p-1`}
+                    value={sortScaleShapeStrategy}
+                    onChange={(e) => {
+                        setSortScaleShapeStrategy(e.target.value as SortScaleShapesStrategy);
+                    }}
+                >
+                    {sortScaleShapesStrategies.map((s, i) => {
+                        return (
+                            <option key={i} value={s.strategy}>
+                                {s.displayName}
+                            </option>
+                        )
+                    })
+                    }
+                </select>
+                <div className={legendStyles}><span>Sort by</span></div>
             </div>
             <div className={containerStyles}>
                 <NumberStepper

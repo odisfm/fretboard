@@ -10,7 +10,7 @@ import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
 import {FaRotate} from "react-icons/fa6";
-import {sortScaleShapes} from "./formulas/sortScaleShapes.ts";
+import {sortScaleShapes, sortScaleShapesStrategies, type SortScaleShapesStrategy} from "./formulas/sortScaleShapes.ts";
 import {ScaleDemo} from "./components/ScaleDemo/ScaleDemo.tsx";
 import {useScale} from "./contexts/scale/useScale.ts";
 import type {ScaleShape} from "@fretboard/shared/types/scale";
@@ -51,6 +51,8 @@ export default function FretboardDemo() {
     const [outShapeOpacity, setOutShapeOpacity] = useState<number>(.5)
     const [filterSavedShapes, setFilterSavedShapes] = useState(false)
     const [fitSavedShapes, setFitSavedShapes] = useState(true)
+    const [sortScaleShapeStrategy, setSortScaleShapeStrategy] =
+        useState<SortScaleShapesStrategy>(sortScaleShapesStrategies[0].strategy)
 
     const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
@@ -58,9 +60,9 @@ export default function FretboardDemo() {
             scaleContext.scale,
             shapeGenOptions
         )
-        scaleShapes = sortScaleShapes(scaleShapes, "lowToHighFretToString")
+        scaleShapes = sortScaleShapes(scaleShapes, sortScaleShapeStrategy)
         return scaleShapes
-    }, [scaleContext.scale, tuning, shapeGenOptions])
+    }, [scaleContext.scale, tuning, shapeGenOptions, sortScaleShapeStrategy])
 
     const relevantSavedShapes: ScaleShape[] = useMemo(() => {
         let relevant: ScaleShape[] = []
@@ -162,6 +164,8 @@ export default function FretboardDemo() {
                 setFitSavedShapes={setFitSavedShapes}
                 outShapeOpacity={outShapeOpacity}
                 setOutShapeOpacity={setOutShapeOpacity}
+                sortScaleShapeStrategy={sortScaleShapeStrategy}
+                setSortScaleShapeStrategy={setSortScaleShapeStrategy}
             />
         </div>
     )

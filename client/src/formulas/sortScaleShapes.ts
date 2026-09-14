@@ -1,7 +1,18 @@
 import type {ScaleShape} from "@fretboard/shared/types/scale";
 
+type SortScaleShapesStrategyOption = {
+    displayName: string;
+    strategy: SortScaleShapesStrategy
+}
+
 export type SortScaleShapesStrategy =
-    "lowToHighFretToString" | "lowToHighStringToFret"
+    "lowToHighFretToString" | "lowToHighStringToFret" | "mostNotes"
+
+export const sortScaleShapesStrategies: SortScaleShapesStrategyOption[] = [
+    {displayName: "Lowest fret", strategy: "lowToHighFretToString"},
+    {displayName: "Lowest string", strategy: "lowToHighStringToFret"},
+    {displayName: "Most notes", strategy: "mostNotes"}
+]
 
 export function sortScaleShapes(scaleShapes: ScaleShape[], strategy: SortScaleShapesStrategy): ScaleShape[] {
     switch (strategy) {
@@ -9,6 +20,8 @@ export function sortScaleShapes(scaleShapes: ScaleShape[], strategy: SortScaleSh
             return sortLowToHighFretToString(scaleShapes);
         case "lowToHighStringToFret":
             return sortLowToHighStringToFret(scaleShapes)
+        case "mostNotes":
+            return sortMostToLeastNotes(scaleShapes)
     }
 }
 
@@ -80,3 +93,14 @@ function sortLowToHighFretToString(scaleShapes: ScaleShape[]): ScaleShape[] {
     })
 }
 
+function sortMostToLeastNotes(scaleShapes: ScaleShape[]): ScaleShape[] {
+    scaleShapes = sortLowToHighStringToFret(scaleShapes);
+    return scaleShapes.sort((a, b) => {
+        if (a.shape.length > b.shape.length) {
+            return -1
+        } else if (a.shape.length < b.shape.length) {
+            return 1
+        }
+        return 0
+    })
+}
