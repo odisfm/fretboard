@@ -17,7 +17,7 @@ type Props = {
 }
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
-const MIN_PER_STRING_BOUNDS = [0, 4]
+const MIN_PER_STRING_BOUNDS = [1, 4]
 const MAX_PER_STRING_BOUNDS = [1, 12]
 const MAX_FRET_SPAN_BOUNDS = [2, 12]
 
