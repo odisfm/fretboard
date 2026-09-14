@@ -1,3 +1,4 @@
+import { Virtuoso } from 'react-virtuoso'
 import Button from "../generic/Button.tsx";
 import type {ScaleShape} from "@fretboard/shared/types/scale";
 import ShapeButton from "./ShapeButton.tsx";
@@ -13,7 +14,7 @@ type Props = {
 export default function ShapePicker({scaleShapes, onClick, active, setScrollToFret}: Props) {
     return (
         <FretboardDisplayContext value={{zoom: 1, variant: "preview", outShapeOpacity: 0}}>
-            <div className={`flex w-full p-2 gap-4 overflow-x-scroll`}>
+            <div className="flex w-full p-2 gap-4">
                 <Button
                     onClick={() => {
                         onClick(null)
@@ -22,12 +23,23 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
                 >
                     {"Whole fretboard"}
                 </Button>
-                {scaleShapes.map((s, i) => {
-                    return (
-                        <ShapeButton scaleShape={s} index={i} active={active} onClick={onClick}
-                                     setScrollToFret={setScrollToFret}/>
-                    )
-                })}
+                <Virtuoso
+                    horizontalDirection
+                    style={{height: 200, flex: 1}}
+                    data={scaleShapes}
+                    computeItemKey={(index) => index}
+                    itemContent={(index, scaleShape) => (
+                        <div className="pr-4 h-full flex items-center">
+                            <ShapeButton
+                                scaleShape={scaleShape}
+                                index={index}
+                                active={active}
+                                onClick={onClick}
+                                setScrollToFret={setScrollToFret}
+                            />
+                        </div>
+                    )}
+                />
             </div>
         </FretboardDisplayContext>
     )
