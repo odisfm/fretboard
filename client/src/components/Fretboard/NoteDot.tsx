@@ -82,7 +82,7 @@ export default function NoteDot(
 
     return (
         <button className={`cursor-pointer`}
-                onClick={() => {audioContext.playNote(midiPitchToNoteName(pitch))}}
+                onClick={() => {if (fdContext.variant === "main") audioContext.playNote(midiPitchToNoteName(pitch))}}
         >
             <div
                 className={`
