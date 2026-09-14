@@ -149,7 +149,10 @@ export function ShapeGenFilter(
                     upperBound={MAX_FRET_SPAN_BOUNDS[1]}
                     displayStyles={displayStyles}
                 />
-                <legend className={legendStyles}>Maximum fret span</legend>
+                <div className={legendStyles}><span>Maximum fret span</span>
+                    {shapeGenOptions.maxFretSpan! >= 5 &&
+                        <Tooltip icon={"bang"} text={"Higher values may severely impact performance"} iconStyles={`!text-red-500`}/>}
+                </div>
             </div>
             <div className={containerStyles}>
                 <NumberStepper
