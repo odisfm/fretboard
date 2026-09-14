@@ -44,7 +44,7 @@ export default function Tooltip({icon, children, text, iconStyles, tooltipStyles
                 ${iconStyles}
         `}>
                 {icon === "question" && <FaQuestion size={10}/>}
-                {icon === "bang" && <FaExclamation/>}
+                {icon === "bang" && <FaExclamation  size={12}/>}
                 <div className={`
                 absolute top-full invisible group-hover:visible 
                 p-4 bg-neutral-900 text-white max-w-sm z-[1000] ${tooltipStyles}
