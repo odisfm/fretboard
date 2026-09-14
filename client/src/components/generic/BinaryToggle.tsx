@@ -10,7 +10,7 @@ export function BinaryToggle({state, fn}: Props) {
     const onStyles = `bg-white text-black hover:bg-neutral-300`
     const offStyles = `bg-neutral-700 hover:bg-neutral-600 text-white`
     return (
-        <div className={`mt-1.5 flex rounded-md w-15 h-5 bg-black ${state ? "justify-end" : "justify-start"}`}>
+        <div className={`mt-1.5 flex rounded-md w-15 h-5 bg-neutral-800 ${state ? "justify-end" : "justify-start"}`}>
             <Button
                 onClick={() => fn(!state)}
                 variant="unstyled"

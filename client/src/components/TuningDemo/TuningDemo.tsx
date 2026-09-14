@@ -1,8 +1,7 @@
 import {useTuning} from "../../contexts/tuning/useTuning.ts";
-import {FaPlusCircle} from "react-icons/fa"
-import StringSetter from "./StringSetter.tsx";
-import Button from "../generic/Button.tsx";
+import StringTuner from "./StringTuner.tsx";
 import {useUserData} from "../../contexts/userData/useUserData.tsx";
+import {RangeMutator} from "./RangeMutator.tsx";
 
 export default function TuningDemo() {
     const userDataContext = useUserData()
@@ -50,41 +49,42 @@ export default function TuningDemo() {
     }
 
     return (
-        <div className={`flex flex-col gap-2 items-center w-sm p-2 bg-neutral-900`}>
+        <div className={`flex flex-col flex-1 gap-4 p-2 bg-neutral-900`}>
             <select
                 onChange={(event) => {
                     const newTuning = userDataContext.tunings[Number(event.target.value)]
                     tuningContext.setTuning(newTuning)
                 }}
+                className={`bg-black p-1 rounded-md self-start`}
             >
                 {userDataContext.tunings.map((tuning, i) => {
-                    return <option value={i}>
+                    return <option value={i} key={i}>
                         {`${tuning.name || "unnamed tuning"}${tuning.instrument && ` (${tuning.instrument})`}`}
                     </option>
                 })}
             </select>
-            <Button
-                onClick={() => insertString("bottom")}
-            >
-                <FaPlusCircle/>
-            </Button>
-            <div className={`flex flex-col gap-1 w-full`}>
-                {tuning.strings.map((s, i) => {
-                    return (
-                        <StringSetter
-                            pitch={s}
-                            idx={i}
-                            incrementPitch={incrementPitch}
-                            deleteString={deleteString}
-                        />
-                    )
-                })}
+            <div className={`flex gap-2 items-center overflow-x-scroll w-full`}>
+                <RangeMutator
+                    insertString={() => insertString("bottom")}
+                    deleteString={() => deleteString(0)}
+                />
+                <div className={`flex gap-1`}>
+                    {tuning.strings.map((s, i) => {
+                        return (
+                            <StringTuner
+                                key={i}
+                                pitch={s}
+                                idx={i}
+                                incrementPitch={incrementPitch}
+                            />
+                        )
+                    })}
+                </div>
+                <RangeMutator
+                    insertString={() => insertString("top")}
+                    deleteString={() => deleteString(tuning.strings.length - 1)}
+                />
             </div>
-            <Button
-                onClick={() => insertString("top")}
-            >
-                <FaPlusCircle/>
-            </Button>
         </div>
     )
 }

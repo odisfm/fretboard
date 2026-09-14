@@ -117,29 +117,10 @@ export default function FretboardDemo() {
 
     return (
         <div className={`flex flex-col gap-2`}>
-            <TuningDemo/>
-            <ScaleDemo />
-            <div className={`flex gap-2`}>
-                <Button
-                    onClick={() => setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
-                    styles={`px-4 py-2 text-lg`}
-                >
-                    <FaRotate/>
-                </Button>
+            <div className={`flex flex-col gap-2`}>
+                <TuningDemo/>
+                <ScaleDemo/>
             </div>
-
-            <ShapeGenFilter
-                shapeGenOptions={shapeGenOptions}
-                setShapeGenOptions={setShapeGenOptions}
-                fretboardZoom={fretboardZoom}
-                setFretboardZoom={setFretboardZoom}
-                filterSavedShapes={filterSavedShapes}
-                setFilterSavedShapes={setFilterSavedShapes}
-                fitSavedShapes={fitSavedShapes}
-                setFitSavedShapes={setFitSavedShapes}
-                outShapeOpacity={outShapeOpacity}
-                setOutShapeOpacity={setOutShapeOpacity}
-            />
 
             <FretboardDisplayContext
                 value={{zoom: fretboardZoom, variant: "main", outShapeOpacity}}
@@ -155,11 +136,32 @@ export default function FretboardDemo() {
                 />
             </FretboardDisplayContext>
 
+            <Button
+                onClick={() => setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
+                styles={`px-4 py-2 text-lg self-start`}
+                variant={"subtle"}
+            >
+                <FaRotate/>
+            </Button>
+
             <ShapePicker
                 onClick={_setActiveScaleShape}
                 active={activeScaleShapeIdx}
                 scaleShapes={scaleShapes}
                 setScrollToFret={setScrollToFret}
+            />
+
+            <ShapeGenFilter
+                shapeGenOptions={shapeGenOptions}
+                setShapeGenOptions={setShapeGenOptions}
+                fretboardZoom={fretboardZoom}
+                setFretboardZoom={setFretboardZoom}
+                filterSavedShapes={filterSavedShapes}
+                setFilterSavedShapes={setFilterSavedShapes}
+                fitSavedShapes={fitSavedShapes}
+                setFitSavedShapes={setFitSavedShapes}
+                outShapeOpacity={outShapeOpacity}
+                setOutShapeOpacity={setOutShapeOpacity}
             />
         </div>
     )

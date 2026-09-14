@@ -96,9 +96,10 @@ export function ShapeGenFilter(
     const displayStyles = `bg-neutral-800`
     const legendStyles = `text-sm text-white/80 flex gap-1 max-w-30`
     const containerStyles = `flex flex-col gap-3`
+    const stepperButtonStyles = `bg-neutral-900`
 
     return (
-        <div className={`flex flex-wrap gap-4 p-4 rounded-md bg-neutral-950`}>
+        <div className={`flex flex-wrap gap-4 p-4 rounded-md bg-neutral-950 max-w-xl`}>
             <div className={containerStyles}>
                 <NumberStepper
                     display={true}
@@ -109,6 +110,7 @@ export function ShapeGenFilter(
                     lowerBound={MIN_OCTAVE_BOUNDS[0]}
                     upperBound={MIN_OCTAVE_BOUNDS[1]}
                     displayStyles={displayStyles}
+                    buttonStyles={stepperButtonStyles}
                 />
                 <legend className={legendStyles}>Minimum octaves</legend>
             </div>
@@ -122,6 +124,7 @@ export function ShapeGenFilter(
                     lowerBound={MIN_PER_STRING_BOUNDS[0]}
                     upperBound={MIN_PER_STRING_BOUNDS[1]}
                     displayStyles={displayStyles}
+                    buttonStyles={stepperButtonStyles}
                 />
                 <legend className={legendStyles}>Minimum notes per string</legend>
             </div>
@@ -135,6 +138,7 @@ export function ShapeGenFilter(
                     lowerBound={MAX_PER_STRING_BOUNDS[0]}
                     upperBound={MAX_PER_STRING_BOUNDS[1]}
                     displayStyles={displayStyles}
+                    buttonStyles={stepperButtonStyles}
                 />
                 <legend className={legendStyles}>Maximum notes per string</legend>
             </div>
@@ -148,6 +152,7 @@ export function ShapeGenFilter(
                     lowerBound={MAX_FRET_SPAN_BOUNDS[0]}
                     upperBound={MAX_FRET_SPAN_BOUNDS[1]}
                     displayStyles={displayStyles}
+                    buttonStyles={stepperButtonStyles}
                 />
                 <div className={legendStyles}><span>Maximum fret span</span>
                 </div>
@@ -162,6 +167,7 @@ export function ShapeGenFilter(
                     lowerBound={1}
                     upperBound={2}
                     displayStyles={displayStyles}
+                    buttonStyles={stepperButtonStyles}
                     valueDisplayFn={(value): string => {
                         const num = value as number;
                         return num.toFixed(1)
@@ -179,6 +185,7 @@ export function ShapeGenFilter(
                     lowerBound={0}
                     upperBound={1}
                     displayStyles={displayStyles}
+                    buttonStyles={stepperButtonStyles}
                     valueDisplayFn={(value): string => {
                         const num = value as number;
                         return num.toFixed(1)
