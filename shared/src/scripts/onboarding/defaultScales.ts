@@ -10,7 +10,7 @@ export const defaultScales: NewScale[] = [
     },
     {
         name: "Minor",
-        intervals: [2, 1, 2, 2, 2, 1, 2],
+        intervals: [2, 1, 2, 2, 1, 2, 2],
         tonic: "C"
     },
     {
