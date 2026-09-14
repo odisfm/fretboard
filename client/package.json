@@ -19,6 +19,7 @@
     "react-icons": "^5.6.0",
     "react-router": "^7.14.1",
     "tailwindcss": "^4.2.2",
+    "tone": "^15.1.22",
     "uuid": "^14.0.2"
   },
   "devDependencies": {
