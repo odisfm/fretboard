@@ -18,8 +18,8 @@ type Props = {
 
 const MIN_OCTAVE_BOUNDS = [1, 4]
 const MIN_PER_STRING_BOUNDS = [0, 4]
-const MAX_PER_STRING_BOUNDS = [1, 5]
-const MAX_FRET_SPAN_BOUNDS = [2, 8]
+const MAX_PER_STRING_BOUNDS = [1, 12]
+const MAX_FRET_SPAN_BOUNDS = [2, 12]
 
 export function ShapeGenFilter(
     {
@@ -150,8 +150,6 @@ export function ShapeGenFilter(
                     displayStyles={displayStyles}
                 />
                 <div className={legendStyles}><span>Maximum fret span</span>
-                    {shapeGenOptions.maxFretSpan! >= 5 &&
-                        <Tooltip icon={"bang"} text={"Higher values may severely impact performance"} iconStyles={`!text-red-500`}/>}
                 </div>
             </div>
             <div className={containerStyles}>
