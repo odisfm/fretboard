@@ -81,7 +81,7 @@ export default function NoteDot(
     }
 
     return (
-        <button className={`cursor-pointer`}
+        <div className={`cursor-pointer`}
                 onClick={() => {if (fdContext.variant === "main") audioContext.playNote(midiPitchToNoteName(pitch))}}
         >
             <div
@@ -96,6 +96,6 @@ export default function NoteDot(
             >
                 {variant === "main" && <span>{text}</span>}
             </div>
-        </button>
+        </div>
     )
 }
