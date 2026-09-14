@@ -11,17 +11,24 @@ type Props = {
     upperBound?: number
     displayStyles?: string
     buttonStyles?: string
+    compStyles?: string
     valueDisplayFn?: (value: unknown) => string
+    orientation?: "horizontal" | "vertical" | "vertical-flip"
+    decIcon?: React.ReactNode
+    incIcon?: React.ReactNode
 }
 
 export function NumberStepper(
     {
-        display, value, incrementFn, decrementFn, variant, upperBound, lowerBound, displayStyles, buttonStyles, valueDisplayFn
+        display, value, incrementFn, decrementFn, variant, upperBound, lowerBound,
+        displayStyles, buttonStyles, compStyles, valueDisplayFn, orientation, decIcon, incIcon
     }: Props) {
     const canIncrement =
         typeof value !== "number" || (typeof upperBound === "number" && value < upperBound);
     const canDecrement =
         typeof value === "number" && (typeof lowerBound === "number" && value > lowerBound);
+
+    orientation = orientation || "horizontal"
 
     let text: string
     if (valueDisplayFn) {
@@ -31,14 +38,18 @@ export function NumberStepper(
     }
 
     return (
-        <div className={`flex`}>
+        <div className={`
+        flex ${orientation === "vertical" && "flex-col"} 
+        ${orientation === "vertical-flip" && `flex-col-reverse`}
+        ${compStyles}
+        `}>
             <Button
                 variant={variant || "default"}
                 disabled={!canDecrement}
                 onClick={decrementFn}
                 styles={buttonStyles}
             >
-                <FaMinus />
+                {decIcon ? decIcon : <FaMinus/>}
             </Button>
             { display &&
                 <div className={`flex items-center px-4 ${displayStyles}`}>
@@ -51,7 +62,7 @@ export function NumberStepper(
                 onClick={incrementFn}
                 styles={buttonStyles}
             >
-                <FaPlus />
+                {incIcon ? incIcon : <FaPlus/>}
             </Button>
         </div>
     )
