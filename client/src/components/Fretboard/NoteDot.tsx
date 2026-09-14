@@ -2,6 +2,7 @@ import type {FretboardVariant} from "./Fretboard.tsx";
 import {useScale} from "../../contexts/scale/useScale.ts";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
+import {useAudio} from "../../contexts/audio/useAudio.tsx";
 
 export type DotVisibility = "highlight" | "dim" | "none" | "zeroFret"
 
@@ -19,7 +20,7 @@ export default function NoteDot(
         variant,
         degree
     }: Props) {
-
+    const audioContext = useAudio();
     const fdContext = useFretboardDisplay()
     const scaleContext = useScale()
     const dimClasses = `bg-white text-black`
@@ -80,7 +81,9 @@ export default function NoteDot(
     }
 
     return (
-        <div className={``}>
+        <button className={`cursor-pointer`}
+                onClick={() => {audioContext.playNote(midiPitchToNoteName(pitch))}}
+        >
             <div
                 className={`
                 flex items-center justify-center rounded-full ${theseClasses} text-xs h-7 w-7`
@@ -93,6 +96,6 @@ export default function NoteDot(
             >
                 {variant === "main" && <span>{text}</span>}
             </div>
-        </div>
+        </button>
     )
 }
