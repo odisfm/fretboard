@@ -5,13 +5,19 @@ import {AudioProvider} from "./contexts/audio/AudioProvider.tsx";
 export function App() {
 
     return (
-        <div className={`w-[100vw] p-4`}>
-            <UserDataProvider>
+        <UserDataProvider>
+            <div className={`w-[100vw]`}>
+                <header className={`bg-black p-2 flex gap-2`}>
+                    <span className={`font-bold text-lg`}>fretboard</span>
+                </header>
                 <AudioProvider>
-                    <FretboardDemo/>
+                    <div className={`p-4`}>
+                        <FretboardDemo/>
+                    </div>
                 </AudioProvider>
-            </UserDataProvider>
-        </div>
+            </div>
+        </UserDataProvider>
+
     )
 }
 
