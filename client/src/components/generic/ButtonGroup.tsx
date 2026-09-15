@@ -44,6 +44,7 @@ export function ButtonGroup(
                         `}
                         loading={loading}
                         disabled={disabled ? disabled[i] : false}
+                        key={i}
                     >
                         {child}
                     </Button>
