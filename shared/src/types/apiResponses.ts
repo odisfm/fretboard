@@ -17,3 +17,11 @@ export type TuningResponse = {
 export type ShapeResponse = {
     shape: ScaleShape,
 }
+
+export type RegistrationFailure = {
+    error: {
+        message: string,
+        passwordConstraints?: string[],
+        emailTaken?: true
+    }
+}

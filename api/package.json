@@ -12,6 +12,7 @@
   "dependencies": {
     "@fretboard/shared": "*",
     "@hono/node-server": "^1.19.14",
+    "argon2": "^0.45.1",
     "hono": "^4.12.14"
   },
   "devDependencies": {

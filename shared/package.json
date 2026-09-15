@@ -8,7 +8,8 @@
     "./db": "./src/db.ts",
     "./types/*": "./src/types/*.ts",
     "./utils/*": "./src/utils/*.ts",
-    "./prisma/*": "./src/generated/prisma/*.ts"
+    "./prisma/*": "./src/generated/prisma/*.ts",
+    "./scripts/*": "./src/scripts/*.ts"
   },
   "scripts": {
     "lint": "eslint .",
