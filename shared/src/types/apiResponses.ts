@@ -1,11 +1,14 @@
-import type {Scale, ScaleShape} from "./scale";
-import type {Tuning} from "./tuning";
+import {ScaleSchema, type ScaleShape, ScaleShapeSchema} from "./scale";
+import {type Tuning, TuningSchema} from "./tuning";
+import * as z from "zod";
 
-export type TestUserDataResponse = {
-    scales: Scale[],
-    tunings: Tuning[],
-    shapes: ScaleShape[]
-}
+export const TestUserDataSchema = z.object({
+    scales: z.array(ScaleSchema),
+    tunings: z.array(TuningSchema),
+    shapes: z.array(ScaleShapeSchema)
+})
+
+export type TestUserDataResponse = z.infer<typeof TestUserDataSchema>;
 
 export type TuningResponse = {
     tuning: Tuning

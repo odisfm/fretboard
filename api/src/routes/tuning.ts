@@ -19,6 +19,7 @@ tuningRouter.post("/", async (c) => {
             data: {
                 userId: process.env.VITE_TEST_USER_ID!, // todo:
                 data: {...tuning},
+                id:  tuning.id
             }
         })
         const tuningData = TuningSchema.parse(insert.data)
@@ -46,9 +47,11 @@ tuningRouter.patch("/", async (c) => {
             },
             data: {
                 data: tuning,
+                updatedAt: new Date(),
             }
         })
-        const tuningData = TuningSchema.parse(update.data)
+        const tuningData =
+            TuningSchema.parse({...update.data as object, updatedAt: update.updatedAt})
         return c.json({tuning: tuningData} satisfies TuningResponse, 200)
     } catch (e) {
         console.error(e)
