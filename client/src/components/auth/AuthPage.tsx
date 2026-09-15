@@ -3,8 +3,12 @@ import type {LoginRequestType} from "@fretboard/shared/types/apiRequests";
 import type {RegistrationFailure} from "@fretboard/shared/types/apiResponses";
 import {Link, useNavigate} from "react-router";
 import {useAuth} from "../../contexts/auth/useAuth.ts";
+import Button from "../generic/Button.tsx";
 
 type Mode = "login" | "register"
+
+const inputStyles = `bg-black p-1 rounded-md mb-2`
+const legendStyles = `font-light text-white/80 mb-1`
 
 export function AuthPage({mode}: {mode: Mode}) {
     const authContext = useAuth()
@@ -64,28 +68,31 @@ export function AuthPage({mode}: {mode: Mode}) {
     }
 
     return (
-        <>
-            <h1>{mode === "login" ? "Log in" : "Register"}</h1>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                submit();
-            }}>
-                <fieldset>
-                    <legend>email</legend>
-                    <input type="email" name="email" id="email" ref={emailRef}/>
-                </fieldset>
-                <fieldset>
-                    <legend>Password</legend>
-                    <input type="password" name="password" id="password" ref={passwordRef}/>
-                </fieldset>
-                <button>
-                    {mode === "login" && "Login"}
-                    {mode === "register" && "Register"}
-                </button>
-            </form>
-            {mode === "login" && <span>Or <Link to={"/register"}>create an account</Link></span>}
-            {mode === "register" && <span>Or <Link to={"/login"}>log in</Link></span>
-            }
-        </>
+        <div className={`flex flex-col items-center`}>
+            <div className={`flex flex-col gap-4 mt-8 w-full md:w-sm`}>
+                <h1 className={`text-3xl font-bold`}>{mode === "login" ? "Log in" : "Register"}</h1>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    submit();
+                }}>
+                    <fieldset>
+                        <legend className={legendStyles}>Email</legend>
+                        <input type="email" name="email" id="email" ref={emailRef} className={inputStyles} />
+                    </fieldset>
+                    <fieldset>
+                        <legend className={legendStyles}>Password</legend>
+                        <input type="password" name="password" id="password" ref={passwordRef} className={inputStyles} />
+                    </fieldset>
+                    <Button
+                        styles={`mt-4 mb-2`}
+                    >
+                        {mode === "login" && "Login"}
+                        {mode === "register" && "Register"}
+                    </Button>
+                </form>
+                {mode === "login" && <span>Or <Link to={"/register"} className={`font-bold`}>create an account</Link></span>}
+                {mode === "register" && <span>Or <Link to={"/login"} className={`font-bold`}>log in</Link></span>
+                }</div>
+        </div>
     )
 }
