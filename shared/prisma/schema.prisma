@@ -24,6 +24,7 @@ model Tuning {
   user      User     @relation(fields: [userId], references: [id])
   data      Json
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Scale {
@@ -32,6 +33,7 @@ model Scale {
   user      User     @relation(fields: [userId], references: [id])
   data      Json
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Shape {
@@ -40,4 +42,5 @@ model Shape {
   user      User     @relation(fields: [userId], references: [id])
   data      Json
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }

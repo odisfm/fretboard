@@ -7,7 +7,8 @@ export const TuningSchema = z.object({
     capo: z.array(z.number()),
     fretCount: z.number(),
     instrument: z.string().optional(),
-    order: z.string()
+    order: z.string(),
+    updatedAt: z.coerce.date().optional()
 })
 
 export type Tuning = z.infer<typeof TuningSchema>

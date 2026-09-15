@@ -11,7 +11,8 @@ type UserDataContextValue = {
     shapes: ScaleShape[]
     connectionStatus: boolean
     initialised: boolean,
-    toggleSavedShape: (shape: ScaleShape) => void
+    toggleSavedShape: (shape: ScaleShape) => void,
+    waitOnServer: boolean
 }
 
 export const UserDataContext = createContext<UserDataContextValue | null>(null)
