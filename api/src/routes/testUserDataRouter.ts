@@ -1,10 +1,10 @@
-import { Hono } from 'hono'
 import { db } from "@fretboard/shared/db"
 import {type TestUserDataResponse, TestUserDataSchema} from "@fretboard/shared/types/apiResponses";
 import {Prisma} from "@fretboard/shared/prisma/client";
 import {formatBulkUserData} from "../utils/formatBulkUserData";
+import {createHono} from "../helpers/createHono";
 
-export const testUserDataRouter = new Hono()
+export const testUserDataRouter = createHono()
 
 testUserDataRouter.get("/:userId", async (c) => {
     const userId = c.req.param("userId")

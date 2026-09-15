@@ -1,9 +1,9 @@
-import {Hono} from "hono";
 import {db} from "@fretboard/shared/db"
 import {TuningSchema} from "@fretboard/shared/types/tuning";
 import type {TuningResponse} from "@fretboard/shared/types/apiResponses";
+import {createHono} from "../helpers/createHono";
 
-export const tuningRouter = new Hono()
+export const tuningRouter = createHono()
 
 tuningRouter.post("/", async (c) => {
     const body = await c.req.json()
