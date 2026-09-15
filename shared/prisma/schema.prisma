@@ -11,17 +11,27 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String    @unique
+  password  String
   scales    Scale[]
   tunings   Tuning[]
   shapes    Shape[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  sessions  Session[]
+}
+
+model Session {
+  id     String   @id @default(uuid()) @db.Uuid
+  userId String   @db.Uuid
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiry DateTime
 }
 
 model Tuning {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -30,7 +40,7 @@ model Tuning {
 model Scale {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -39,7 +49,7 @@ model Scale {
 model Shape {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

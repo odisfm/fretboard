@@ -6,8 +6,12 @@ import {UserDataContext} from "./UserDataContext.ts";
 import {TuningProvider} from "../tuning/TuningProvider.tsx";
 import {ScaleProvider} from "../scale/ScaleProvider.tsx";
 import {reconcileUserData} from "./reconcileUserData.ts";
+import {useAuth} from "../auth/useAuth.ts";
+import {defaultScales} from "@fretboard/shared/scripts/onboarding/defaultScales";
+import {defaultTunings} from "@fretboard/shared/scripts/onboarding/defaultTunings";
+import {v4 as createUuid} from "uuid";
+import {LexoRank} from "@dalet-oss/lexorank";
 
-const TEST_USER_ID = import.meta.env.VITE_TEST_USER_ID;
 const API_URL = import.meta.env.VITE_API_URL;
 const BACKOFF_BASE = 500
 const BACKOFF_CAP = 1000 * 120
@@ -41,12 +45,15 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     const [needsReconcile, setNeedsReconcile] = useState<boolean>(true)
     const [initialised, setInitialised] = useState<boolean>(false)
     const [waitOnServer, setWaitOnServer] = useState<boolean>(true)
+    const [didOnBoard, setDidOnBoard] = useState<boolean>(false)
 
     const tuningsRef = useRef(tunings)
     const shapesRef = useRef(shapes)
     const scalesRef = useRef(scales)
     const initialisedRef = useRef(initialised)
     const needsReconcileRef = useRef(needsReconcile)
+
+    const authContext = useAuth()
 
     useEffect(() => {
         tuningsRef.current = tunings
@@ -61,11 +68,14 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         setWaitOnServer(true)
         let res: Response
         try {
-            res = await fetch(`${API_URL}/user-data/${TEST_USER_ID}`);
+            res = await fetch(`${API_URL}/user-data`, {credentials: "include"});
             if (!res.ok) {
                 console.error(res);
                 setWaitOnServer(false)
                 setConnectionStatus(false)
+                if (canInitialise) {
+                    setInitialised(true)
+                }
                 return;
             }
         } catch (e) {
@@ -80,45 +90,64 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         const json = await res.json();
         const data = json as TestUserDataResponse
 
-        const deletedTunings = JSON.parse(localStorage.getItem("deletedTunings") || "[]")
-        const deletedShapes = JSON.parse(localStorage.getItem("deletedShapes") || "[]")
-        const deletedScales = JSON.parse(localStorage.getItem("deletedScales") || "[]")
-
-        const {reconciledTunings, reconciledScales, reconciledShapes} = reconcileUserData(
-            tuningsRef.current, data.tunings, shapesRef.current, data.shapes, scalesRef.current, data.scales,
-            deletedTunings, deletedShapes, deletedScales
-        )
-
-        try {
-            const reconcileBody = {
-                tunings: reconciledTunings,
-                shapes: reconciledShapes,
-                scales: reconciledScales,
-            }
-            const updateRes = await fetch(`${API_URL}/user-data/${TEST_USER_ID}`,
-                {
-                    method: "POST",
-                    body: JSON.stringify(reconcileBody),
-                })
-            const json: TestUserDataResponse = await updateRes.json();
-            localStorage.setItem("deletedTunings", "[]")
-            localStorage.setItem("deletedShapes", "[]")
-            localStorage.setItem("deletedScales", "[]")
-
-            setTunings(json.tunings)
-            setShapes(json.shapes)
-            setScales(json.scales)
-
+        if (didOnBoard && !authContext.isNewUser) {
+            setTunings(data.tunings)
+            setShapes(data.shapes)
+            setScales(data.scales)
             setInitialised(true)
+            setNeedsReconcile(false)
             setConnectionStatus(true)
             setWaitOnServer(false)
-            setNeedsReconcile(false)
-        } catch (e) {
-            console.error(e)
-            setConnectionStatus(false)
-            setWaitOnServer(false)
+
+            setTimeout(() => {
+                setInitialised(true)
+            }, 100)
+            setInitialised(false)
+
+        } else {
+
+            const deletedTunings = JSON.parse(localStorage.getItem("deletedTunings") || "[]")
+            const deletedShapes = JSON.parse(localStorage.getItem("deletedShapes") || "[]")
+            const deletedScales = JSON.parse(localStorage.getItem("deletedScales") || "[]")
+
+            const {reconciledTunings, reconciledScales, reconciledShapes} = reconcileUserData(
+                tuningsRef.current, data.tunings, shapesRef.current, data.shapes, scalesRef.current, data.scales,
+                deletedTunings, deletedShapes, deletedScales
+            )
+
+            try {
+                const reconcileBody = {
+                    tunings: reconciledTunings,
+                    shapes: reconciledShapes,
+                    scales: reconciledScales,
+                }
+                const updateRes = await fetch(`${API_URL}/user-data`,
+                    {
+                        method: "POST",
+                        body: JSON.stringify(reconcileBody),
+                        credentials: "include",
+                    })
+                const json: TestUserDataResponse = await updateRes.json();
+                localStorage.setItem("deletedTunings", "[]")
+                localStorage.setItem("deletedShapes", "[]")
+                localStorage.setItem("deletedScales", "[]")
+
+                setTunings(json.tunings)
+                setShapes(json.shapes)
+                setScales(json.scales)
+
+                setInitialised(true)
+                setConnectionStatus(true)
+                setWaitOnServer(false)
+                setNeedsReconcile(false)
+                authContext.setIsNewUser(false)
+            } catch (e) {
+                console.error(e)
+                setConnectionStatus(false)
+                setWaitOnServer(false)
+            }
         }
-    }, [])
+    }, [authContext, didOnBoard])
 
     useEffect(() => {
         if (!needsReconcile) return
@@ -152,6 +181,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             res = await fetch(`${API_URL}/tuning`, {
                 method: "POST",
                 body: JSON.stringify(tuning),
+                credentials: "include",
             })
             if (!res.ok) {
                 if (res.status === 400) {
@@ -184,6 +214,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         try {
             res = await fetch(`${API_URL}/tuning/${id}`, {
                 method: "DELETE",
+                credentials: "include",
             })
             if (!res.ok) {
                 if (res.status === 400) {
@@ -219,6 +250,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             const res = await fetch(`${API_URL}/tuning`, {
                 method: "PATCH",
                 body: JSON.stringify(tuning),
+                credentials: "include",
             })
             if (!res.ok) {
                 if (res.status === 400) {
@@ -257,6 +289,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
                 res = await fetch(`${API_URL}/shape`, {
                     method: "DELETE",
                     body: JSON.stringify(shape),
+                    credentials: "include",
                 })
             } catch (e) {
                 console.error(e)
@@ -287,6 +320,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
                 res = await fetch(`${API_URL}/shape`, {
                     method: "PUT",
                     body: JSON.stringify(shape),
+                    credentials: "include",
                 })
             } catch (e) {
                 console.error(e)
@@ -308,6 +342,38 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             const newShapes = [...shapes, shape]
             setShapes(newShapes)
         }
+    }
+
+    function onboardUser() {
+        const newScales: Scale[] = []
+        let scaleLexoRank = LexoRank.middle()
+        for (const s of defaultScales) {
+            scaleLexoRank = scaleLexoRank.genNext()
+            newScales.push({
+                ...s,
+                id: createUuid(),
+                order: scaleLexoRank["value"]
+            })
+        }
+        const newTunings: Tuning[] = []
+        let tuningLexoRank = LexoRank.middle()
+        for (const t of defaultTunings) {
+            tuningLexoRank = tuningLexoRank.genNext()
+            newTunings.push({
+                ...t,
+                id: createUuid(),
+                order: tuningLexoRank["value"],
+            })
+        }
+
+        setScales(newScales)
+        setTunings(newTunings)
+        setDidOnBoard(true)
+        setInitialised(true)
+    }
+
+    if ((!authContext.auth && !initialised && !canInitialise)) {
+        onboardUser()
     }
 
     useEffect(() => {

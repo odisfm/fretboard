@@ -2,10 +2,11 @@ import {ScaleShapeSchema} from "@fretboard/shared/types/scale";
 import {db} from "@fretboard/shared";
 import type {ShapeResponse} from "@fretboard/shared/types/apiResponses";
 import {createHono} from "../helpers/createHono";
+import {needsAuth} from "../middleware/needsAuth";
 
 export const shapeRouter = createHono()
 
-shapeRouter.put("/", async (c) => {
+shapeRouter.put("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let shape
     try {
@@ -19,7 +20,7 @@ shapeRouter.put("/", async (c) => {
         record = await db.shape.create({
             data: {
                 data: {...shape},
-                userId: process.env.VITE_TEST_USER_ID!, // todo:
+                userId: c.get("user")!.id,
                 id: shape.id
             }
         })
@@ -34,7 +35,7 @@ shapeRouter.put("/", async (c) => {
     return c.json({shape: obj} satisfies ShapeResponse, 200)
 })
 
-shapeRouter.delete("/", async (c) => {
+shapeRouter.delete("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let shape
     try {
@@ -46,7 +47,7 @@ shapeRouter.delete("/", async (c) => {
     let record
     try {
         record = await db.shape.delete({
-            where: {id: shape.id}
+            where: {id: shape.id, userId: c.get("user")!.id}
         })
         return c.json({}, 200)
     } catch (e) {

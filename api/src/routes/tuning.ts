@@ -2,10 +2,11 @@ import {db} from "@fretboard/shared/db"
 import {TuningSchema} from "@fretboard/shared/types/tuning";
 import type {TuningResponse} from "@fretboard/shared/types/apiResponses";
 import {createHono} from "../helpers/createHono";
+import {needsAuth} from "../middleware/needsAuth";
 
 export const tuningRouter = createHono()
 
-tuningRouter.post("/", async (c) => {
+tuningRouter.post("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let tuning;
     try {
@@ -17,7 +18,7 @@ tuningRouter.post("/", async (c) => {
     try {
         const insert = await db.tuning.create({
             data: {
-                userId: process.env.VITE_TEST_USER_ID!, // todo:
+                userId: c.get("user")!.id,
                 data: {...tuning},
                 id:  tuning.id
             }
@@ -31,7 +32,7 @@ tuningRouter.post("/", async (c) => {
     }
 })
 
-tuningRouter.patch("/", async (c) => {
+tuningRouter.patch("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let tuning;
     try {
@@ -41,13 +42,20 @@ tuningRouter.patch("/", async (c) => {
         return c.json({error: "Malformed input"}, 400)
     }
     try {
-        const update = await db.tuning.update({
+        const update = await db.tuning.upsert({
             where: {
-                id: tuning.id
+                id: tuning.id,
+                userId: c.get("user")!.id
             },
-            data: {
+            create: {
+                id: tuning.id,
+                userId: c.get("user")!.id,
                 data: tuning,
                 updatedAt: new Date(),
+            },
+            update: {
+                data: tuning,
+                updatedAt: new Date()
             }
         })
         const tuningData =
@@ -59,13 +67,13 @@ tuningRouter.patch("/", async (c) => {
     }
 })
 
-tuningRouter.delete("/:id", async (c) => {
+tuningRouter.delete("/:id", needsAuth, async (c) => {
     const id = c.req.param("id")
     try {
         const record = await db.tuning.delete({
             where: {
                 id,
-                userId: process.env.VITE_TEST_USER_ID! // todo:
+                userId: c.get("user")!.id,
             }
         })
         return c.json({message: `Deleted tuning ${id}`}, 200)

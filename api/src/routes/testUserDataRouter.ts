@@ -3,11 +3,12 @@ import {type TestUserDataResponse, TestUserDataSchema} from "@fretboard/shared/t
 import {Prisma} from "@fretboard/shared/prisma/client";
 import {formatBulkUserData} from "../utils/formatBulkUserData";
 import {createHono} from "../helpers/createHono";
+import {needsAuth} from "../middleware/needsAuth";
 
 export const testUserDataRouter = createHono()
 
-testUserDataRouter.get("/:userId", async (c) => {
-    const userId = c.req.param("userId")
+testUserDataRouter.get("/", needsAuth, async (c) => {
+    const userId = c.get("user")!.id
     const userRecord = await db.user.findUnique({
         where: {id: userId},
         include: {
@@ -39,10 +40,9 @@ testUserDataRouter.get("/:userId", async (c) => {
 
 })
 
-testUserDataRouter.post("/:userId", async (c) => {
-    console.log("doing bulk userData update")
+testUserDataRouter.post("/", needsAuth, async (c) => {
     const start = performance.now()
-    const userId = c.req.param("userId")
+    const userId = c.get("user")!.id
     const body = await c.req.json()
     let update: TestUserDataResponse
     try {
@@ -159,7 +159,6 @@ testUserDataRouter.post("/:userId", async (c) => {
     const {scales, shapes, tunings} = formatBulkUserData(userRecord)
 
     const end = performance.now()
-    console.log(`updated user in ${end - start}ms`)
 
     return c.json({scales, shapes, tunings} satisfies TestUserDataResponse, 200)
 })
