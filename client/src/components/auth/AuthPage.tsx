@@ -50,10 +50,10 @@ export function AuthPage({mode}: {mode: Mode}) {
                 }
             } else {
                 const json = await res.json()
-                authContext.setUserDetails({email: json.email!})
-                authContext.setAuth(true)
                 if (mode === "register") {
-                    authContext.setIsNewUser(true)
+                    authContext.signUp({email: json.email})
+                } else {
+                    authContext.logIn({email: json.email})
                 }
                 navigate("/")
             }
