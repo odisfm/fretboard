@@ -1,9 +1,9 @@
-import {Hono} from "hono";
 import {ScaleShapeSchema} from "@fretboard/shared/types/scale";
 import {db} from "@fretboard/shared";
 import type {ShapeResponse} from "@fretboard/shared/types/apiResponses";
+import {createHono} from "../helpers/createHono";
 
-export const shapeRouter = new Hono()
+export const shapeRouter = createHono()
 
 shapeRouter.put("/", async (c) => {
     const body = await c.req.json()
