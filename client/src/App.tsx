@@ -2,9 +2,9 @@ import {UserDataProvider} from "./contexts/userData/UserDataProvider.tsx";
 import {AudioProvider} from "./contexts/audio/AudioProvider.tsx";
 import {Outlet} from "react-router";
 import {Header} from "./components/global/Header.tsx";
+import {Footer} from "./components/global/Footer.tsx";
 
 export function App() {
-
     return (
             <UserDataProvider>
                 <div className={`w-[100vw]`}>
@@ -14,6 +14,7 @@ export function App() {
                             <Outlet/>
                         </div>
                     </AudioProvider>
+                    <Footer />
                 </div>
             </UserDataProvider>
     )
