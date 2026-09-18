@@ -1,8 +1,8 @@
 import {NumberStepper} from "../generic/NumberStepper.tsx";
-import type {GenerateScaleShapesOptions} from "../../formulas/generateScaleShapes.ts";
+import type {GenerateScaleShapesOptions} from "../../formulas/scaleShapes/generateScaleShapes.ts";
 import {BinaryToggle} from "../generic/BinaryToggle.tsx";
 import Tooltip from "../generic/Tooltip.tsx";
-import {sortScaleShapesStrategies, type SortScaleShapesStrategy} from "../../formulas/sortScaleShapes.ts";
+import {sortScaleShapesStrategies, type SortScaleShapesStrategy} from "../../formulas/scaleShapes/sortScaleShapes.ts";
 
 type Props = {
     shapeGenOptions: GenerateScaleShapesOptions

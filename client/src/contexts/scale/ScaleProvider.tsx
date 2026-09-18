@@ -4,7 +4,7 @@ import {type AccidentalPrefType, type IntervalPrefType, ScaleContext} from "./Sc
 import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName";
 import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
-import getScaleDegreeNumbers from "../../formulas/getScaleDegreeNumbers.ts";
+import getScaleDegreeNumbers from "../../formulas/scaleShapes/getScaleDegreeNumbers.ts";
 import {TONES, TONES_FLAT, TONES_SHARP} from "@fretboard/shared/consts";
 
 export function ScaleProvider({initialScale, children}: {initialScale: Scale, children: React.ReactNode}) {
