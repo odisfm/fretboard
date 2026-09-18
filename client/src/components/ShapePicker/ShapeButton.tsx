@@ -1,31 +1,48 @@
-import type { ScaleShape } from "@fretboard/shared/types/scale";
 import Button from "../generic/Button.tsx";
 import ShapePreview from "./ShapePreview.tsx";
 import FavButton from "../generic/FavButton.tsx";
 import {useUserData} from "../../contexts/userData/useUserData.tsx";
 import {useMemo} from "react";
+import type {FingerShape} from "@fretboard/shared/types/fingerShape";
+import type {ScaleShape} from "@fretboard/shared/types/scale";
+import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
 
 type Props = {
     onClick: (index: number) => void;
     setScrollToFret: (index: number) => void;
     active: number | null;
-    scaleShape: ScaleShape;
+    fingerShape: FingerShape;
     index: number
 }
 
-export default function ShapeButton({onClick, setScrollToFret, scaleShape, index, active}: Props) {
+export default function ShapeButton({onClick, setScrollToFret, fingerShape, index, active}: Props) {
     const userDataContext = useUserData()
+    const fdContext = useFretboardDisplay()
     const isFav = useMemo(() => {
-        return userDataContext.shapes.findIndex((s) => s.id === scaleShape.id) !== -1
-    }, [userDataContext.shapes, scaleShape])
+        return userDataContext.shapes.findIndex((s) => s.id === fingerShape.id) !== -1
+    }, [userDataContext.shapes, fingerShape])
 
     function toggleFav(e: React.MouseEvent<HTMLElement>) {
         e.preventDefault()
         e.stopPropagation();
-        userDataContext.toggleSavedShape(scaleShape)
+        if (fingerShape.scale) {
+            userDataContext.toggleSavedShape(fingerShape as ScaleShape)
+        }
     }
 
-    const favShapeFitted = isFav && scaleShape?.isAdjusted
+    const scrollToFret = useMemo(() => {
+        if (fdContext.type === "scale") {
+            return fingerShape.lowFret
+        } else {
+            let lowFret = Infinity
+            for (const p of fingerShape.shape) {
+                if (p.fret && p.fret < lowFret) lowFret = p.fret
+            }
+            return lowFret > 3 ? lowFret : 0
+        }
+    }, [fingerShape, fdContext.type])
+
+    const favShapeFitted = isFav && fingerShape?.isAdjusted
 
     return (
 
@@ -44,12 +61,12 @@ export default function ShapeButton({onClick, setScrollToFret, scaleShape, index
                 <Button
                     onClick={() => {
                         onClick(index)
-                        setScrollToFret(scaleShape.lowFret)
+                        setScrollToFret(scrollToFret)
                     }}
                     variant={active === index ? "default" : "subtle"}
                     styles={`z-30`}
                 >
-                <ShapePreview shape={scaleShape}/>
+                <ShapePreview shape={fingerShape}/>
                 </Button>
             </div>
     )
