@@ -1,7 +1,8 @@
-import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
+import type {Scale} from "@fretboard/shared/types/scale";
 import Fret from "./Fret.tsx";
 import {useEffect, useRef} from "react";
 import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
+import type {FingerShape} from "@fretboard/shared/types/fingerShape";
 
 export type FretboardVariant = "main" | "preview"
 
@@ -9,7 +10,7 @@ type Props = {
     orientation: "horizontal" | "vertical";
     startFret: number;
     endFret: number;
-    highlightedShape?: ScaleShape;
+    highlightedShape?: FingerShape;
     scale: Scale;
     renderZeroFret: boolean;
     scrollToFret: number | null
@@ -80,7 +81,7 @@ export default function Fretboard(
                     scale={scale}
                     zeroFret={true}
                     orientation={orientation}
-                    highlightedShape={highlightedShape}
+                    shape={highlightedShape}
                     ref={(el) => { fretRefs.current[0] = el; }}
 
                 />
@@ -93,7 +94,7 @@ export default function Fretboard(
                             orientation={orientation}
                             fretNumber={i + startFret}
                             scale={scale}
-                            highlightedShape={highlightedShape}
+                            shape={highlightedShape}
                             zeroFret={false}
                             ref={(el) => {
                                 fretRefs.current[i] = el;

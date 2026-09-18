@@ -80,7 +80,6 @@ export default function FretboardDemo() {
                             continue
                         }
                         const result = fitShapeToNewTonic(s, scaleContext.scale.tonic)
-                        console.log({result})
                         if (result) {
                             relevant.push(result)
                         }
@@ -125,7 +124,7 @@ export default function FretboardDemo() {
             </div>
 
             <FretboardDisplayContext
-                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity}}
+                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity, type: "scale"}}
             >
                 <Fretboard
                     orientation={orientation}
@@ -146,12 +145,14 @@ export default function FretboardDemo() {
                 <FaRotate/>
             </Button>
 
-            <ShapePicker
-                onClick={_setActiveScaleShape}
-                active={activeScaleShapeIdx}
-                scaleShapes={scaleShapes}
-                setScrollToFret={setScrollToFret}
-            />
+            <FretboardDisplayContext value={{variant: "preview", zoom: 1.0, outShapeOpacity: 0, type: "scale"}}>
+                <ShapePicker
+                    onClick={_setActiveScaleShape}
+                    active={activeScaleShapeIdx}
+                    fingerShapes={scaleShapes}
+                    setScrollToFret={setScrollToFret}
+                />
+            </FretboardDisplayContext>
 
             <ShapeGenFilter
                 shapeGenOptions={shapeGenOptions}

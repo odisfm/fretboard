@@ -1,19 +1,17 @@
 import { Virtuoso } from 'react-virtuoso'
 import Button from "../generic/Button.tsx";
-import type {ScaleShape} from "@fretboard/shared/types/scale";
 import ShapeButton from "./ShapeButton.tsx";
-import {FretboardDisplayContext} from "../../contexts/fretboardDisplay/FretboardDisplayContext.ts";
+import type {FingerShape} from "@fretboard/shared/types/fingerShape";
 
 type Props = {
-    scaleShapes: ScaleShape[],
+    fingerShapes: FingerShape[],
     active: number | null,
     onClick: (idx: number | null) => void,
     setScrollToFret: (fretNumber: number) => void,
 }
 
-export default function ShapePicker({scaleShapes, onClick, active, setScrollToFret}: Props) {
+export default function ShapePicker({fingerShapes, onClick, active, setScrollToFret}: Props) {
     return (
-        <FretboardDisplayContext value={{zoom: 1, variant: "preview", outShapeOpacity: 0}}>
             <div className="flex w-full p-2 gap-4">
                 <Button
                     onClick={() => {
@@ -26,12 +24,12 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
                 <Virtuoso
                     horizontalDirection
                     style={{height: 200, flex: 1}}
-                    data={scaleShapes}
+                    data={fingerShapes}
                     computeItemKey={(index) => index}
-                    itemContent={(index, scaleShape) => (
+                    itemContent={(index, shape) => (
                         <div className="pr-4 h-full flex items-center">
                             <ShapeButton
-                                scaleShape={scaleShape}
+                                fingerShape={shape}
                                 index={index}
                                 active={active}
                                 onClick={onClick}
@@ -41,6 +39,5 @@ export default function ShapePicker({scaleShapes, onClick, active, setScrollToFr
                     )}
                 />
             </div>
-        </FretboardDisplayContext>
     )
 }

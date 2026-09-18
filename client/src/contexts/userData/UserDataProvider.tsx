@@ -11,6 +11,7 @@ import {defaultScales} from "@fretboard/shared/scripts/onboarding/defaultScales"
 import {defaultTunings} from "@fretboard/shared/scripts/onboarding/defaultTunings";
 import {v4 as createUuid} from "uuid";
 import {LexoRank} from "@dalet-oss/lexorank";
+import {ChordProvider} from "../chord/ChordProvider.tsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BACKOFF_BASE = 500
@@ -328,7 +329,14 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             {initialised ? (
                 <TuningProvider key={dataVersion} initialTuning={tunings[0]}>
                     <ScaleProvider key={dataVersion} initialScale={scales[0]}>
+                        <ChordProvider key={dataVersion} initialChord={{
+                            root: "C",
+                            intervals: [4, 7, 11],
+                            quality: "Major",
+                            id: ""
+                        }}>
                         {children}
+                        </ChordProvider>
                     </ScaleProvider>
                 </TuningProvider>
             ) : (
