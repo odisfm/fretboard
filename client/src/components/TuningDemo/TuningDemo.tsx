@@ -4,10 +4,16 @@ import {useUserData} from "../../contexts/userData/useUserData.tsx";
 import {RangeMutator} from "./RangeMutator.tsx";
 import Button from "../generic/Button.tsx";
 import {v4 as createUuid} from "uuid";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {LexoRank} from "@dalet-oss/lexorank";
 import { IoAddCircle } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
+import type {Tuning} from "@fretboard/shared/types/tuning";
+
+type SegmentedTuningList = {
+    instrument: string | null,
+    tunings: Tuning[]
+}[]
 
 export default function TuningDemo() {
     const userDataContext = useUserData()
@@ -84,6 +90,36 @@ export default function TuningDemo() {
         tuningContext.setTuning(userDataContext.tunings[0])
     }
 
+    const segmentedTunings: SegmentedTuningList = useMemo(() => {
+        const instrumentIndices: string[] = []
+        const noInstrumentTunings: Tuning[] = []
+        const list: SegmentedTuningList = []
+        for (const t of userDataContext.tunings) {
+            const instrument = t.instrument
+            if (!instrument) {
+                noInstrumentTunings.push(t)
+                continue
+            }
+            const idx = instrumentIndices.indexOf(instrument!)
+            if (idx === -1) {
+                instrumentIndices.push(instrument)
+                list.push({instrument: instrument, tunings: [t]})
+            } else {
+                list[idx].tunings.push(t)
+            }
+        }
+        list.sort((a, b) => {
+            if (a.tunings.length > b.tunings.length) {
+                return -1
+            } else if (a.tunings.length < b.tunings.length) {
+                return 1
+            }
+            return 0
+        })
+        if (noInstrumentTunings.length) list.push({instrument: null, tunings: [...noInstrumentTunings]})
+        return list
+    }, [userDataContext.tunings])
+
     return (
         <div className={`flex flex-col flex-1 gap-4 p-2 bg-neutral-900`}>
             <div className={`flex gap-2`}>
@@ -95,10 +131,20 @@ export default function TuningDemo() {
                     }}
                     className={`bg-black p-1 rounded-md self-start`}
                 >
-                    {userDataContext.tunings.map((tuning, i) => {
-                        return <option value={i} key={i}>
-                            {`${tuning.name || "unnamed tuning"}${tuning.instrument && ` (${tuning.instrument})`}`}
-                        </option>
+                    {segmentedTunings.map((instrument) => {
+                        let globalIndex = -1
+                        return (
+                            <optgroup label={instrument.instrument ? instrument.instrument : "Unlabelled instrument"}>
+                                {instrument.tunings.map((t) => {
+                                    globalIndex += 1
+                                    return (
+                                        <option key={globalIndex} value={globalIndex}>
+                                            {t.name ? t.name : "Unnamed tuning"}
+                                        </option>
+                                    )
+                                })}
+                            </optgroup>
+                        )
                     })}
                 </select>
                 <Button
