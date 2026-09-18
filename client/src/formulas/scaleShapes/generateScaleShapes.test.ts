@@ -1,7 +1,7 @@
 import {test, expect, describe} from "vitest"
 import {eStandardTuning, type Tuning} from "@fretboard/shared/types/tuning";
 import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
-import {generateScaleShapes} from "./generateScaleShapes";
+import {generateScaleShapes} from "./generateScaleShapes.ts";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import { v4 as createUuid } from "uuid"
 

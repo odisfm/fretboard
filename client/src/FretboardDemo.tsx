@@ -5,19 +5,19 @@ import {
     filterByMinOctaves, filterByOptions,
     generateScaleShapes,
     type GenerateScaleShapesOptions
-} from "./formulas/generateScaleShapes.ts";
+} from "./formulas/scaleShapes/generateScaleShapes.ts";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
 import {FaRotate} from "react-icons/fa6";
-import {sortScaleShapes, sortScaleShapesStrategies, type SortScaleShapesStrategy} from "./formulas/sortScaleShapes.ts";
+import {sortScaleShapes, sortScaleShapesStrategies, type SortScaleShapesStrategy} from "./formulas/scaleShapes/sortScaleShapes.ts";
 import {ScaleDemo} from "./components/ScaleDemo/ScaleDemo.tsx";
 import {useScale} from "./contexts/scale/useScale.ts";
 import type {ScaleShape} from "@fretboard/shared/types/scale";
 import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameScale, isSameShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 import {ShapeGenFilter} from "./components/Fretboard/ShapeGenFilter.tsx";
-import {fitShapeToNewTonic} from "./formulas/fitShapeToNewTonic.ts";
+import {fitShapeToNewTonic} from "./formulas/scaleShapes/fitShapeToNewTonic.ts";
 import {FretboardDisplayContext} from "./contexts/fretboardDisplay/FretboardDisplayContext.ts";
 
 function dedupeShapes(shapes: ScaleShape[]): ScaleShape[] {

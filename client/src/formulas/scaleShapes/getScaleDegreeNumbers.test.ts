@@ -1,5 +1,5 @@
 import {test, describe, expect} from "vitest";
-import getScaleDegreeNumbers from "./getScaleDegreeNumbers";
+import getScaleDegreeNumbers from "./getScaleDegreeNumbers.ts";
 
 describe("getScaleDegreeNumbers", () => {
     test("natural minor scale", () => {
