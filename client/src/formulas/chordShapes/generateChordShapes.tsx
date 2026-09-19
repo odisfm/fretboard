@@ -2,9 +2,6 @@ import type {Barre, Chord, ChordPosition, ChordShape, Finger} from "@fretboard/s
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName";
 import {v4 as uuid} from "uuid";
-import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
-import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
-import type {NoteName} from "@fretboard/shared/types/scale";
 
 export type generateChordShapesOptions = {
     omissions: number[],
@@ -33,6 +30,10 @@ export type FingeringResult =
  *  tracked over fretted notes only. */
 type PartialShape = {
     positions: ChordPosition[]
+    /** Absolute pitch of the root this shape was seeded from. Every tone is
+     *  identified by its distance above this, so the octave a note lands in is
+     *  part of its identity rather than being thrown away. */
+    rootPitch: number
     /** Span of *fretted* notes only; open strings need no finger and no reach. */
     frettedLow: number
     frettedHigh: number
@@ -166,42 +167,50 @@ export function generateChordShapes(
     options: generateChordShapesOptions
 ): ChordShape[] {
     const rootIndices = allIndicesForNoteName(chord.root)
-    const rootPitchClass = indexForNoteName(chord.root)
 
-    // Absolute pitch -> tone index, and by the same token the set of pitches
-    // the search may place at all. The root is seeded first: `intervals` is
-    // measured from an assumed 0, so it never spells the root itself, but the
-    // root can be voiced on any string, not only under the bass. It always
-    // carries index 0, and an interval landing back on it (an octave, say)
-    // doesn't reclaim the slot.
-    const toneIndexByPitch = new Map<number, number>()
+    // Distance above the voiced root -> tone index, and by the same token the
+    // set of placements the search may make at all.
+    //
+    // Distances, not pitch classes: an interval is only satisfied at a distance
+    // congruent to it *and no lower than it*, so a 13 (21) is voiced at 21 or 33
+    // semitones and never at 9, where it would simply be a 6. Sub-octave
+    // intervals are untouched by the extra condition, since the smallest
+    // non-negative distance congruent to them is the interval itself — a 3rd can
+    // still sit 4 or 16 semitones up.
+    //
+    // The root is seeded first: `intervals` is measured from an assumed 0, so it
+    // never spells the root itself, but the root can be voiced on any string
+    // above the bass. It always carries index 0, and an interval landing back on
+    // it (an octave, say) doesn't reclaim the slot. Negative distances are absent
+    // by construction, which is what holds the root in the bass.
+    const lowestPitch = Math.min(...tuning.strings)
+    const highestPitch = Math.max(...tuning.strings) + tuning.fretCount
+    const maxDistance = highestPitch - lowestPitch
 
-    for (const idx of rootIndices) {
-        toneIndexByPitch.set(idx, 0)
+    const toneIndexByDistance = new Map<number, number>()
+
+    for (let d = 0; d <= maxDistance; d += 12) {
+        toneIndexByDistance.set(d, 0)
     }
 
     chord.intervals.forEach((interval, i) => {
-        const basePitch = (rootPitchClass + interval) % 12
-        const noteName = midiPitchToNoteName(basePitch, false) as NoteName
-        for (const idx of allIndicesForNoteName(noteName)) {
-            if (!toneIndexByPitch.has(idx)) toneIndexByPitch.set(idx, i + 1)
+        for (let d = interval; d <= maxDistance; d += 12) {
+            if (!toneIndexByDistance.has(d)) toneIndexByDistance.set(d, i + 1)
         }
     })
 
-    // Degrees measured from the root, not absolute pitch classes.
-    const requiredDegrees = chord.intervals
-        .filter(i => !options.omissions.includes(i))
-        .map(i => ((i % 12) + 12) % 12)
+    // Kept as written, not folded into an octave: a required 13 is only covered
+    // by a note an octave-and-a-sixth or more above the root.
+    const requiredIntervals = chord.intervals.filter(i => !options.omissions.includes(i))
 
-    function coversRequiredDegrees(positions: ChordPosition[]): boolean {
-        const degrees = new Set<number>()
-        for (const p of positions) {
-            const pitch = tuning.strings[p.stringIndex] + p.fret
-            degrees.add((((pitch - rootPitchClass) % 12) + 12) % 12)
-        }
+    function coversRequiredIntervals(positions: ChordPosition[], rootPitch: number): boolean {
+        for (const interval of requiredIntervals) {
+            const covered = positions.some(p => {
+                const distance = tuning.strings[p.stringIndex] + p.fret - rootPitch
+                return distance >= interval && (distance - interval) % 12 === 0
+            })
 
-        for (const d of requiredDegrees) {
-            if (!degrees.has(d)) return false
+            if (!covered) return false
         }
 
         return true
@@ -216,6 +225,7 @@ export function generateChordShapes(
         if (options.openStrings && rootIndices.has(zeroFret)) {
             bases.push({
                 positions: [{stringIndex: s, fret: 0, toneIndex: 0}],
+                rootPitch: zeroFret,
                 frettedLow: Infinity,
                 frettedHigh: -Infinity,
             })
@@ -229,6 +239,7 @@ export function generateChordShapes(
 
             bases.push({
                 positions: [{stringIndex: s, fret: f, toneIndex: 0}],
+                rootPitch: zeroFret + f,
                 frettedLow: f,
                 frettedHigh: f,
             })
@@ -238,7 +249,7 @@ export function generateChordShapes(
     const shapes: ChordShape[] = []
 
     function emit(partial: PartialShape) {
-        if (!coversRequiredDegrees(partial.positions)) return
+        if (!coversRequiredIntervals(partial.positions, partial.rootPitch)) return
 
         const plan = planFingering(partial.positions, options)
         if (!plan.ok) return
@@ -268,7 +279,7 @@ export function generateChordShapes(
         }
 
         const zeroFret = tuning.strings[stringIndex]
-        const openToneIndex = toneIndexByPitch.get(zeroFret)
+        const openToneIndex = toneIndexByDistance.get(zeroFret - partial.rootPitch)
 
         if (options.openStrings && openToneIndex !== undefined) {
             extendShape(
@@ -289,7 +300,7 @@ export function generateChordShapes(
         const searchEnd = Math.min(tuning.fretCount, options.highFret, partial.frettedLow + options.fretSpan - 1)
 
         for (let f = searchStart; f <= searchEnd; f++) {
-            const toneIndex = toneIndexByPitch.get(zeroFret + f)
+            const toneIndex = toneIndexByDistance.get(zeroFret + f - partial.rootPitch)
             if (toneIndex === undefined) continue
 
             const positions = [...partial.positions, {stringIndex, fret: f, toneIndex}]
@@ -300,6 +311,7 @@ export function generateChordShapes(
             extendShape(
                 {
                     positions,
+                    rootPitch: partial.rootPitch,
                     frettedLow: Math.min(f, partial.frettedLow),
                     frettedHigh: Math.max(f, partial.frettedHigh),
                 },
