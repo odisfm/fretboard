@@ -8,7 +8,8 @@ export type Props = {
     variant?: ButtonVariant
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     children?: React.ReactNode;
-    styles?: string
+    styles?: string,
+    type?: "button" | "submit" | "reset"
 }
 
 export default function Button(
@@ -19,6 +20,7 @@ export default function Button(
         children,
         variant = "default",
         styles,
+        type
 
 
     }: Props) {
@@ -55,6 +57,7 @@ export default function Button(
             flex items-center gap-2 py-1 px-2 rounded-sm
             ${cursorStyle} ${styles} ${variantStyles} 
             `}
+            type={type || "button"}
         >
             {children}
             {loading ? <Spinner /> : null}

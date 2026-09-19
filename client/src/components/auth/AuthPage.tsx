@@ -162,6 +162,7 @@ export function AuthPage({mode}: {mode: Mode}) {
                         disabled={!canSubmit}
                         loading={waitForServer}
                         variant={canSubmit ? "default" : "subtle"}
+                        type={"submit"}
                     >
                         {mode === "login" && "Login"}
                         {mode === "register" && "Register"}
