@@ -1,4 +1,3 @@
-import TuningDemo from "./components/TuningDemo/TuningDemo.tsx";
 import {FretboardDisplayContext} from "./contexts/fretboardDisplay/FretboardDisplayContext.ts";
 import Fretboard from "./components/Fretboard/Fretboard.tsx";
 import {useTuning} from "./contexts/tuning/useTuning.ts";
@@ -82,11 +81,8 @@ export function ChordDemo() {
     }, [chordShapes, activeShapeIdx])
 
     return (
-        <div className={`flex flex-col gap-2`}>
-            <div className={`flex flex-col gap-2`}>
-                <TuningDemo/>
-                <ChordPicker chordPickerOptions={chordPickerOptions} setChordPickerOptions={_setChordPickerOptions} />
-            </div>
+        <>
+            <ChordPicker chordPickerOptions={chordPickerOptions} setChordPickerOptions={_setChordPickerOptions} />
 
             <FretboardDisplayContext
                 value={{zoom: fretboardZoom, variant: "main", outShapeOpacity, type: "chord"}}
@@ -123,6 +119,6 @@ export function ChordDemo() {
                     type={"chord"}
                 />
             </FretboardDisplayContext>
-        </div>
+        </>
     )
 }

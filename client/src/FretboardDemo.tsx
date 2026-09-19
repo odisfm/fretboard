@@ -1,4 +1,3 @@
-import TuningDemo from "./components/TuningDemo/TuningDemo.tsx";
 import Fretboard from "./components/Fretboard/Fretboard.tsx";
 import {useTuning} from "./contexts/tuning/useTuning.ts";
 import {
@@ -117,11 +116,8 @@ export default function FretboardDemo() {
 
 
     return (
-        <div className={`flex flex-col gap-2`}>
-            <div className={`flex flex-col gap-2`}>
-                <TuningDemo/>
-                <ScaleDemo/>
-            </div>
+        <>
+            <ScaleDemo/>
 
             <FretboardDisplayContext
                 value={{zoom: fretboardZoom, variant: "main", outShapeOpacity, type: "scale"}}
@@ -169,6 +165,6 @@ export default function FretboardDemo() {
                 sortScaleShapeStrategy={sortScaleShapeStrategy}
                 setSortScaleShapeStrategy={setSortScaleShapeStrategy}
             />
-        </div>
+        </>
     )
 }
