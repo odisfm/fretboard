@@ -2,7 +2,7 @@ import TuningDemo from "./components/TuningDemo/TuningDemo.tsx";
 import {FretboardDisplayContext} from "./contexts/fretboardDisplay/FretboardDisplayContext.ts";
 import Fretboard from "./components/Fretboard/Fretboard.tsx";
 import {useTuning} from "./contexts/tuning/useTuning.ts";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {generateChordShapes} from "./formulas/chordShapes/generateChordShapes.tsx";
@@ -29,7 +29,7 @@ export type ChordPickerOptions = {
 export function ChordDemo() {
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
-    const [activeShapeIdx, setActiveShapeIdx] = useState<number | null>(null);
+    const [activeShapeIdx, setActiveShapeIdx] = useState<number | null>(0);
     const chordContext = useChord()
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
@@ -68,6 +68,19 @@ export function ChordDemo() {
         )
     }, [tuning, chordContext.chord])
 
+    useEffect(() => {
+        (async () => {
+        if (activeShapeIdx === null || !chordShapes) return
+        const replacingShape = chordShapes.at(activeShapeIdx)
+        if (!replacingShape) return
+        let lowFret = Infinity
+        for (const p of replacingShape.shape) {
+            if (p.fret && p.fret < lowFret) lowFret = p.fret
+        }
+        setScrollToFret(lowFret > 3 ? lowFret : 0)
+        })()
+    }, [chordShapes, activeShapeIdx])
+
     return (
         <div className={`flex flex-col gap-2`}>
             <div className={`flex flex-col gap-2`}>
@@ -90,7 +103,7 @@ export function ChordDemo() {
                         order: ""
                     }}
                     renderZeroFret={true}
-                    highlightedShape={chordShapes[activeShapeIdx || 0]}
+                    highlightedShape={activeShapeIdx !== null ? chordShapes.at(activeShapeIdx) : undefined}
                     scrollToFret={scrollToFret}
                 />
             </FretboardDisplayContext>
