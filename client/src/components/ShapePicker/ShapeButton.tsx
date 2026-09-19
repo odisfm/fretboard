@@ -19,14 +19,14 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
     const userDataContext = useUserData()
     const fdContext = useFretboardDisplay()
     const isFav = useMemo(() => {
-        return userDataContext.shapes.findIndex((s) => s.id === fingerShape.id) !== -1
-    }, [userDataContext.shapes, fingerShape])
+        return userDataContext.scaleShapes.findIndex((s) => s.id === fingerShape.id) !== -1
+    }, [userDataContext.scaleShapes, fingerShape])
 
     function toggleFav(e: React.MouseEvent<HTMLElement>) {
         e.preventDefault()
         e.stopPropagation();
         if (fingerShape.scale) {
-            userDataContext.toggleSavedShape(fingerShape as ScaleShape)
+            userDataContext.toggleSavedScaleShape(fingerShape as ScaleShape)
         }
     }
 

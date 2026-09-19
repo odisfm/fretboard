@@ -5,7 +5,7 @@ import * as z from "zod";
 export const TestUserDataSchema = z.object({
     scales: z.array(ScaleSchema),
     tunings: z.array(TuningSchema),
-    shapes: z.array(ScaleShapeSchema)
+    scaleShapes: z.array(ScaleShapeSchema)
 })
 
 export type TestUserDataResponse = z.infer<typeof TestUserDataSchema>;
@@ -14,8 +14,8 @@ export type TuningResponse = {
     tuning: Tuning
 }
 
-export type ShapeResponse = {
-    shape: ScaleShape,
+export type ScaleShapeResponse = {
+    scaleShape: ScaleShape,
 }
 
 export type RegistrationFailure = {

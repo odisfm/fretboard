@@ -64,15 +64,15 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         if (stored.length) return stored;
         return authContext.auth ? [] : buildDefaultScales();
     });
-    const [shapes, setShapes] = usePersistedState<ScaleShape[]>("shapes", () =>
-        readLocal<ScaleShape[]>("shapes", [])
+    const [scaleShapes, setScaleShapes] = usePersistedState<ScaleShape[]>("scaleShapes", () =>
+        readLocal<ScaleShape[]>("scaleShapes", [])
     );
 
     const [deletedTunings, setDeletedTunings] = usePersistedState<string[]>(
         "deletedTunings", () => readLocal<string[]>("deletedTunings", [])
     );
-    const [deletedShapes, setDeletedShapes] = usePersistedState<string[]>(
-        "deletedShapes", () => readLocal<string[]>("deletedShapes", [])
+    const [deletedScaleShapes, setDeletedScaleShapes] = usePersistedState<string[]>(
+        "deletedScaleShapes", () => readLocal<string[]>("deletedScaleShapes", [])
     );
 
     const [connectionStatus, setConnectionStatus] = useState(true)
@@ -86,19 +86,19 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     )
 
     const tuningsRef = useRef(tunings)
-    const shapesRef = useRef(shapes)
+    const scaleShapesRef = useRef(scaleShapes)
     const scalesRef = useRef(scales)
     const deletedTuningsRef = useRef(deletedTunings)
-    const deletedShapesRef = useRef(deletedShapes)
+    const deletedScaleShapesRef = useRef(deletedScaleShapes)
     const prevAuthRef = useRef(authContext.auth)
 
     useEffect(() => {
         tuningsRef.current = tunings
-        shapesRef.current = shapes
+        scaleShapesRef.current = scaleShapes
         scalesRef.current = scales
         deletedTuningsRef.current = deletedTunings
-        deletedShapesRef.current = deletedShapes
-    }, [tunings, shapes, scales, deletedTunings, deletedShapes])
+        deletedScaleShapesRef.current = deletedScaleShapes
+    }, [tunings, scaleShapes, scales, deletedTunings, deletedScaleShapes])
 
     const runMutation = useCallback(async <T,>(
         setState: Dispatch<SetStateAction<T>>,
@@ -167,30 +167,30 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         }
     ), [runMutation, setTunings])
 
-    const toggleSavedShape = useCallback((shape: ScaleShape) => {
-        const isSaved = shapesRef.current.some(s => s.id === shape.id)
+    const toggleSavedScaleShape = useCallback((shape: ScaleShape) => {
+        const isSaved = scaleShapesRef.current.some(s => s.id === shape.id)
         if (isSaved) {
             return runMutation(
-                setShapes,
+                setScaleShapes,
                 prev => prev.filter(s => s.id !== shape.id),
-                () => fetch(`${API_URL}/shape`, {
+                () => fetch(`${API_URL}/scale-shape`, {
                     method: "DELETE",
                     body: JSON.stringify(shape),
                     credentials: "include",
                 }),
-                {onOffline: () => setDeletedShapes(prev => [...prev, shape.id])}
+                {onOffline: () => setDeletedScaleShapes(prev => [...prev, shape.id])}
             )
         }
         return runMutation(
-            setShapes,
+            setScaleShapes,
             prev => [...prev, shape],
-            () => fetch(`${API_URL}/shape`, {
+            () => fetch(`${API_URL}/scale-shape`, {
                 method: "PUT",
                 body: JSON.stringify(shape),
                 credentials: "include",
             }),
         )
-    }, [runMutation, setShapes, setDeletedShapes])
+    }, [runMutation, setScaleShapes, setDeletedScaleShapes])
 
     const syncWithServer = useCallback(async (): Promise<boolean> => {
         setWaitOnServer(true)
@@ -215,9 +215,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         if (authContext.pendingSyncAction === "pull") {
             setTunings(data.tunings)
             setScales(data.scales)
-            setShapes(data.shapes)
+            setScaleShapes(data.scaleShapes)
             setDeletedTunings([])
-            setDeletedShapes([])
+            setDeletedScaleShapes([])
             setNeedsReconcile(false)
             setInitialised(true)
             setWaitOnServer(false)
@@ -226,11 +226,11 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             return true
         }
 
-        const {reconciledTunings, reconciledScales, reconciledShapes} = reconcileUserData(
+        const {reconciledTunings, reconciledScales, reconciledScaleShapes} = reconcileUserData(
             tuningsRef.current, data.tunings,
-            shapesRef.current, data.shapes,
+            scaleShapesRef.current, data.scaleShapes,
             scalesRef.current, data.scales,
-            deletedTuningsRef.current, deletedShapesRef.current, [],
+            deletedTuningsRef.current, deletedScaleShapesRef.current, [],
         )
 
         try {
@@ -238,7 +238,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
                 method: "POST",
                 body: JSON.stringify({
                     tunings: reconciledTunings,
-                    shapes: reconciledShapes,
+                    scaleShapes: reconciledScaleShapes,
                     scales: reconciledScales,
                 }),
                 credentials: "include",
@@ -250,9 +250,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             const json = (await updateRes.json()) as TestUserDataResponse
             setTunings(json.tunings)
             setScales(json.scales)
-            setShapes(json.shapes)
+            setScaleShapes(json.scaleShapes)
             setDeletedTunings([])
-            setDeletedShapes([])
+            setDeletedScaleShapes([])
             setNeedsReconcile(false)
             setInitialised(true)
             setConnectionStatus(true)
@@ -270,7 +270,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         }
 
     }, [
-        authContext, setTunings, setScales, setShapes, setDeletedTunings, setDeletedShapes,
+        authContext, setTunings, setScales, setScaleShapes, setDeletedTunings, setDeletedScaleShapes,
     ])
 
     useEffect(() => {
@@ -305,25 +305,25 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         if (wasAuthenticated && !authContext.auth) {
             setTunings(buildDefaultTunings())
             setScales(buildDefaultScales())
-            setShapes([])
+            setScaleShapes([])
             setDeletedTunings([])
-            setDeletedShapes([])
+            setDeletedScaleShapes([])
             setNeedsReconcile(false)
             setDataVersion(v => v + 1)
         }
-    }, [authContext.auth, setTunings, setScales, setShapes, setDeletedTunings, setDeletedShapes])
+    }, [authContext.auth, setTunings, setScales, setScaleShapes, setDeletedTunings, setDeletedScaleShapes])
 
     return (
         <UserDataContext value={{
             scales,
             tunings,
-            shapes,
+            scaleShapes,
             createTuning,
             deleteTuning,
             updateTuning,
             connectionStatus,
             initialised,
-            toggleSavedShape,
+            toggleSavedScaleShape,
             waitOnServer
         }}>
             {initialised ? (

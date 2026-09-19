@@ -1,12 +1,12 @@
 import {ScaleShapeSchema} from "@fretboard/shared/types/scale";
 import {db} from "@fretboard/shared";
-import type {ShapeResponse} from "@fretboard/shared/types/apiResponses";
+import type {ScaleShapeResponse} from "@fretboard/shared/types/apiResponses";
 import {createHono} from "../helpers/createHono";
 import {needsAuth} from "../middleware/needsAuth";
 
-export const shapeRouter = createHono()
+export const scaleShapeRouter = createHono()
 
-shapeRouter.put("/", needsAuth, async (c) => {
+scaleShapeRouter.put("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let shape
     try {
@@ -17,7 +17,7 @@ shapeRouter.put("/", needsAuth, async (c) => {
     }
     let record
     try {
-        record = await db.shape.create({
+        record = await db.scaleShape.create({
             data: {
                 data: {...shape},
                 userId: c.get("user")!.id,
@@ -32,10 +32,10 @@ shapeRouter.put("/", needsAuth, async (c) => {
         ...record.data as object
     })
 
-    return c.json({shape: obj} satisfies ShapeResponse, 200)
+    return c.json({scaleShape: obj} satisfies ScaleShapeResponse, 200)
 })
 
-shapeRouter.delete("/", needsAuth, async (c) => {
+scaleShapeRouter.delete("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let shape
     try {
@@ -46,7 +46,7 @@ shapeRouter.delete("/", needsAuth, async (c) => {
     }
     let record
     try {
-        record = await db.shape.delete({
+        record = await db.scaleShape.delete({
             where: {id: shape.id, userId: c.get("user")!.id}
         })
         return c.json({}, 200)

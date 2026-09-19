@@ -4,7 +4,7 @@ import {TuningSchema} from "@fretboard/shared/types/tuning";
 import type {UserGetPayload} from "@fretboard/shared/prisma/models/User";
 
 type UserRecord = UserGetPayload<{
-    include: {scales: true, shapes: true, tunings: true}
+    include: {scales: true, scaleShapes: true, tunings: true}
 }>
 
 export function formatBulkUserData(userRecord: UserRecord) {
@@ -32,7 +32,7 @@ export function formatBulkUserData(userRecord: UserRecord) {
         return sortByLexorank(a, b)
     })
 
-    let shapes = userRecord.shapes.map((s) => {
+    let scaleShapes = userRecord.scaleShapes.map((s) => {
         const obj = {
             ...s.data as object,
             id: s.id,
@@ -40,9 +40,9 @@ export function formatBulkUserData(userRecord: UserRecord) {
         }
         return ScaleShapeSchema.parse(obj)
     })
-    shapes = shapes.sort((a, b) => {
+    scaleShapes = scaleShapes.sort((a, b) => {
         return sortByLexorank(a, b)
     })
 
-    return {scales, shapes, tunings}
+    return {scales, scaleShapes, tunings}
 }

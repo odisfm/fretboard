@@ -8,10 +8,10 @@ type UserDataContextValue = {
     createTuning: (tuning: Tuning) => Promise<Tuning | void>
     deleteTuning: (tuning: Tuning) => Promise<void>
     updateTuning: (tuning: Tuning) => void
-    shapes: ScaleShape[]
+    scaleShapes: ScaleShape[]
     connectionStatus: boolean
     initialised: boolean,
-    toggleSavedShape: (shape: ScaleShape) => void,
+    toggleSavedScaleShape: (shape: ScaleShape) => void,
     waitOnServer: boolean
 }
 

@@ -3,16 +3,16 @@ import type {ScaleShape, Scale} from "@fretboard/shared/types/scale";
 
 export function reconcileUserData(
     localTunings: Tuning[], remoteTunings: Tuning[],
-    localShapes: ScaleShape[], remoteShapes: ScaleShape[],
+    localScaleShapes: ScaleShape[], remoteScaleShapes: ScaleShape[],
     localScales: Scale[], remoteScales: Scale[],
-    deletedTunings: string[], deletedShapes: string[], deletedScales: string[]
+    deletedTunings: string[], deletedScaleShapes: string[], deletedScales: string[]
 ) {
     let reconciledTunings: Tuning[] = [];
-    let reconciledShapes: ScaleShape[] = [];
+    let reconciledScaleShapes: ScaleShape[] = [];
     let reconciledScales: Scale[] = [];
 
     reconciledTunings = deleteFromList(deletedTunings, remoteTunings) as Tuning[];
-    reconciledShapes = deleteFromList(deletedShapes, remoteShapes) as ScaleShape[];
+    reconciledScaleShapes = deleteFromList(deletedScaleShapes, remoteScaleShapes) as ScaleShape[];
     reconciledScales = deleteFromList(deletedScales, remoteScales) as Scale[]
 
     for (const lt of localTunings) {
@@ -26,13 +26,13 @@ export function reconcileUserData(
         }
     }
 
-    for (const ls of localShapes) {
-        const idx = reconciledShapes.findIndex((s) => s.id === ls.id)
+    for (const ls of localScaleShapes) {
+        const idx = reconciledScaleShapes.findIndex((s) => s.id === ls.id)
         if (idx === -1) {
-            reconciledShapes.push(ls)
+            reconciledScaleShapes.push(ls)
         } else {
             if (ls.updatedAt! > reconciledTunings[idx].updatedAt!) {
-                reconciledShapes[idx] = ls
+                reconciledScaleShapes[idx] = ls
             }
         }
     }
@@ -49,7 +49,7 @@ export function reconcileUserData(
     }
 
     return {
-        reconciledTunings, reconciledShapes, reconciledScales,
+        reconciledTunings, reconciledScaleShapes, reconciledScales,
     }
 }
 

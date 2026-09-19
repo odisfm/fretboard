@@ -1,7 +1,7 @@
 import { cors } from "hono/cors"
 import {testUserDataRouter} from "./routes/testUserDataRouter.js";
 import {tuningRouter} from "./routes/tuning";
-import {shapeRouter} from "./routes/shape";
+import {scaleShapeRouter} from "./routes/scaleShape";
 import {createHono} from "./helpers/createHono";
 import {deleteCookie, getCookie} from "hono/cookie";
 import {db} from "@fretboard/shared";
@@ -41,5 +41,5 @@ app.use("*", async (c, next) => {
 
 app.route("/user-data", testUserDataRouter)
 app.route("/tuning", tuningRouter)
-app.route("/shape", shapeRouter)
+app.route("/scale-shape", scaleShapeRouter)
 app.route("/auth", authRouter)

@@ -42,7 +42,7 @@ export function isSameTuning(a: Tuning, b: Tuning, includeSuperset = false): boo
     return false
 }
 
-export function isSameShape(a: ScaleShape, b: ScaleShape): boolean {
+export function isSameScaleShape(a: ScaleShape, b: ScaleShape): boolean {
     if (!isSameScale(a.scale, b.scale, false))  return false
     if (!isSameTuning(a.tuning, b.tuning)) return false
     const aShape = a.shape
