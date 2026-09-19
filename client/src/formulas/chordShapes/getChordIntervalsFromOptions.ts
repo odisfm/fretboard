@@ -103,5 +103,5 @@ export function getChordIntervalsFromOptions(chordPickerOptions: ChordPickerOpti
             break
     }
 
-    return [...new Set(intervals)].sort()
+    return [...new Set(intervals)].sort((a, b) => a - b);
 }
