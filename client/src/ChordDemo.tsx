@@ -4,11 +4,27 @@ import Fretboard from "./components/Fretboard/Fretboard.tsx";
 import {useTuning} from "./contexts/tuning/useTuning.ts";
 import {useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
-import {ScaleDemo} from "./components/ScaleDemo/ScaleDemo.tsx";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {generateChordShapes} from "./formulas/chordShapes/generateChordShapes.tsx";
 import {useChord} from "./contexts/chord/useChord.ts";
 import {chordIntervalsToScaleIntervals} from "@fretboard/shared/utils/chordIntervalsToScaleIntervals"
+import {ChordPicker} from "./components/ChordPicker/ChordPicker.tsx";
+import {getChordIntervalsFromOptions} from "./formulas/chordShapes/getChordIntervalsFromOptions.ts";
+
+
+export type ChordPickerOptions = {
+    quality: "major" | "minor" | null,
+    sus: "sus2" | "sus4" | null,
+    augDim: "aug" | "dim" | null,
+    fifth: "flat" | "perfect" | "sharp" | null,
+    seventh: "major" | "dom" | "sixth" | null,
+    ninth: "flat" | "natural" | "sharp" | null,
+    eleventh: "flat" | "natural" | "sharp" | null,
+    thirteenth: "flat" | "natural" | "sharp" | null,
+    add2: "add2" | "add9" | null,
+    add4: "add4" | "add11" | null,
+    add6: "add6" | "add13" | null
+}
 
 export function ChordDemo() {
     const tuningContext = useTuning()
@@ -19,7 +35,21 @@ export function ChordDemo() {
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
     const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
     const [outShapeOpacity, setOutShapeOpacity] = useState<number>(.2)
+    const [chordPickerOptions, setChordPickerOptions] = useState<ChordPickerOptions>({
+        quality: "major", sus: null, augDim: null, fifth: "perfect", seventh: null,
+        ninth: null, eleventh: null, thirteenth: null, add2: null, add4: null, add6: null
+    })
     console.log({setFretboardZoom, setOutShapeOpacity})
+
+    function _setChordPickerOptions(chordPickerOptions: ChordPickerOptions) {
+        const intervals = getChordIntervalsFromOptions(chordPickerOptions)
+        chordContext.setChord({
+            ...chordContext.chord,
+            intervals: intervals,
+        })
+        setChordPickerOptions(chordPickerOptions)
+    }
+
 
     const chordShapes = useMemo(() => {
         return generateChordShapes(
@@ -42,7 +72,7 @@ export function ChordDemo() {
         <div className={`flex flex-col gap-2`}>
             <div className={`flex flex-col gap-2`}>
                 <TuningDemo/>
-                <ScaleDemo />
+                <ChordPicker chordPickerOptions={chordPickerOptions} setChordPickerOptions={_setChordPickerOptions} />
             </div>
 
             <FretboardDisplayContext

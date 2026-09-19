@@ -331,7 +331,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
                     <ScaleProvider key={dataVersion} initialScale={scales[0]}>
                         <ChordProvider key={dataVersion} initialChord={{
                             root: "C",
-                            intervals: [4, 7, 11],
+                            intervals: [4, 7],
                             quality: "Major",
                             id: ""
                         }}>
