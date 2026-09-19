@@ -10,9 +10,12 @@ import {useChord} from "../../contexts/chord/useChord.ts";
 import type {NoteName} from "@fretboard/shared/types/scale";
 import {ButtonGroup} from "../generic/ButtonGroup.tsx";
 import {getChordName} from "@fretboard/shared/utils/getChordName";
-import {useMemo} from "react";
+import {useMemo, useRef, useState} from "react";
 import type { ChordPickerOptions } from "../../ChordDemo.tsx";
 import Tooltip from "../generic/Tooltip.tsx";
+import Button from "../generic/Button.tsx";
+import {FaSearch} from "react-icons/fa";
+import {getChordFromName} from "@fretboard/shared/utils/getChordFromName";
 
 export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     chordPickerOptions: ChordPickerOptions,
@@ -21,6 +24,8 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     const chordContext = useChord();
     let tones: string[]
     let tonesStyled: string[]
+    const chordNameSearchRef = useRef<HTMLInputElement | null>(null);
+    const [badChordNameSearch, setBadChordNameSearch] = useState(false)
 
     switch(chordContext.accidentalPref) {
         case "sharps":
@@ -75,13 +80,43 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
         return getChordName(chordContext.chord.root, chordContext.chord.intervals)
     }, [chordContext.chord])
 
+    function setChordByName() {
+        if (!chordNameSearchRef.current) return
+        const value = chordNameSearchRef.current.value
+        const chord = getChordFromName(value)
+        if (!chord) {
+            setBadChordNameSearch(true)
+            chordNameSearchRef.current.blur()
+            return;
+        }
+        setBadChordNameSearch(false)
+        chordContext.setChord(chord)
+    }
+
 
     return (
         <div className={`flex flex-col gap-4 rounded-md bg-neutral-900 p-4`}>
             <div className={`flex flex-wrap gap-2`}>
-                <div className={`flex min-w-50`}>
-                    <h2 className={`font-bold text-3xl`}>{chordName || `${chordContext.chord.root}?`}</h2>
-                    {!chordName && <Tooltip text={"Couldn't determine a name for this chord"} />}
+                <div className={`flex flex-col gap-2 min-w-50`}>
+                    <div className={`flex`}>
+                        <h2 className={`font-bold text-3xl`}>{chordName || `${chordContext.chord.root}?`}</h2>
+                        {!chordName && <Tooltip text={"Couldn't determine a name for this chord"}/>}
+                    </div>
+                    <form onSubmit={(e) => {e.preventDefault(); setChordByName();}}>
+                        <label htmlFor={"chordNameSearch"} className={`text-xs font-light`}>search by name</label>
+                        <div className={`flex gap-1`}>
+                            <input
+                                name={"chordNameSearch"}
+                                id={"chordNameSearch"}
+                                placeholder={chordName || "Fmaj11"}
+                                className={`p-1 bg-black rounded-md ${badChordNameSearch && `border-1 border-red-500/50`}`}
+                                ref={chordNameSearchRef}
+                            />
+                            <Button type={"submit"} variant={"subtle"}>
+                                <FaSearch />
+                            </Button>
+                        </div>
+                    </form>
                 </div>
 
                 <ButtonGroup
