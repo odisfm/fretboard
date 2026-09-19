@@ -106,7 +106,10 @@ export default function NoteDot(
     }
 
     let text: string
-    if (visibility === "zeroFret" && fdContext.type === "scale") {
+    if (visibility === "none") {
+        text = ""
+    }
+    else if (visibility === "zeroFret" && fdContext.type === "scale") {
         text = midiPitchToNoteName(pitch, false, spelling)
     } else {
         switch (typeContext.intervalPref) {
