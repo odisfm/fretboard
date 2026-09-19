@@ -151,6 +151,7 @@ export default function FretboardDemo() {
                     active={activeScaleShapeIdx}
                     fingerShapes={scaleShapes}
                     setScrollToFret={setScrollToFret}
+                    type={"scale"}
                 />
             </FretboardDisplayContext>
 

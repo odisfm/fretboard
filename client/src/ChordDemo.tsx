@@ -107,6 +107,7 @@ export function ChordDemo() {
                     active={activeShapeIdx}
                     fingerShapes={chordShapes}
                     setScrollToFret={setScrollToFret}
+                    type={"chord"}
                 />
             </FretboardDisplayContext>
         </div>
