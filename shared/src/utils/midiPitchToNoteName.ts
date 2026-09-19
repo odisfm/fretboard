@@ -1,11 +1,12 @@
 import { TONES_SHARP, TONES_FLAT} from "../consts";
+import type {NoteName} from "../types/scale";
 const TONE_COUNT = TONES_SHARP.length // 12
 
 export function midiPitchToNoteName(
     midiPitch: number,
     useOctave: boolean = true,
     accidentals: "sharps" | "flats" = "sharps"
-): string {
+): NoteName {
     if (!Number.isInteger(midiPitch)) {
         throw new Error("midiPitch must be integer")
     }
@@ -23,5 +24,5 @@ export function midiPitchToNoteName(
         output += octave;
     }
 
-    return output;
+    return output as NoteName;
 }
