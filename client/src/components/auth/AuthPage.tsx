@@ -1,12 +1,13 @@
 import * as z from "zod"
 import {useRef, useState} from "react";
-import type {LoginRequestType} from "@fretboard/shared/types/apiRequests";
+import type {LoginRequestType, RegisterRequestType} from "@fretboard/shared/types/apiRequests";
 import type {RegistrationFailure} from "@fretboard/shared/types/apiResponses";
 import {Link, useNavigate} from "react-router";
 import {useAuth} from "../../contexts/auth/useAuth.ts";
 import Button from "../generic/Button.tsx";
 import {PasswordSchema} from "@fretboard/api/src/types/password.ts";
 import {PasswordValidHint} from "./PasswordValidHint.tsx";
+import {useUserData} from "../../contexts/userData/useUserData.tsx";
 
 type Mode = "login" | "register"
 
@@ -23,6 +24,7 @@ try {
 
 export function AuthPage({mode}: {mode: Mode}) {
     const authContext = useAuth()
+    const userData = useUserData()
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
@@ -47,9 +49,17 @@ export function AuthPage({mode}: {mode: Mode}) {
                 url += "register"
         }
         try {
+            let body
+            if (mode === "login") {
+                body = JSON.stringify({email: email, password: password} satisfies LoginRequestType)
+            } else if (mode === "register") {
+
+                body = JSON.stringify({email: email, password: password, prefs: userData.prefs} satisfies RegisterRequestType)
+            }
+
             const res = await fetch(url, {
                 method: "POST",
-                body: JSON.stringify({email: email, password: password} satisfies LoginRequestType),
+                body: body,
                 credentials: "include",
             })
 

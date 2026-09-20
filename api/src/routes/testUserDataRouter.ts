@@ -4,6 +4,7 @@ import {Prisma} from "@fretboard/shared/prisma/client";
 import {formatBulkUserData} from "../utils/formatBulkUserData";
 import {createHono} from "../helpers/createHono";
 import {needsAuth} from "../middleware/needsAuth";
+import type {UserPrefType} from "@fretboard/shared/types/userPrefs";
 
 export const testUserDataRouter = createHono()
 
@@ -40,7 +41,9 @@ testUserDataRouter.get("/", needsAuth, async (c) => {
 
     const {scales, scaleShapes, tunings, chordShapes} = formatBulkUserData(userRecord)
 
-    return c.json({scales, tunings, scaleShapes, chordShapes} satisfies TestUserDataResponse, 200)
+    return c.json({
+        scales, tunings, scaleShapes, chordShapes, prefs: userRecord.prefs as unknown as UserPrefType
+    } satisfies TestUserDataResponse, 200)
 
 
 })
@@ -157,6 +160,7 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
                     WHERE "userId" = ${userId}
                 `;
             }
+            await db.user.update({where: {id: userId}, data: {prefs: update.prefs}})
         });
     } catch (e) {
         console.error(e)
@@ -196,5 +200,7 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
 
     const end = performance.now()
 
-    return c.json({scales, scaleShapes, tunings, chordShapes} satisfies TestUserDataResponse, 200)
+    return c.json({
+        scales, scaleShapes, tunings, chordShapes, prefs: userRecord.prefs as unknown as UserPrefType
+    } satisfies TestUserDataResponse, 200)
 })
