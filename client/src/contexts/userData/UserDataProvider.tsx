@@ -97,10 +97,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     const [deletedChordShapes, setDeletedChordShapes] = usePersistedState<string[]>(
         "deletedChordShapes", () => readLocal<string[]>("deletedChordShapes", [])
     );
-    const [prefs, setPrefs] = usePersistedState<UserPrefType>(
-        "prefs", () => defaultUserPrefs
-    )
-
+    const [prefs, setPrefs] = usePersistedState<UserPrefType>("prefs", () => {
+        return readLocal<UserPrefType>("prefs", defaultUserPrefs)
+    });
     const [connectionStatus, setConnectionStatus] = useState(true)
     const [waitOnServer, setWaitOnServer] = useState(false)
     const [needsReconcile, setNeedsReconcile] = useState(true)
@@ -390,7 +389,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         }
         return runMutation(
             setPrefs,
-            (prev) => newPrefs,
+            (_prev) => newPrefs,
             () => fetch(`${API_URL}/prefs`, {
                 method: "PATCH",
                 body: JSON.stringify(newPrefs),

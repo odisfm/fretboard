@@ -7,14 +7,10 @@ import {sortScaleShapesStrategies, type SortScaleShapesStrategy} from "../../for
 type Props = {
     shapeGenOptions: GenerateScaleShapesOptions
     setShapeGenOptions: (o: GenerateScaleShapesOptions) => void;
-    fretboardZoom: number
-    setFretboardZoom: (val: number) => void;
     filterSavedShapes: boolean,
     setFilterSavedShapes: (bool: boolean) => void,
     fitSavedShapes: boolean,
     setFitSavedShapes: (bool: boolean) => void,
-    outShapeOpacity: number,
-    setOutShapeOpacity: (val: number) => void,
     sortScaleShapeStrategy: SortScaleShapesStrategy,
     setSortScaleShapeStrategy: (val: SortScaleShapesStrategy) => void,
 }
@@ -26,9 +22,9 @@ const MAX_FRET_SPAN_BOUNDS = [2, 12]
 
 export function ShapeGenFilter(
     {
-        shapeGenOptions, setShapeGenOptions, fretboardZoom,
-        setFretboardZoom, filterSavedShapes, setFilterSavedShapes,
-        fitSavedShapes, setFitSavedShapes, outShapeOpacity, setOutShapeOpacity,
+        shapeGenOptions, setShapeGenOptions,
+        filterSavedShapes, setFilterSavedShapes,
+        fitSavedShapes, setFitSavedShapes,
         sortScaleShapeStrategy, setSortScaleShapeStrategy,
     }: Props) {
 
@@ -78,23 +74,6 @@ export function ShapeGenFilter(
             ...shapeGenOptions,
             maxFretSpan: newValue,
         })
-    }
-
-    function incrementFretboardZoom(direction: -1 | 1) {
-        const step = .1
-        const val = step * direction
-        setFretboardZoom(fretboardZoom + val)
-    }
-
-    function incrementOutShapeOpacity(direction: -1 | 1) {
-        const step = .1
-        let val = (step * direction) + outShapeOpacity
-        if (val > 1) {
-            val = 1
-        } else if (val < 0) {
-            val = 0
-        }
-        setOutShapeOpacity(val)
     }
 
     const displayStyles = `bg-neutral-800`
@@ -179,42 +158,6 @@ export function ShapeGenFilter(
                     }
                 </select>
                 <div className={legendStyles}><span>Sort by</span></div>
-            </div>
-            <div className={containerStyles}>
-                <NumberStepper
-                    display={true}
-                    value={fretboardZoom}
-                    incrementFn={() => incrementFretboardZoom(1)}
-                    decrementFn={() => incrementFretboardZoom(-1)}
-                    variant={"subtle"}
-                    lowerBound={1}
-                    upperBound={2}
-                    displayStyles={displayStyles}
-                    buttonStyles={stepperButtonStyles}
-                    valueDisplayFn={(value): string => {
-                        const num = value as number;
-                        return num.toFixed(1)
-                    }}
-                />
-                <legend className={legendStyles}>Fretboard zoom</legend>
-            </div>
-            <div className={containerStyles}>
-                <NumberStepper
-                    display={true}
-                    value={outShapeOpacity}
-                    incrementFn={() => incrementOutShapeOpacity(1)}
-                    decrementFn={() => incrementOutShapeOpacity(-1)}
-                    variant={"subtle"}
-                    lowerBound={0}
-                    upperBound={1}
-                    displayStyles={displayStyles}
-                    buttonStyles={stepperButtonStyles}
-                    valueDisplayFn={(value): string => {
-                        const num = value as number;
-                        return num.toFixed(1)
-                    }}
-                />
-                <legend className={legendStyles}>Out-of-shape opacity</legend>
             </div>
             <div className={containerStyles}>
                 <BinaryToggle state={filterSavedShapes} fn={(newState) => setFilterSavedShapes(newState)}/>

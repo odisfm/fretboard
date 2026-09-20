@@ -3,6 +3,7 @@ import Fret from "./Fret.tsx";
 import {useEffect, useRef} from "react";
 import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
 import type {FingerShape} from "@fretboard/shared/types/fingerShape";
+import {FretboardControls} from "./FretboardControls.tsx";
 
 export type FretboardVariant = "main" | "preview"
 
@@ -74,35 +75,41 @@ export default function Fretboard(
     }, [scrollToFret, orientation, startFret]);
 
     return (
-        <div className={`flex ${orientation === "vertical" && `flex-col w-md`}`}>
-            {renderZeroFret &&
-                <Fret
-                    fretNumber={0}
-                    scale={scale}
-                    zeroFret={true}
-                    orientation={orientation}
-                    shape={highlightedShape}
-                    ref={(el) => { fretRefs.current[0] = el; }}
+        <>
+        {fdContext.variant === "main" && <FretboardControls /> }
 
-                />
-            }
-            <div className={`flex ${orientationClasses}`} ref={containerRef}>
-                {Array(fretsToRender).fill(null).map((_, i) => {
-                    return (
-                        <Fret
-                            key={i}
-                            orientation={orientation}
-                            fretNumber={i + startFret}
-                            scale={scale}
-                            shape={highlightedShape}
-                            zeroFret={false}
-                            ref={(el) => {
-                                fretRefs.current[i] = el;
-                            }}
-                        />
-                    )
-                })}
+            <div className={`flex ${orientation === "vertical" && `flex-col w-md`} mt-4`}>
+                {renderZeroFret &&
+                    <Fret
+                        fretNumber={0}
+                        scale={scale}
+                        zeroFret={true}
+                        orientation={orientation}
+                        shape={highlightedShape}
+                        ref={(el) => {
+                            fretRefs.current[0] = el;
+                        }}
+
+                    />
+                }
+                <div className={`flex ${orientationClasses}`} ref={containerRef}>
+                    {Array(fretsToRender).fill(null).map((_, i) => {
+                        return (
+                            <Fret
+                                key={i}
+                                orientation={orientation}
+                                fretNumber={i + startFret}
+                                scale={scale}
+                                shape={highlightedShape}
+                                zeroFret={false}
+                                ref={(el) => {
+                                    fretRefs.current[i] = el;
+                                }}
+                            />
+                        )
+                    })}
+                </div>
             </div>
-        </div>
+        </>
     )
 }

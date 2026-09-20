@@ -7,8 +7,6 @@ import {
 } from "./formulas/scaleShapes/generateScaleShapes.ts";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
 import {useMemo, useState} from "react";
-import Button from "./components/generic/Button.tsx";
-import {FaRotate} from "react-icons/fa6";
 import {sortScaleShapes, sortScaleShapesStrategies, type SortScaleShapesStrategy} from "./formulas/scaleShapes/sortScaleShapes.ts";
 import {ScaleDemo} from "./components/ScaleDemo/ScaleDemo.tsx";
 import {useScale} from "./contexts/scale/useScale.ts";
@@ -38,7 +36,6 @@ export default function FretboardDemo() {
     const tuningContext = useTuning()
     const tuning = tuningContext.tuning
     const [activeScaleShapeIdx, setActiveScaleShapeIdx] = useState<number | null>(null);
-    const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
     const [shapeGenOptions, setShapeGenOptions] = useState<GenerateScaleShapesOptions>({
         maxPerString: 3,
@@ -46,8 +43,6 @@ export default function FretboardDemo() {
         minPerString: 1,
         minOctaves: 1
     });
-    const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
-    const [outShapeOpacity, setOutShapeOpacity] = useState<number>(.5)
     const [filterSavedShapes, setFilterSavedShapes] = useState(false)
     const [fitSavedShapes, setFitSavedShapes] = useState(true)
     const [sortScaleShapeStrategy, setSortScaleShapeStrategy] =
@@ -120,10 +115,15 @@ export default function FretboardDemo() {
             <ScaleDemo/>
 
             <FretboardDisplayContext
-                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity, type: "scale"}}
+                value={{
+                    zoom: userDataContext.prefs.fretboardZoom,
+                    variant: "main",
+                    outShapeOpacity: userDataContext.prefs.scaleOutOpacity,
+                    type: "scale"
+            }}
             >
                 <Fretboard
-                    orientation={orientation}
+                    orientation={userDataContext.prefs.fretboardRotation}
                     startFret={1}
                     endFret={24}
                     scale={scaleContext.scale}
@@ -132,14 +132,6 @@ export default function FretboardDemo() {
                     scrollToFret={scrollToFret}
                 />
             </FretboardDisplayContext>
-
-            <Button
-                onClick={() => setOrientation(orientation === "horizontal" ? "vertical" : "horizontal")}
-                styles={`px-4 py-2 text-lg self-start`}
-                variant={"subtle"}
-            >
-                <FaRotate/>
-            </Button>
 
             <FretboardDisplayContext value={{variant: "preview", zoom: 1.0, outShapeOpacity: 0, type: "scale"}}>
                 <ShapePicker
@@ -154,14 +146,10 @@ export default function FretboardDemo() {
             <ShapeGenFilter
                 shapeGenOptions={shapeGenOptions}
                 setShapeGenOptions={setShapeGenOptions}
-                fretboardZoom={fretboardZoom}
-                setFretboardZoom={setFretboardZoom}
                 filterSavedShapes={filterSavedShapes}
                 setFilterSavedShapes={setFilterSavedShapes}
                 fitSavedShapes={fitSavedShapes}
                 setFitSavedShapes={setFitSavedShapes}
-                outShapeOpacity={outShapeOpacity}
-                setOutShapeOpacity={setOutShapeOpacity}
                 sortScaleShapeStrategy={sortScaleShapeStrategy}
                 setSortScaleShapeStrategy={setSortScaleShapeStrategy}
             />
