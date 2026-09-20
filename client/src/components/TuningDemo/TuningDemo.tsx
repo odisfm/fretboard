@@ -10,6 +10,7 @@ import { IoAddCircle } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import {TuningPreview} from "../TuningPreview/TuningPreview.tsx";
+import {ExpandableHeading} from "../ExpandableHeading.tsx";
 
 type SegmentedTuningList = {
     instrument: string | null,
@@ -122,76 +123,81 @@ export default function TuningDemo() {
     }, [userDataContext.tunings])
 
     return (
-        <div className={`flex flex-1 gap-4 p-4 bg-neutral-900 rounded-md`}>
-            <div className={`flex gap-2 items-center overflow-x-scroll `}>
-                <RangeMutator
-                    insertString={() => insertString("bottom")}
-                    deleteString={() => deleteString(0)}
-                />
-                <div className={`flex gap-1`}>
-                    {tuning.strings.map((s, i) => {
-                        return (
-                            <StringTuner
-                                key={i}
-                                pitch={s}
-                                idx={i}
-                                incrementPitch={incrementPitch}
-                            />
-                        )
-                    })}
+        <ExpandableHeading heading={"Tuning"} collapsedHeading={`Tuning | ${tuning.name}`}>
+            <div className={`flex gap-4 p-4 bg-neutral-900 rounded-md w-min`}>
+                <div className={`flex flex-col gap-2`}>
+                    <h2 className={`text-2xl font-bold`}>{tuning.name}</h2>
+                    <div className={`flex gap-2 items-center overflow-x-scroll`}>
+                        <RangeMutator
+                            insertString={() => insertString("bottom")}
+                            deleteString={() => deleteString(0)}
+                        />
+                        <div className={`flex gap-1`}>
+                            {tuning.strings.map((s, i) => {
+                                return (
+                                    <StringTuner
+                                        key={i}
+                                        pitch={s}
+                                        idx={i}
+                                        incrementPitch={incrementPitch}
+                                    />
+                                )
+                            })}
+                        </div>
+                        <RangeMutator
+                            insertString={() => insertString("top")}
+                            deleteString={() => deleteString(tuning.strings.length - 1)}
+                        />
+                    </div>
                 </div>
-                <RangeMutator
-                    insertString={() => insertString("top")}
-                    deleteString={() => deleteString(tuning.strings.length - 1)}
-                />
-            </div>
 
-            <div className={`flex gap-2 min-w-0 ml-auto`}>
-                <div className={`flex flex-col gap-2 w-15 items-stretch mt-auto`}>
-                    <Button
-                        onClick={createTuning}
-                        loading={createTuningWait}
-                        styles={`!bg-lime-700 hover:!bg-lime-600 justify-center`}
-                    >
-                        <IoAddCircle/>
-                    </Button>
-                    <Button
-                        onClick={deleteTuning}
-                        loading={deleteTuningWait}
-                        variant={"warning"}
-                        styles={`justify-center`}
-                    >
-                        <FaTrash/>
-                    </Button>
-                </div>
-                <div className={`flex flex-col w-50 h-60 rounded-lg overflow-y-scroll bg-black`}>
-                    {segmentedTunings.map((instrument) => {
-                        return (
-                            <div className={`w-full flex flex-col`}>
-                                <div className={`p-2 bg-black font-bold text-right pr-4`}>
-                                    {instrument.instrument ? instrument.instrument : "Unlabelled instrument"}
+                <div className={`flex gap-2 min-w-0`}>
+                    <div className={`flex flex-col gap-2 w-15 items-stretch mt-auto`}>
+                        <Button
+                            onClick={createTuning}
+                            loading={createTuningWait}
+                            styles={`!bg-lime-700 hover:!bg-lime-600 justify-center`}
+                        >
+                            <IoAddCircle/>
+                        </Button>
+                        <Button
+                            onClick={deleteTuning}
+                            loading={deleteTuningWait}
+                            variant={"warning"}
+                            styles={`justify-center`}
+                        >
+                            <FaTrash/>
+                        </Button>
+                    </div>
+                    <div className={`flex flex-col w-50 h-60 rounded-lg overflow-y-scroll bg-black`}>
+                        {segmentedTunings.map((instrument) => {
+                            return (
+                                <div className={`w-full flex flex-col`}>
+                                    <div className={`p-2 bg-black font-bold text-right pr-4`}>
+                                        {instrument.instrument ? instrument.instrument : "Unlabelled instrument"}
+                                    </div>
+                                    {
+                                        instrument.tunings.map((tuning) => {
+                                            return (
+                                                <TuningPreview
+                                                    tuning={tuning}
+                                                    active={tuning.id === tuningContext.tuning.id}
+                                                    onClick={(id) => {
+                                                        const tuning = userDataContext.tunings.find(
+                                                            (tuning) => tuning.id === id)
+                                                        if (!tuning) return
+                                                        tuningContext.setTuning(tuning)
+                                                    }}
+                                                />
+                                            )
+                                        })
+                                    }
                                 </div>
-                                {
-                                    instrument.tunings.map((tuning) => {
-                                        return (
-                                            <TuningPreview
-                                                tuning={tuning}
-                                                active={tuning.id === tuningContext.tuning.id}
-                                                onClick={(id) => {
-                                                    const tuning = userDataContext.tunings.find(
-                                                        (tuning) => tuning.id === id)
-                                                    if (!tuning) return
-                                                    tuningContext.setTuning(tuning)
-                                                }}
-                                            />
-                                        )
-                                    })
-                                }
-                            </div>
-                        )
-                    })}
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
-        </div>
+        </ExpandableHeading>
     )
 }
