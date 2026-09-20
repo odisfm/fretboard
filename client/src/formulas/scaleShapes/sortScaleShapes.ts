@@ -1,3 +1,4 @@
+import * as z from "zod"
 import type {ScaleShape} from "@fretboard/shared/types/scale";
 
 type SortScaleShapesStrategyOption = {
@@ -5,8 +6,13 @@ type SortScaleShapesStrategyOption = {
     strategy: SortScaleShapesStrategy
 }
 
-export type SortScaleShapesStrategy =
-    "lowToHighFretToString" | "lowToHighStringToFret" | "mostNotes"
+export const SortScaleShapesStrategySchema = z.union([
+    z.literal("lowToHighFretToString"),
+    z.literal("lowToHighStringToFret"),
+    z.literal("mostNotes")
+])
+
+export type SortScaleShapesStrategy = z.infer<typeof SortScaleShapesStrategySchema>
 
 export const sortScaleShapesStrategies: SortScaleShapesStrategyOption[] = [
     {displayName: "Lowest fret", strategy: "lowToHighFretToString"},

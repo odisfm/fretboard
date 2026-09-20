@@ -1,5 +1,5 @@
 import {createHono} from "../helpers/createHono";
-import {LoginRequestSchema} from "@fretboard/shared/types/apiRequests";
+import {LoginRequestSchema, RegisterRequestSchema} from "@fretboard/shared/types/apiRequests";
 import {db} from "@fretboard/shared";
 import {deleteCookie, setCookie} from "hono/cookie";
 import {checkPassword, hashPassword} from "../helpers/password";
@@ -50,7 +50,7 @@ authRouter.post("/register", async (c) => {
     }
     let body
     try {
-        body = LoginRequestSchema.parse(await c.req.json())
+        body = RegisterRequestSchema.parse(await c.req.json())
     } catch (e) {
         console.error(e)
         return c.json({error: "Malformed input"}, 400)
@@ -78,7 +78,8 @@ authRouter.post("/register", async (c) => {
         const userRecord = await db.user.create({
             data: {
                 email: body.email,
-                password: passwordHash
+                password: passwordHash,
+                prefs: body.prefs
             }
         })
         const sessionRecord = await db.session.create({
