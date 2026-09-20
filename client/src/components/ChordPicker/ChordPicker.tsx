@@ -16,6 +16,7 @@ import Tooltip from "../generic/Tooltip.tsx";
 import Button from "../generic/Button.tsx";
 import {FaSearch} from "react-icons/fa";
 import {getChordFromName} from "@fretboard/shared/utils/getChordFromName";
+import {getChordPickerOptionsFromChord} from "../../formulas/chordShapes/getChordPickerOptionsFromChord.ts";
 
 export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     chordPickerOptions: ChordPickerOptions,
@@ -91,6 +92,8 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
         }
         setBadChordNameSearch(false)
         chordContext.setChord(chord)
+        const options = getChordPickerOptionsFromChord(chord)
+        setChordPickerOptions(options)
     }
 
 
