@@ -1,4 +1,4 @@
-import type {Chord} from "@fretboard/shared/types/chord";
+import type {Chord, ChordShape} from "@fretboard/shared/types/chord";
 import type {AccidentalPrefType} from "../scale/ScaleContext.ts";
 import {createContext} from "react";
 
@@ -14,6 +14,9 @@ type ChordContextValue = {
     intervalPref: IntervalPrefType,
     setIntervalPref: (pref: IntervalPrefType) => void,
     chordSpelling: "sharps" | "flats"
+    chordShape: ChordShape | null;
+    setChordShape: (shape: ChordShape | null) => void,
+    fretLabels: string[]
 }
 
 export const ChordContext = createContext<ChordContextValue | null>(null)

@@ -1,4 +1,4 @@
-import type {Chord} from "@fretboard/shared/types/chord";
+import type {Chord, ChordShape} from "@fretboard/shared/types/chord";
 import {useMemo, useState} from "react";
 import type {AccidentalPrefType} from "../scale/ScaleContext.ts";
 import {ChordContext, type IntervalPrefType} from "./ChordContext.ts";
@@ -12,6 +12,7 @@ import {chordIntervalsToScaleIntervals} from "@fretboard/shared/utils/chordInter
 
 export function ChordProvider({children, initialChord}: {children: React.ReactNode, initialChord: Chord}) {
     const [chord, setChord] = useState<Chord>(initialChord);
+    const [chordShape, setChordShape] = useState<ChordShape | null>(null);
     const [accidentalPref, setAccidentalPref] = useState<AccidentalPrefType>(null);
     const [intervalPref, setIntervalPref] = useState<IntervalPrefType>("interval");
 
@@ -44,6 +45,21 @@ export function ChordProvider({children, initialChord}: {children: React.ReactNo
         return getScaleDegreeNumbers(chordIntervalsToScaleIntervals(chord.intervals), "interval")
     }, [chord.intervals])
 
+    const fretLabels = useMemo(() => {
+        if (intervalPref === "finger") {
+            if (!chordShape) return []
+            return chordShape.shape.map((p) => {
+                return String(p.finger) || "?"
+            })
+        } else if (intervalPref === "interval") {
+            return getScaleDegreeNumbers(chordIntervalsToScaleIntervals(chord.intervals), "interval")
+        } else {  // if (intervalPref === "note") {
+            return chord.intervals.map((i) => {
+                return midiPitchToNoteName(indexForNoteName(chord.root) + i, false)
+            })
+        }
+    }, [chordShape, intervalPref, chord])
+
     const tonesToPitches: Set<number>[] = useMemo(() => {
         const arr: Set<number>[] = []
         const tonicSet = allIndicesForNoteName(chord.root)
@@ -70,7 +86,10 @@ export function ChordProvider({children, initialChord}: {children: React.ReactNo
             setIntervalPref,
             chordSpelling,
             toneNumbers,
-            tonesToPitches
+            tonesToPitches,
+            chordShape,
+            setChordShape,
+            fretLabels
         }}>
             {children}
         </ChordContext>

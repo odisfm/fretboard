@@ -6,6 +6,7 @@ import {useAudio} from "../../contexts/audio/useAudio.tsx";
 import type {Finger} from "@fretboard/shared/types/chord";
 import {useChord} from "../../contexts/chord/useChord.ts";
 import { RxCross2 } from "react-icons/rx";
+import {useMemo} from "react";
 
 export type DotVisibility = "highlight" | "dim" | "none" | "zeroFret"
 
@@ -19,6 +20,8 @@ type Props = {
     barre?: BarreType,
     finger?: Finger,
     zeroFretType: ZeroFretType
+    stringIndex: number
+    fretNumber: number
 }
 
 export type BarreType = null | "top" | "middle" | "bottom"
@@ -30,31 +33,47 @@ export default function NoteDot(
         variant,
         degree,
         zeroFretType,
-        barre
+        barre,
+        stringIndex,
+        fretNumber
     }: Props) {
     const audioContext = useAudio();
     const fdContext = useFretboardDisplay()
     const scaleContext = useScale()
     const chordContext = useChord()
-    const typeContext = fdContext.type === "scale" ? scaleContext : chordContext
-    if (Number.isNaN(pitch)) return <></> // weird errors happening when deleting string
     const dimClasses = `bg-white text-black`
     const noneClasses = `bg-transparent invisible`
     const zeroFretClasses = `bg-neutral-700/75`
     let diameter = variant === "main" ? 30 : 15
     diameter = diameter * (fdContext.zoom * .7)
     let degreeName: string
-    let degreeNumbers: string[]
     let spelling: "sharps" | "flats"
     if (fdContext.type === "scale") {
         degreeName = degree !== false ? scaleContext.degreeNumbers[degree] : ""
         spelling = scaleContext.scaleSpelling
-        degreeNumbers = scaleContext.degreeNumbers
     } else  {
         degreeName = degree !== false ? chordContext.toneNumbers[degree] : ""
         spelling = chordContext.chordSpelling
-        degreeNumbers = chordContext.toneNumbers
     }
+
+    const fingerNumber: string | null = useMemo(() => {
+        if (fdContext.type !== "chord") return null
+        const shape = chordContext.chordShape
+        if (barre) {
+            for (const b of (shape?.barres) || []) {
+                if (b.fret === fretNumber && b.fromString <= stringIndex && b.toString >= stringIndex) {
+                    return String(b.finger)
+                }
+            }
+        } else {
+            for (const p of (shape?.shape) || []) {
+                if (p.fret === fretNumber && p.stringIndex === stringIndex) {
+                    return String(p.finger) || "?"
+                }
+            }
+        }
+        return null
+    }, [chordContext.chordShape, barre, fretNumber, stringIndex, fdContext.type])
 
     const zeroFretMain = zeroFretType && fdContext.variant === "main"
     let theseClasses = " "
@@ -105,29 +124,51 @@ export default function NoteDot(
         }
     }
 
-    let text: string
-    if (visibility === "none") {
+    if (Number.isNaN(pitch)) return <></> // weird errors happening when deleting string
+
+    let text = ""
+    if (visibility === "none" || fdContext.variant === "preview") {
         text = ""
     }
     else if (visibility === "zeroFret" && fdContext.type === "scale") {
         text = midiPitchToNoteName(pitch, false, spelling)
     } else {
-        switch (typeContext.intervalPref) {
-            case null:
-            case "note":
-                text = midiPitchToNoteName(pitch, false, spelling)
-                break
-            case "nashville":
-            case "interval":
-                if (degree === false) {
+        if (fdContext.type === "scale") {
+            switch (scaleContext.intervalPref) {
+                case null:
+                    text = midiPitchToNoteName(pitch, false, spelling)
+                    break
+                case "nashville":
+                case "interval":
+                    if (degree === false) {
+                        text = ""
+                    } else {
+                        text = scaleContext.degreeNumbers[degree]
+                    }
+                    break
+
+                default:
                     text = ""
-                } else {
-                    text = degreeNumbers[degree]
-                }
-                break
-            default:
-                text = ""
-                break
+                    break
+            }
+        } else if (fdContext.type === "chord") {
+            switch (chordContext.intervalPref) {
+                case null:
+                case "note":
+                    text = midiPitchToNoteName(pitch, false, spelling)
+                    break
+                case "interval":
+                    if (degree !== false) {
+                        text = chordContext.toneNumbers[degree]
+                    }
+                    break
+                case "finger":
+                    text = fingerNumber || "?"
+                    break
+                default:
+                    text = ""
+                    break
+            }
         }
     }
 

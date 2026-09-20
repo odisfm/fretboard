@@ -301,6 +301,8 @@ export default function Fret(
                                 barre={barre}
                                 finger={finger}
                                 zeroFretType={zeroFretType}
+                                stringIndex={stringIdx}
+                                fretNumber={fretNumber}
                             />
                         </div>
                     )

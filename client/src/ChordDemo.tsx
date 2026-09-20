@@ -124,6 +124,16 @@ export function ChordDemo() {
         })()
     }, [generatedShapes, activeShapeIdx])
 
+    function _setActiveShapeIdx(shapeIdx: number | null) {
+        if (shapeIdx === null) {
+            setActiveShapeIdx(shapeIdx)
+            chordContext.setChordShape(null)
+        } else {
+            setActiveShapeIdx(shapeIdx)
+            chordContext.setChordShape(chordShapes[shapeIdx])
+        }
+    }
+
     return (
         <>
             <ChordPicker chordPickerOptions={chordPickerOptions} setChordPickerOptions={_setChordPickerOptions} />
@@ -143,7 +153,7 @@ export function ChordDemo() {
                         order: ""
                     }}
                     renderZeroFret={true}
-                    highlightedShape={activeShapeIdx !== null ? generatedShapes.at(activeShapeIdx) : undefined}
+                    highlightedShape={chordContext.chordShape || undefined}
                     scrollToFret={scrollToFret}
                 />
             </FretboardDisplayContext>
@@ -156,7 +166,7 @@ export function ChordDemo() {
             </Button>
             <FretboardDisplayContext value={{zoom: 1, variant: "preview", outShapeOpacity: 0, type: "chord"}}>
                 <ShapePicker
-                    onClick={(idx) => {setActiveShapeIdx(idx)}}
+                    onClick={(idx) => {_setActiveShapeIdx(idx)}}
                     active={activeShapeIdx}
                     fingerShapes={chordShapes}
                     setScrollToFret={setScrollToFret}
