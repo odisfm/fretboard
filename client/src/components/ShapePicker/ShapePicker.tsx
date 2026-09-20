@@ -10,11 +10,12 @@ type Props = {
     onClick: (idx: number | null) => void,
     setScrollToFret: (fretNumber: number) => void,
     type: "scale" | "chord"
+    showLabels: boolean,
 }
 
-export default function ShapePicker({fingerShapes, onClick, active, setScrollToFret, type}: Props) {
+export default function ShapePicker({fingerShapes, onClick, active, setScrollToFret, type, showLabels}: Props) {
     return (
-            <div className="flex w-full p-2 gap-4">
+            <div className="flex w-full p-2 gap-4 min-h-55">
                 <Button
                     onClick={() => {
                         onClick(null)
@@ -36,13 +37,14 @@ export default function ShapePicker({fingerShapes, onClick, active, setScrollToF
                     data={fingerShapes}
                     computeItemKey={(index) => index}
                     itemContent={(index, shape) => (
-                        <div className="pr-4 h-full flex items-center">
+                        <div className="pr-4 h-full flex items-start">
                             <ShapeButton
                                 fingerShape={shape}
                                 index={index}
                                 active={active}
                                 onClick={onClick}
                                 setScrollToFret={setScrollToFret}
+                                showLabel={showLabels}
                             />
                         </div>
                     )}
