@@ -173,6 +173,7 @@ export function ChordDemo() {
                     fingerShapes={chordShapes}
                     setScrollToFret={setScrollToFret}
                     type={"chord"}
+                    showLabels={false}
                 />
             </FretboardDisplayContext>
         </>
