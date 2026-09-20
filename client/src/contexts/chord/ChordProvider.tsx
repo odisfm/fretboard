@@ -1,7 +1,6 @@
 import type {Chord, ChordShape} from "@fretboard/shared/types/chord";
 import {useMemo, useState} from "react";
-import type {AccidentalPrefType} from "../scale/ScaleContext.ts";
-import {ChordContext, type IntervalPrefType} from "./ChordContext.ts";
+import {ChordContext} from "./ChordContext.ts";
 import {TONES, TONES_FLAT, TONES_SHARP} from "@fretboard/shared/consts";
 import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
 import type {NoteName} from "@fretboard/shared/types/scale";
@@ -9,12 +8,13 @@ import getScaleDegreeNumbers from "../../formulas/scaleShapes/getScaleDegreeNumb
 import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import {chordIntervalsToScaleIntervals} from "@fretboard/shared/utils/chordIntervalsToScaleIntervals";
+import type {AccidentalPrefType, NoteLabelPrefChord} from "@fretboard/shared/types/userPrefs";
 
 export function ChordProvider({children, initialChord}: {children: React.ReactNode, initialChord: Chord}) {
     const [chord, setChord] = useState<Chord>(initialChord);
     const [chordShape, setChordShape] = useState<ChordShape | null>(null);
     const [accidentalPref, setAccidentalPref] = useState<AccidentalPrefType>(null);
-    const [intervalPref, setIntervalPref] = useState<IntervalPrefType>("interval");
+    const [intervalPref, setIntervalPref] = useState<NoteLabelPrefChord>("interval");
 
     const chordSpelling = useMemo(() => {
         if (chord.root.includes("b")) return "flats"

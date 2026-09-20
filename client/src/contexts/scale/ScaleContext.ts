@@ -1,8 +1,6 @@
 import { createContext } from "react";
 import { type Scale } from "@fretboard/shared/types/scale"
-
-export type AccidentalPrefType = null | "sharps" | "flats"
-export type IntervalPrefType = null | "nashville" | "interval"
+import type {AccidentalPrefType, NoteLabelPrefScale} from "@fretboard/shared/types/userPrefs";
 
 type ScaleContextValue = {
     scale: Scale;
@@ -11,8 +9,8 @@ type ScaleContextValue = {
     setAccidentalPref: (pref: AccidentalPrefType) => void;
     degreesToPitches: Set<number>[],
     degreeNumbers: string[],
-    intervalPref: IntervalPrefType,
-    setIntervalPref: (pref: IntervalPrefType) => void,
+    intervalPref: NoteLabelPrefScale,
+    setIntervalPref: (pref: NoteLabelPrefScale) => void,
     scaleSpelling: "sharps" | "flats"
 }
 

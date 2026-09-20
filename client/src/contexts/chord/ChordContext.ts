@@ -1,8 +1,6 @@
 import type {Chord, ChordShape} from "@fretboard/shared/types/chord";
-import type {AccidentalPrefType} from "../scale/ScaleContext.ts";
 import {createContext} from "react";
-
-export type IntervalPrefType = "finger" | "note" | "interval"
+import type {AccidentalPrefType, NoteLabelPrefChord} from "@fretboard/shared/types/userPrefs";
 
 type ChordContextValue = {
     chord: Chord,
@@ -11,8 +9,8 @@ type ChordContextValue = {
     setAccidentalPref: (pref: AccidentalPrefType) => void;
     toneNumbers: string[]
     tonesToPitches: Set<number>[],
-    intervalPref: IntervalPrefType,
-    setIntervalPref: (pref: IntervalPrefType) => void,
+    intervalPref: NoteLabelPrefChord,
+    setIntervalPref: (pref: NoteLabelPrefChord) => void,
     chordSpelling: "sharps" | "flats"
     chordShape: ChordShape | null;
     setChordShape: (shape: ChordShape | null) => void,
