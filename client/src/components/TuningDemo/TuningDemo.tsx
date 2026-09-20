@@ -4,9 +4,9 @@ import {useUserData} from "../../contexts/userData/useUserData.tsx";
 import {RangeMutator} from "./RangeMutator.tsx";
 import Button from "../generic/Button.tsx";
 import {v4 as createUuid} from "uuid";
-import {useMemo, useState} from "react";
+import {useMemo, useRef, useState} from "react";
 import {LexoRank} from "@dalet-oss/lexorank";
-import { IoAddCircle } from "react-icons/io5";
+import {IoCopy, IoPencil} from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import {TuningPreview} from "../TuningPreview/TuningPreview.tsx";
@@ -23,6 +23,8 @@ export default function TuningDemo() {
     const tuning = tuningContext.tuning
     const [createTuningWait, setCreateTuningWait] = useState<boolean>(false)
     const [deleteTuningWait, setDeleteTuningWait] = useState<boolean>(false)
+    const [renamingTuning, setRenamingTuning] = useState<boolean>(false)
+    const renameInputRef = useRef<HTMLInputElement>(null)
 
     function incrementPitch(idx: number, increment: number) {
         const strings = [...tuning.strings]
@@ -92,6 +94,18 @@ export default function TuningDemo() {
         tuningContext.setTuning(userDataContext.tunings[0])
     }
 
+    async function renameTuning() {
+        if (!renameInputRef.current) return
+        const value = renameInputRef.current.value
+        if (value) {
+            const newTuning = {...tuningContext.tuning, name: value}
+            userDataContext.updateTuning(newTuning)
+            tuningContext.setTuning(newTuning)
+        }
+        setRenamingTuning(false)
+        renameInputRef.current.value = ""
+    }
+
     const segmentedTunings: SegmentedTuningList = useMemo(() => {
         const instrumentIndices: string[] = []
         const noInstrumentTunings: Tuning[] = []
@@ -124,51 +138,89 @@ export default function TuningDemo() {
 
     return (
         <ExpandableHeading heading={"Tuning"} collapsedHeading={`Tuning | ${tuning.name}`}>
-            <div className={`flex gap-4 p-4 bg-neutral-900 rounded-md w-min`}>
-                <div className={`flex flex-col gap-2`}>
-                    <h2 className={`text-2xl font-bold`}>{tuning.name}</h2>
-                    <div className={`flex gap-2 items-center overflow-x-scroll`}>
-                        <RangeMutator
-                            insertString={() => insertString("bottom")}
-                            deleteString={() => deleteString(0)}
-                        />
-                        <div className={`flex gap-1`}>
-                            {tuning.strings.map((s, i) => {
-                                return (
-                                    <StringTuner
-                                        key={i}
-                                        pitch={s}
-                                        idx={i}
-                                        incrementPitch={incrementPitch}
-                                    />
-                                )
-                            })}
-                        </div>
-                        <RangeMutator
-                            insertString={() => insertString("top")}
-                            deleteString={() => deleteString(tuning.strings.length - 1)}
-                        />
+            <div className={`flex flex-wrap md:flex-nowrap gap-4 p-4 bg-neutral-900 rounded-md w-min max-w-full`}>
+                <div className={`flex flex-col gap-6 min-w-0`}>
+                    <div className={`min-h-10`}>
+                        {!renamingTuning ?
+                        <h2 className={`text-3xl font-bold`}>
+                            {tuning.name || "Unnamed tuning"}
+                        </h2>
+                        :
+                            <form
+                                onSubmit={(e) => {
+                                e.preventDefault()
+                                renameTuning()
+                                }}
+                                className={`p-1 rounded-md bg-black`}
+                            >
+                                <input
+                                    ref={renameInputRef}
+                                    placeholder={tuning.name || "Unnamed tuning"}
+                                    onBlur={(e) => {
+                                        e.preventDefault()
+                                        renameTuning()
+                                    }}
+                                />
+                            </form>
+                        }
                     </div>
-                </div>
 
-                <div className={`flex gap-2 min-w-0`}>
-                    <div className={`flex flex-col gap-2 w-15 items-stretch mt-auto`}>
+                    <div className={`flex gap-2 items-stretch`}>
                         <Button
                             onClick={createTuning}
                             loading={createTuningWait}
-                            styles={`!bg-lime-700 hover:!bg-lime-600 justify-center`}
+                            variant={"subtle"}
+                            styles={`hover:!bg-lime-700 !border-neutral-700 hover:!border-lime-600 justify-center w-15 h-8`}
                         >
-                            <IoAddCircle/>
+                            <IoCopy/>
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setRenamingTuning(true)
+                                renameInputRef.current?.focus()
+                            }}
+                            variant={"subtle"}
+                            styles={`hover:!bg-sky-700 justify-center w-15 h-8`}
+                        >
+                            <IoPencil/>
                         </Button>
                         <Button
                             onClick={deleteTuning}
                             loading={deleteTuningWait}
-                            variant={"warning"}
-                            styles={`justify-center`}
+                            variant={"subtle"}
+                            styles={`hover:!bg-red-600`}
                         >
                             <FaTrash/>
                         </Button>
                     </div>
+
+                    <div className={`min-w-0 max-w-full mt-auto`}>
+                        <div className={`flex flex-0 gap-2 items-center overflow-x-scroll mt-auto`}>
+                            <RangeMutator
+                                insertString={() => insertString("bottom")}
+                                deleteString={() => deleteString(0)}
+                            />
+                            <div className={`flex gap-1`}>
+                                {tuning.strings.map((s, i) => {
+                                    return (
+                                        <StringTuner
+                                            key={i}
+                                            pitch={s}
+                                            idx={i}
+                                            incrementPitch={incrementPitch}
+                                        />
+                                    )
+                                })}
+                            </div>
+                            <RangeMutator
+                                insertString={() => insertString("top")}
+                                deleteString={() => deleteString(tuning.strings.length - 1)}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`flex gap-2`}>
                     <div className={`flex flex-col w-50 h-60 rounded-lg overflow-y-scroll bg-black`}>
                         {segmentedTunings.map((instrument) => {
                             return (
