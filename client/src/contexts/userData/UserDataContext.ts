@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import type {Tuning} from "@fretboard/shared/types/tuning";
+import type {Chord, ChordShape} from "@fretboard/shared/types/chord";
 
 type UserDataContextValue = {
     scales: Scale[]
@@ -9,9 +10,13 @@ type UserDataContextValue = {
     deleteTuning: (tuning: Tuning) => Promise<void>
     updateTuning: (tuning: Tuning) => void
     scaleShapes: ScaleShape[]
+    chordShapes: ChordShape[]
+    chords: Chord[]
+    setChords: (chords: Chord[]) => void
     connectionStatus: boolean
     initialised: boolean,
     toggleSavedScaleShape: (shape: ScaleShape) => void,
+    toggleSavedChordShape: (shape: ChordShape) => void,
     waitOnServer: boolean
 }
 

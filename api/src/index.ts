@@ -6,6 +6,7 @@ import {createHono} from "./helpers/createHono";
 import {deleteCookie, getCookie} from "hono/cookie";
 import {db} from "@fretboard/shared";
 import {authRouter} from "./routes/auth";
+import {chordShapeRouter} from "./routes/chordShape";
 
 export const app = createHono()
 
@@ -42,4 +43,5 @@ app.use("*", async (c, next) => {
 app.route("/user-data", testUserDataRouter)
 app.route("/tuning", tuningRouter)
 app.route("/scale-shape", scaleShapeRouter)
+app.route("/chord-shape", chordShapeRouter)
 app.route("/auth", authRouter)

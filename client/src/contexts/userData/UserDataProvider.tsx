@@ -2,6 +2,7 @@ import {useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAc
 import {type TestUserDataResponse, type TuningResponse} from "@fretboard/shared/types/apiResponses"
 import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
 import type {Tuning} from "@fretboard/shared/types/tuning";
+import type {Chord} from "@fretboard/shared/types/chord"
 import {UserDataContext} from "./UserDataContext.ts";
 import {TuningProvider} from "../tuning/TuningProvider.tsx";
 import {ScaleProvider} from "../scale/ScaleProvider.tsx";
@@ -12,6 +13,8 @@ import {defaultTunings} from "@fretboard/shared/scripts/onboarding/defaultTuning
 import {v4 as createUuid} from "uuid";
 import {LexoRank} from "@dalet-oss/lexorank";
 import {ChordProvider} from "../chord/ChordProvider.tsx";
+import type {ChordShape} from "@fretboard/shared/types/chord";
+import {defaultChords} from "@fretboard/shared/scripts/onboarding/defaultChords";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BACKOFF_BASE = 500
@@ -51,6 +54,14 @@ function buildDefaultTunings(): Tuning[] {
     });
 }
 
+function buildDefaultChords(): Chord[] {
+    let rank = LexoRank.middle();
+    return defaultChords.map(c => {
+        rank = rank.genNext();
+        return {...c, id: createUuid(), order: rank["value"]};
+    });
+}
+
 export function UserDataProvider({children}: {children: React.ReactNode}) {
     const authContext = useAuth();
 
@@ -64,8 +75,16 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         if (stored.length) return stored;
         return authContext.auth ? [] : buildDefaultScales();
     });
+    const [chords, setChords] = usePersistedState<Chord[]>("chords", () => {
+        const stored = readLocal<Chord[]>("chords", []);
+        if (stored.length) return stored;
+        return authContext.auth ? [] : buildDefaultChords();
+    });
     const [scaleShapes, setScaleShapes] = usePersistedState<ScaleShape[]>("scaleShapes", () =>
         readLocal<ScaleShape[]>("scaleShapes", [])
+    );
+    const [chordShapes, setChordShapes] = usePersistedState<ChordShape[]>("chordShapes", () =>
+        readLocal<ChordShape[]>("chordShapes", [])
     );
 
     const [deletedTunings, setDeletedTunings] = usePersistedState<string[]>(
@@ -73,6 +92,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     );
     const [deletedScaleShapes, setDeletedScaleShapes] = usePersistedState<string[]>(
         "deletedScaleShapes", () => readLocal<string[]>("deletedScaleShapes", [])
+    );
+    const [deletedChordShapes, setDeletedChordShapes] = usePersistedState<string[]>(
+        "deletedChordShapes", () => readLocal<string[]>("deletedChordShapes", [])
     );
 
     const [connectionStatus, setConnectionStatus] = useState(true)
@@ -90,6 +112,8 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     const scalesRef = useRef(scales)
     const deletedTuningsRef = useRef(deletedTunings)
     const deletedScaleShapesRef = useRef(deletedScaleShapes)
+    const chordShapesRef = useRef(chordShapes)
+    const deletedChordShapesRef = useRef(deletedChordShapes)
     const prevAuthRef = useRef(authContext.auth)
 
     useEffect(() => {
@@ -98,7 +122,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         scalesRef.current = scales
         deletedTuningsRef.current = deletedTunings
         deletedScaleShapesRef.current = deletedScaleShapes
-    }, [tunings, scaleShapes, scales, deletedTunings, deletedScaleShapes])
+        chordShapesRef.current = chordShapes
+        deletedChordShapesRef.current = deletedChordShapes
+    }, [tunings, scaleShapes, scales, deletedTunings, deletedScaleShapes, chordShapes, deletedChordShapes])
 
     const runMutation = useCallback(async <T,>(
         setState: Dispatch<SetStateAction<T>>,
@@ -168,6 +194,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     ), [runMutation, setTunings])
 
     const toggleSavedScaleShape = useCallback((shape: ScaleShape) => {
+        console.log(shape)
         const isSaved = scaleShapesRef.current.some(s => s.id === shape.id)
         if (isSaved) {
             return runMutation(
@@ -191,6 +218,31 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             }),
         )
     }, [runMutation, setScaleShapes, setDeletedScaleShapes])
+
+    const toggleSavedChordShape = useCallback((shape: ChordShape) => {
+        const isSaved = chordShapesRef.current.some(s => s.id === shape.id)
+        if (isSaved) {
+            return runMutation(
+                setChordShapes,
+                prev => prev.filter(s => s.id !== shape.id),
+                () => fetch(`${API_URL}/chord-shape`, {
+                    method: "DELETE",
+                    body: JSON.stringify(shape),
+                    credentials: "include",
+                }),
+                {onOffline: () => setDeletedChordShapes(prev => [...prev, shape.id])}
+            )
+        }
+        return runMutation(
+            setChordShapes,
+            prev => [...prev, shape],
+            () => fetch(`${API_URL}/chord-shape`, {
+                method: "PUT",
+                body: JSON.stringify(shape),
+                credentials: "include",
+            }),
+        )
+    }, [runMutation, setChordShapes, setDeletedChordShapes])
 
     const syncWithServer = useCallback(async (): Promise<boolean> => {
         setWaitOnServer(true)
@@ -218,6 +270,8 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             setScaleShapes(data.scaleShapes)
             setDeletedTunings([])
             setDeletedScaleShapes([])
+            setChordShapes([])
+            setDeletedChordShapes([])
             setNeedsReconcile(false)
             setInitialised(true)
             setWaitOnServer(false)
@@ -226,11 +280,12 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             return true
         }
 
-        const {reconciledTunings, reconciledScales, reconciledScaleShapes} = reconcileUserData(
+        const {reconciledTunings, reconciledScales, reconciledScaleShapes, reconciledChordShapes} = reconcileUserData(
             tuningsRef.current, data.tunings,
             scaleShapesRef.current, data.scaleShapes,
             scalesRef.current, data.scales,
-            deletedTuningsRef.current, deletedScaleShapesRef.current, [],
+            chordShapesRef.current, data.chordShapes,
+            deletedTuningsRef.current, deletedScaleShapesRef.current, [], deletedChordShapesRef.current,
         )
 
         try {
@@ -240,6 +295,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
                     tunings: reconciledTunings,
                     scaleShapes: reconciledScaleShapes,
                     scales: reconciledScales,
+                    chordShapes: reconciledChordShapes
                 }),
                 credentials: "include",
             })
@@ -253,6 +309,8 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             setScaleShapes(json.scaleShapes)
             setDeletedTunings([])
             setDeletedScaleShapes([])
+            setChordShapes(json.chordShapes)
+            setDeletedChordShapes([])
             setNeedsReconcile(false)
             setInitialised(true)
             setConnectionStatus(true)
@@ -271,6 +329,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
 
     }, [
         authContext, setTunings, setScales, setScaleShapes, setDeletedTunings, setDeletedScaleShapes,
+        setChordShapes, setDeletedChordShapes
     ])
 
     useEffect(() => {
@@ -308,10 +367,13 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             setScaleShapes([])
             setDeletedTunings([])
             setDeletedScaleShapes([])
+            setChordShapes([])
+            setDeletedChordShapes([])
             setNeedsReconcile(false)
             setDataVersion(v => v + 1)
         }
-    }, [authContext.auth, setTunings, setScales, setScaleShapes, setDeletedTunings, setDeletedScaleShapes])
+    }, [authContext.auth, setTunings, setScales, setScaleShapes,
+        setDeletedTunings, setDeletedScaleShapes, setChordShapes, setDeletedChordShapes])
 
     return (
         <UserDataContext value={{
@@ -321,6 +383,10 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             createTuning,
             deleteTuning,
             updateTuning,
+            chordShapes,
+            chords,
+            setChords,
+            toggleSavedChordShape,
             connectionStatus,
             initialised,
             toggleSavedScaleShape,
@@ -329,12 +395,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             {initialised ? (
                 <TuningProvider key={dataVersion} initialTuning={tunings[0]}>
                     <ScaleProvider key={dataVersion} initialScale={scales[0]}>
-                        <ChordProvider key={dataVersion} initialChord={{
-                            root: "C",
-                            intervals: [4, 7],
-                            quality: "Major",
-                            id: ""
-                        }}>
+                        <ChordProvider key={dataVersion} initialChord={chords[0]}>
                         {children}
                         </ChordProvider>
                     </ScaleProvider>

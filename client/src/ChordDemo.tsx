@@ -9,7 +9,22 @@ import {useChord} from "./contexts/chord/useChord.ts";
 import {chordIntervalsToScaleIntervals} from "@fretboard/shared/utils/chordIntervalsToScaleIntervals"
 import {ChordPicker} from "./components/ChordPicker/ChordPicker.tsx";
 import {getChordIntervalsFromOptions} from "./formulas/chordShapes/getChordIntervalsFromOptions.ts";
+import type {ChordShape} from "@fretboard/shared/types/chord";
+import {useUserData} from "./contexts/userData/useUserData.tsx";
+import {isSameChord, isSameChordShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 
+function dedupeShapes(shapes: ChordShape[]): ChordShape[] {
+    const result: ChordShape[] = []
+    for (const shape of shapes) {
+        const idx = result.findIndex(existing => isSameChordShape(shape, existing))
+        if (idx === -1) {
+            result.push(shape)
+        } else if (result[idx].isAdjusted && !shape.isAdjusted) {
+            result[idx] = shape
+        }
+    }
+    return result
+}
 
 export type ChordPickerOptions = {
     quality: "major" | "minor" | null,
@@ -27,6 +42,7 @@ export type ChordPickerOptions = {
 
 export function ChordDemo() {
     const tuningContext = useTuning()
+    const userData = useUserData()
     const tuning = tuningContext.tuning
     const [activeShapeIdx, setActiveShapeIdx] = useState<number | null>(0);
     const chordContext = useChord()
@@ -38,7 +54,9 @@ export function ChordDemo() {
         quality: "major", sus: null, augDim: null, fifth: "perfect", seventh: null,
         ninth: null, eleventh: null, thirteenth: null, add2: null, add4: null, add6: null
     })
-    console.log({setFretboardZoom, setOutShapeOpacity})
+    const [fitSavedShapes, setFitSavedShapes] = useState(false)
+    console.log({setFretboardZoom, setOutShapeOpacity,
+        fitSavedShapes, setFitSavedShapes}) // it's a surprise tool that will help us later
 
     function _setChordPickerOptions(chordPickerOptions: ChordPickerOptions) {
         const intervals = getChordIntervalsFromOptions(chordPickerOptions)
@@ -50,7 +68,7 @@ export function ChordDemo() {
     }
 
 
-    const chordShapes = useMemo(() => {
+    const generatedShapes = useMemo(() => {
         return generateChordShapes(
             chordContext.chord,
             tuning,
@@ -67,10 +85,36 @@ export function ChordDemo() {
         )
     }, [tuning, chordContext.chord])
 
+    const relevantSavedShapes: ChordShape[] = useMemo(() => {
+        const relevant: ChordShape[] = []
+        for (const s of userData.chordShapes) {
+            // todo: fit saved shapes
+            if (isSameChord(s.chord, chordContext.chord)) {
+                if (isSameTuning(s.tuning, tuning)) {
+                    relevant.push(s)
+                }
+            }
+        }
+
+        return relevant
+    }, [userData.chordShapes, tuning, chordContext.chord])
+
+    const chordShapes: ChordShape[] = useMemo(() => {
+        const dedupedSaved = dedupeShapes(relevantSavedShapes)
+        const shapes: ChordShape[] = [...dedupedSaved]
+        for (const gs of generatedShapes) {
+            if (!dedupedSaved.some(rs => isSameChordShape(gs, rs))) {
+                shapes.push(gs)
+            }
+        }
+        return shapes
+
+        }, [relevantSavedShapes, generatedShapes])
+
     useEffect(() => {
         (async () => {
-        if (activeShapeIdx === null || !chordShapes) return
-        const replacingShape = chordShapes.at(activeShapeIdx)
+        if (activeShapeIdx === null || !generatedShapes) return
+        const replacingShape = generatedShapes.at(activeShapeIdx)
         if (!replacingShape) return
         let lowFret = Infinity
         for (const p of replacingShape.shape) {
@@ -78,7 +122,7 @@ export function ChordDemo() {
         }
         setScrollToFret(lowFret > 3 ? lowFret : 0)
         })()
-    }, [chordShapes, activeShapeIdx])
+    }, [generatedShapes, activeShapeIdx])
 
     return (
         <>
@@ -99,7 +143,7 @@ export function ChordDemo() {
                         order: ""
                     }}
                     renderZeroFret={true}
-                    highlightedShape={activeShapeIdx !== null ? chordShapes.at(activeShapeIdx) : undefined}
+                    highlightedShape={activeShapeIdx !== null ? generatedShapes.at(activeShapeIdx) : undefined}
                     scrollToFret={scrollToFret}
                 />
             </FretboardDisplayContext>
