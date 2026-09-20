@@ -16,6 +16,7 @@ import { MdMusicNote } from "react-icons/md";
 import Tooltip from "../generic/Tooltip.tsx";
 import {ScalePreview} from "../ScalePreview/ScalePreview.tsx";
 import {ExpandableHeading} from "../ExpandableHeading.tsx";
+import {ScaleIntervalGrid} from "./ScaleIntervalGrid.tsx";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
@@ -52,7 +53,11 @@ export function ScaleDemo() {
         <ExpandableHeading heading={"Scale"} collapsedHeading={`Scale | ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}>
             <div className={`flex flex-wrap flex-1 gap-4 bg-neutral-900 rounded-md p-4 min-w-0`}>
                 <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
-                    <div className={`overflow-x-scroll min-w-0`}>
+                    <h2 className={`text-3xl font-bold`}>
+                        {`${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
+                    </h2>
+                    <ScaleIntervalGrid scale={scaleContext.scale} />
+                    <div className={`overflow-x-scroll min-w-0 mt-auto`}>
                         <ButtonGroup
                             onClick={setTonicByIndex}
                             _children={tonesStyled.map(((ts) => {
@@ -64,7 +69,7 @@ export function ScaleDemo() {
                             styles={`w-10`}
                         />
                     </div>
-                    <div className={`flex flex-wrap gap-4 items-center`}>
+                    <div className={`flex flex-wrap gap-4 items-center mb-4`}>
                         <div className={`flex gap-1 justify-center mr-2`}>
                             <ButtonGroup
                                 _children={["♭", "♮", "♯"].map(((symbol) => {
