@@ -213,9 +213,11 @@ export default function Fret(
                                 degree = false
                                 if (isZeroFret) {
                                     zeroFretType = "dead"
-                                    for (const pos of shape!.shape) {
-                                        if (pos.stringIndex === stringIdx) {
-                                            zeroFretType = "irrelevant"
+                                    if (shape?.shape) {
+                                        for (const pos of shape!.shape) {
+                                            if (pos.stringIndex === stringIdx) {
+                                                zeroFretType = "irrelevant"
+                                            }
                                         }
                                     }
                                 }
