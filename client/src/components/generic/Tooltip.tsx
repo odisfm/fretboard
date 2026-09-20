@@ -1,56 +1,68 @@
 import {FaQuestion, FaExclamation} from "react-icons/fa";
-import {useLayoutEffect, useRef, useState} from "react";
+import {useCallback, useLayoutEffect, useRef, useState} from "react";
 
 type Props = {
     icon?: "bang" | "question"
-    children?:  React.ReactNode
+    children?: React.ReactNode
     text?: string
     iconStyles?: string,
     tooltipStyles?: string,
 }
 
-function getSide(el: HTMLElement) {
+type Side = { x: "left" | "right"; y: "top" | "bottom" };
+
+function getSide(el: HTMLElement): Side {
     const rect = el.getBoundingClientRect();
-    return rect.left + rect.width / 2 < window.innerWidth / 2 ? 'left' : 'right';
+    return {
+        x: rect.left + rect.width / 2 < window.innerWidth / 2 ? "left" : "right",
+        y: rect.top + rect.height / 2 < window.innerHeight / 2 ? "top" : "bottom",
+    };
 }
 
-export default function Tooltip({icon, children, text, iconStyles, tooltipStyles}: Props) {
-    if (!icon) {
-        icon = "question"
-    }
-    const ref = useRef(null);
-    const [side, setSide] = useState<"left" | "right" | null>(null);
+export default function Tooltip({
+                                    icon = "question",
+                                    children,
+                                    text,
+                                    iconStyles = "",
+                                    tooltipStyles = "",
+                                }: Props) {
+    const ref = useRef<HTMLDivElement>(null);
+    const [side, setSide] = useState<Side>({x: "left", y: "top"});
 
-    useLayoutEffect(() => {
-        if (!ref.current) return;
-
-        const el = ref.current;
-
-        function updateSide() {
-            setSide(getSide(el));
-        }
-
-        updateSide();
-
-        window.addEventListener("resize", updateSide);
-        return () => window.removeEventListener("resize", updateSide);
+    const updateSide = useCallback(() => {
+        if (ref.current) setSide(getSide(ref.current));
     }, []);
 
+    useLayoutEffect(() => {
+        updateSide();
+        window.addEventListener("resize", updateSide);
+        // capture phase so scrolling inside any container also recomputes
+        window.addEventListener("scroll", updateSide, true);
+        return () => {
+            window.removeEventListener("resize", updateSide);
+            window.removeEventListener("scroll", updateSide, true);
+        };
+    }, [updateSide]);
+
+    const horizontal = side.x === "left" ? "left-0" : "right-0";
+    const vertical = side.y === "top" ? "top-full mt-2" : "bottom-full mb-2";
+
     return (
-        <div className={`inline-flex mt-1`} ref={ref}>
+        <div className="inline-flex mt-1" ref={ref} onPointerEnter={updateSide}>
             <div className={`
-                relative h-3 text-xs aspect-square rounded-full group 
+                relative h-3 text-xs aspect-square rounded-full group
                 bg-black hover:bg-white text-white hover:text-black flex items-center justify-center
                 ${iconStyles}
-        `}>
+            `}>
                 {icon === "question" && <FaQuestion size={10}/>}
-                {icon === "bang" && <FaExclamation  size={12}/>}
+                {icon === "bang" && <FaExclamation size={12}/>}
                 <div className={`
-                absolute top-full invisible group-hover:visible 
-                p-4 bg-neutral-900 text-white z-[1000] ${tooltipStyles}
-                ${side === "left" ? `left-1` : `right-1`}
+                    absolute ${vertical} ${horizontal}
+                    w-max max-w-xs
+                    invisible group-hover:visible
+                    p-4 bg-neutral-900 text-white z-[1000] ${tooltipStyles}
                 `}>
-                    {children ? children : text}
+                    {children ?? text}
                 </div>
             </div>
         </div>
