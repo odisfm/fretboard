@@ -81,10 +81,10 @@ export function ScaleDemo() {
                     active={["flats", null, "sharps"].indexOf(scaleContext.accidentalPref)}
                     styles={"w-10 h-7"}
                 />
-                    <Tooltip children={
+                    <Tooltip tooltipStyles={`bg-neutral-950`} children={
                         <>
                             <span className={`font-bold mb-2 block`}>Accidentals</span>
-                            <ul>
+                            <ul className={`[&_li]:flex [&_li]:items-center [&_li]:gap-1`}>
                                 <li>♭ prefer flats</li>
                                 <li>♮ no preference</li>
                                 <li>♯ prefer sharps</li>
@@ -115,15 +115,15 @@ export function ScaleDemo() {
                         active={["nashville", "note", "interval"].indexOf(scaleContext.intervalPref)}
                         styles={`w-10 h-7`}
                     />
-                    <Tooltip children={
-                        <>
+                    <Tooltip tooltipStyles={`bg-neutral-950`} children={
+                        <div className={`flex flex-col gap-1`}>
                             <span className={`font-bold mb-2 block`}>Note labels</span>
-                            <ul>
+                            <ul className={`[&_li]:flex [&_li]:items-center [&_li]:gap-1`}>
                                 <li><Bs5CircleFill/> Nashville</li>
                                 <li><MdMusicNote /> Letter</li>
                                 <li><RxFontRoman />Interval</li>
                             </ul>
-                        </>
+                        </div>
                     }/>
                 </div>
 
