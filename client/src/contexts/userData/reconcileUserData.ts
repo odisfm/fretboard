@@ -1,19 +1,23 @@
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import type {ScaleShape, Scale} from "@fretboard/shared/types/scale";
+import type {ChordShape} from "@fretboard/shared/types/chord";
 
 export function reconcileUserData(
     localTunings: Tuning[], remoteTunings: Tuning[],
-    localShapes: ScaleShape[], remoteShapes: ScaleShape[],
+    localScaleShapes: ScaleShape[], remoteScaleShapes: ScaleShape[],
     localScales: Scale[], remoteScales: Scale[],
-    deletedTunings: string[], deletedShapes: string[], deletedScales: string[]
+    localChordShapes: ChordShape[], remoteChordShapes: ChordShape[],
+    deletedTunings: string[], deletedScaleShapes: string[], deletedScales: string[], deletedChordShapes: string[],
 ) {
     let reconciledTunings: Tuning[] = [];
-    let reconciledShapes: ScaleShape[] = [];
+    let reconciledScaleShapes: ScaleShape[] = [];
     let reconciledScales: Scale[] = [];
+    let reconciledChordShapes: ChordShape[] = [];
 
     reconciledTunings = deleteFromList(deletedTunings, remoteTunings) as Tuning[];
-    reconciledShapes = deleteFromList(deletedShapes, remoteShapes) as ScaleShape[];
+    reconciledScaleShapes = deleteFromList(deletedScaleShapes, remoteScaleShapes) as ScaleShape[];
     reconciledScales = deleteFromList(deletedScales, remoteScales) as Scale[]
+    reconciledChordShapes = deleteFromList(deletedChordShapes, remoteChordShapes) as ChordShape[];
 
     for (const lt of localTunings) {
         const idx = reconciledTunings.findIndex((t) => t.id === lt.id)
@@ -26,13 +30,13 @@ export function reconcileUserData(
         }
     }
 
-    for (const ls of localShapes) {
-        const idx = reconciledShapes.findIndex((s) => s.id === ls.id)
+    for (const ls of localScaleShapes) {
+        const idx = reconciledScaleShapes.findIndex((s) => s.id === ls.id)
         if (idx === -1) {
-            reconciledShapes.push(ls)
+            reconciledScaleShapes.push(ls)
         } else {
             if (ls.updatedAt! > reconciledTunings[idx].updatedAt!) {
-                reconciledShapes[idx] = ls
+                reconciledScaleShapes[idx] = ls
             }
         }
     }
@@ -48,8 +52,19 @@ export function reconcileUserData(
         }
     }
 
+    for (const ls of localChordShapes) {
+        const idx = reconciledChordShapes.findIndex((s) => s.id === ls.id)
+        if (idx === -1) {
+            reconciledChordShapes.push(ls)
+        } else {
+            if (ls.updatedAt! > reconciledScales[idx].updatedAt!) {
+                reconciledChordShapes[idx] = ls
+            }
+        }
+    }
+
     return {
-        reconciledTunings, reconciledShapes, reconciledScales,
+        reconciledTunings, reconciledScaleShapes, reconciledScales, reconciledChordShapes
     }
 }
 

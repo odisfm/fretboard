@@ -2,16 +2,17 @@ import ReactDOM from "react-dom/client";
 import {createBrowserRouter, Navigate} from "react-router";
 import { RouterProvider } from "react-router/dom";
 import "./index.css"
-import App from "./App.tsx";
+import Frame from "./Frame.tsx";
 import FretboardDemo from "./FretboardDemo.tsx";
 import {AuthPage} from "./components/auth/AuthPage.tsx";
 import {AuthProvider} from "./contexts/auth/AuthProvider.tsx";
 import {ChordDemo} from "./ChordDemo.tsx";
+import {App} from "./App.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App></App>,
+        element: <Frame></Frame>,
         children: [
             {
                 index: true,
@@ -19,11 +20,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/scale",
-                element: <FretboardDemo />
+                element: <App><FretboardDemo /></App>
             },
             {
                 path: "/chord",
-                element: <ChordDemo />
+                element: <App><ChordDemo /></App>
             },
             {
                 path: "/login",

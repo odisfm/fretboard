@@ -14,12 +14,15 @@
   "dependencies": {
     "@fretboard/shared": "*",
     "@tailwindcss/vite": "^4.2.2",
+    "@tonaljs/chord": "^6.1.2",
+    "@tonaljs/chord-detect": "^4.9.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-icons": "^5.6.0",
     "react-router": "^7.14.1",
     "react-virtuoso": "^4.18.13",
     "tailwindcss": "^4.2.2",
+    "tonal": "^6.4.3",
     "tone": "^15.1.22",
     "uuid": "^14.0.2"
   },

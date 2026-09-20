@@ -1,5 +1,6 @@
 import type {Scale, ScaleShape} from "../types/scale";
 import type {Tuning} from "../types/tuning";
+import type {Chord, ChordShape} from "../types/chord";
 
 export function isSameScale(a: Scale, b: Scale, includeTonic: boolean): boolean {
     if (includeTonic) {
@@ -42,7 +43,7 @@ export function isSameTuning(a: Tuning, b: Tuning, includeSuperset = false): boo
     return false
 }
 
-export function isSameShape(a: ScaleShape, b: ScaleShape): boolean {
+export function isSameScaleShape(a: ScaleShape, b: ScaleShape): boolean {
     if (!isSameScale(a.scale, b.scale, false))  return false
     if (!isSameTuning(a.tuning, b.tuning)) return false
     const aShape = a.shape
@@ -54,3 +55,26 @@ export function isSameShape(a: ScaleShape, b: ScaleShape): boolean {
     }
     return true
 }
+
+export function isSameChord(a: Chord, b: Chord): boolean {
+    const aIntervals = a.intervals
+    const bIntervals = b.intervals
+    if (aIntervals.length !== b.intervals.length) return false
+    for (let i = 0; i < aIntervals.length; i++) {
+        if (aIntervals[i] !== bIntervals[i]) return false
+    }
+    return true
+}
+
+export function isSameChordShape(a: ChordShape, b: ChordShape): boolean {
+    if (!isSameTuning(a.tuning, b.tuning)) return false
+    const aShape = a.shape
+    const bShape = b.shape
+    if (a.shape.length !== b.shape.length) return false
+    for (let i = 0; i < aShape.length; i++) {
+        if (aShape[i].stringIndex !== bShape[i].stringIndex) return false
+        if (aShape[i].fret !== bShape[i].fret) return false
+    }
+    return true
+}
+

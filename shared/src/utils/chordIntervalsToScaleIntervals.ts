@@ -1,13 +1,17 @@
-import {sumArray} from "./sumArray";
-
 export function chordIntervalsToScaleIntervals(intervals: number[]): number[] {
-    const cIntervals: number[] = [];
-    cIntervals.push(intervals[0])
-    for (let i = 1; i < intervals.length; i++) {
-        cIntervals.push(intervals[i] - sumArray(cIntervals))
-    }
-    const sum = sumArray(cIntervals);
-    cIntervals.push(12 - (sum % 12))
+    const degrees = [...new Set(intervals)]
+        .filter(i => i !== 0)   // tonic is implied
+        .sort((a, b) => a - b);
 
-    return cIntervals;
+    if (degrees.length === 0) return [12];
+
+    const steps: number[] = [];
+    let prev = 0;
+    for (const d of degrees) {
+        steps.push(d - prev);
+        prev = d;
+    }
+    steps.push(12 * (Math.floor(prev / 12) + 1) - prev);
+
+    return steps;
 }

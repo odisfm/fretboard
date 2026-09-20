@@ -22,20 +22,25 @@ testUserDataRouter.get("/", needsAuth, async (c) => {
                     {createdAt: "asc"}
                 ]
             },
-            shapes: {
+            scaleShapes: {
                 orderBy: [
                     {createdAt: "asc"}
                 ]
             },
+            chordShapes: {
+                orderBy: [
+                    {createdAt: "asc"}
+                ]
+            }
         }
     })
     if (!userRecord) {
         return c.json({error: 'User not found'}, 404)
     }
 
-    const {scales, shapes, tunings} = formatBulkUserData(userRecord)
+    const {scales, scaleShapes, tunings, chordShapes} = formatBulkUserData(userRecord)
 
-    return c.json({scales, tunings, shapes: shapes} satisfies TestUserDataResponse, 200)
+    return c.json({scales, tunings, scaleShapes, chordShapes} satisfies TestUserDataResponse, 200)
 
 
 })
@@ -78,27 +83,27 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
                 `;
             }
 
-            if (update.shapes.length > 0) {
-                const values = update.shapes.map(s =>
+            if (update.scaleShapes.length > 0) {
+                const values = update.scaleShapes.map(s =>
                     Prisma.sql`(${s.id}, ${userId}, ${JSON.stringify({...s})}::jsonb)`
                 );
                 await tx.$executeRaw`
-                    INSERT INTO "Shape" (id, "userId", data)
+                    INSERT INTO "ScaleShape" (id, "userId", data)
                     VALUES ${Prisma.join(values)} ON CONFLICT (id) DO
                     UPDATE
                         SET data = EXCLUDED.data, "userId" = EXCLUDED."userId"
                 `;
-                const shapeIds = update.shapes.map(s => s.id);
+                const shapeIds = update.scaleShapes.map(s => s.id);
                 await tx.$executeRaw`
                     DELETE
-                    FROM "Shape"
+                    FROM "ScaleShape"
                     WHERE "userId" = ${userId}
                       AND id NOT IN (${Prisma.join(shapeIds)})
                 `;
             } else {
                 await tx.$executeRaw`
                     DELETE
-                    FROM "Shape"
+                    FROM "ScaleShape"
                     WHERE "userId" = ${userId}
                 `;
             }
@@ -127,8 +132,34 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
                     WHERE "userId" = ${userId}
                 `;
             }
+
+            if (update.chordShapes.length > 0) {
+                const values = update.chordShapes.map(s =>
+                    Prisma.sql`(${s.id}, ${userId}, ${JSON.stringify({...s})}::jsonb)`
+                );
+                await tx.$executeRaw`
+                    INSERT INTO "ChordShape" (id, "userId", data)
+                    VALUES ${Prisma.join(values)} ON CONFLICT (id) DO
+                    UPDATE
+                        SET data = EXCLUDED.data, "userId" = EXCLUDED."userId"
+                `;
+                const shapeIds = update.chordShapes.map(s => s.id);
+                await tx.$executeRaw`
+                    DELETE
+                    FROM "ChordShape"
+                    WHERE "userId" = ${userId}
+                      AND id NOT IN (${Prisma.join(shapeIds)})
+                `;
+            } else {
+                await tx.$executeRaw`
+                    DELETE
+                    FROM "ChordShape"
+                    WHERE "userId" = ${userId}
+                `;
+            }
         });
     } catch (e) {
+        console.error(e)
         return c.json({error: "Internal server error"}, 500)
     }
 
@@ -145,20 +176,25 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
                     {createdAt: "asc"}
                 ]
             },
-            shapes: {
+            scaleShapes: {
                 orderBy: [
                     {createdAt: "asc"}
                 ]
             },
+            chordShapes: {
+                orderBy: [
+                    {createdAt: "asc"}
+                ]
+            }
         }
     })
     if (!userRecord) {
         return c.json({error: 'User not found'}, 404)
     }
 
-    const {scales, shapes, tunings} = formatBulkUserData(userRecord)
+    const {scales, scaleShapes, tunings, chordShapes} = formatBulkUserData(userRecord)
 
     const end = performance.now()
 
-    return c.json({scales, shapes, tunings} satisfies TestUserDataResponse, 200)
+    return c.json({scales, scaleShapes, tunings, chordShapes} satisfies TestUserDataResponse, 200)
 })

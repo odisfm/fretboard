@@ -1,23 +1,35 @@
-import {UserDataProvider} from "./contexts/userData/UserDataProvider.tsx";
-import {AudioProvider} from "./contexts/audio/AudioProvider.tsx";
-import {Outlet} from "react-router";
-import {Header} from "./components/global/Header.tsx";
-import {Footer} from "./components/global/Footer.tsx";
+import TuningDemo from "./components/TuningDemo/TuningDemo.tsx";
+import {useLocation, useNavigate} from "react-router";
+import {ButtonGroup} from "./components/generic/ButtonGroup.tsx";
+import {useFeature} from "./contexts/feature/useFeature.ts";
 
-export function App() {
+export function App({children}: {children: React.ReactNode}) {
+    const location = useLocation()
+    const pathname = location.pathname
+    const navigate = useNavigate()
+    const featureContext = useFeature()
     return (
-            <UserDataProvider>
-                <div className={`w-[100vw]`}>
-                    <Header />
-                    <AudioProvider>
-                        <div className={`p-4`}>
-                            <Outlet/>
-                        </div>
-                    </AudioProvider>
-                    <Footer />
-                </div>
-            </UserDataProvider>
+        <div className={`flex flex-col gap-2`}>
+            <div className={`flex items-center gap-2`}>
+                <ButtonGroup
+                    styles={`text-xl px-8`}
+                    onClick={(i) => {
+                        if (i === 0) {
+                            featureContext.setFeature("scale")
+                            navigate("/scale")
+                        } else {
+                            featureContext.setFeature("chord")
+                            navigate("/chord")
+                    }}}
+                    _children={["Scales", "Chords"]}
+                    active={(() => {
+                        if (pathname.startsWith("/scale")) return 0
+                        if (pathname.startsWith("/chord")) return 1
+                    })()}
+                />
+            </div>
+            <TuningDemo/>
+            {children}
+        </div>
     )
 }
-
-export default App

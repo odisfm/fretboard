@@ -191,11 +191,15 @@ export default function Fret(
                         } else {
                             if (inScale[stringIdx] !== false) {
                                 if (isZeroFret) {
-                                    zeroFretType = "dead"
-                                    for (const pos of shape!.shape) {
-                                        if (pos.stringIndex === stringIdx) {
-                                            zeroFretType = "irrelevant"
+                                    if (shape) {
+                                        zeroFretType = "dead"
+                                        for (const pos of shape.shape) {
+                                            if (pos.stringIndex === stringIdx) {
+                                                zeroFretType = "irrelevant"
+                                            }
                                         }
+                                    } else {
+                                        zeroFretType = "inKey"
                                     }
                                 }
                                 visibility = "dim"
@@ -297,6 +301,8 @@ export default function Fret(
                                 barre={barre}
                                 finger={finger}
                                 zeroFretType={zeroFretType}
+                                stringIndex={stringIdx}
+                                fretNumber={fretNumber}
                             />
                         </div>
                     )

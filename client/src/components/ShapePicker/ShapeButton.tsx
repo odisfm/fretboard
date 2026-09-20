@@ -6,6 +6,8 @@ import {useMemo} from "react";
 import type {FingerShape} from "@fretboard/shared/types/fingerShape";
 import type {ScaleShape} from "@fretboard/shared/types/scale";
 import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
+import {useFeature} from "../../contexts/feature/useFeature.ts";
+import type {ChordShape} from "@fretboard/shared/types/chord";
 
 type Props = {
     onClick: (index: number) => void;
@@ -18,15 +20,22 @@ type Props = {
 export default function ShapeButton({onClick, setScrollToFret, fingerShape, index, active}: Props) {
     const userDataContext = useUserData()
     const fdContext = useFretboardDisplay()
+    const featureContext = useFeature()
     const isFav = useMemo(() => {
-        return userDataContext.shapes.findIndex((s) => s.id === fingerShape.id) !== -1
-    }, [userDataContext.shapes, fingerShape])
+        let arr
+        if (featureContext.feature === "scale") arr = userDataContext.scaleShapes
+        if (featureContext.feature === "chord") arr = userDataContext.chordShapes
+        return arr!.findIndex((s) => s.id === fingerShape.id) !== -1
+
+    }, [userDataContext.scaleShapes, userDataContext.chordShapes, fingerShape, featureContext.feature])
 
     function toggleFav(e: React.MouseEvent<HTMLElement>) {
         e.preventDefault()
         e.stopPropagation();
-        if (fingerShape.scale) {
-            userDataContext.toggleSavedShape(fingerShape as ScaleShape)
+        if (fingerShape?.scale) {
+            userDataContext.toggleSavedScaleShape(fingerShape as ScaleShape)
+        } else if (fingerShape?.chord) {
+            userDataContext.toggleSavedChordShape(fingerShape as ChordShape)
         }
     }
 

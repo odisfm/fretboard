@@ -1,23 +1,23 @@
-import {ScaleShapeSchema} from "@fretboard/shared/types/scale";
 import {db} from "@fretboard/shared";
-import type {ShapeResponse} from "@fretboard/shared/types/apiResponses";
+import type {ChordShapeResponse} from "@fretboard/shared/types/apiResponses";
 import {createHono} from "../helpers/createHono";
 import {needsAuth} from "../middleware/needsAuth";
+import {ChordShapeSchema} from "@fretboard/shared/types/chord";
 
-export const shapeRouter = createHono()
+export const chordShapeRouter = createHono()
 
-shapeRouter.put("/", needsAuth, async (c) => {
+chordShapeRouter.put("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let shape
     try {
-        shape = ScaleShapeSchema.parse(body)
+        shape = ChordShapeSchema.parse(body)
     } catch (e) {
         console.error(e)
         return c.json({error: "Malformed input"}, 400)
     }
     let record
     try {
-        record = await db.shape.create({
+        record = await db.chordShape.create({
             data: {
                 data: {...shape},
                 userId: c.get("user")!.id,
@@ -28,25 +28,25 @@ shapeRouter.put("/", needsAuth, async (c) => {
         console.error(e)
         return c.json({error: "Internal server error"}, 500)
     }
-    const obj = ScaleShapeSchema.parse({
+    const obj = ChordShapeSchema.parse({
         ...record.data as object
     })
 
-    return c.json({shape: obj} satisfies ShapeResponse, 200)
+    return c.json({chordShape: obj} satisfies ChordShapeResponse, 200)
 })
 
-shapeRouter.delete("/", needsAuth, async (c) => {
+chordShapeRouter.delete("/", needsAuth, async (c) => {
     const body = await c.req.json()
     let shape
     try {
-        shape = ScaleShapeSchema.parse(body)
+        shape = ChordShapeSchema.parse(body)
     } catch (e) {
         console.error(e)
         return c.json({error: "Malformed input"}, 400)
     }
     let record
     try {
-        record = await db.shape.delete({
+        record = await db.chordShape.delete({
             where: {id: shape.id, userId: c.get("user")!.id}
         })
         return c.json({}, 200)

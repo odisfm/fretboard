@@ -1,11 +1,13 @@
 import {ScaleSchema, type ScaleShape, ScaleShapeSchema} from "./scale";
 import {type Tuning, TuningSchema} from "./tuning";
 import * as z from "zod";
+import {type ChordShape, ChordShapeSchema} from "./chord";
 
 export const TestUserDataSchema = z.object({
     scales: z.array(ScaleSchema),
     tunings: z.array(TuningSchema),
-    shapes: z.array(ScaleShapeSchema)
+    scaleShapes: z.array(ScaleShapeSchema),
+    chordShapes: z.array(ChordShapeSchema),
 })
 
 export type TestUserDataResponse = z.infer<typeof TestUserDataSchema>;
@@ -14,8 +16,12 @@ export type TuningResponse = {
     tuning: Tuning
 }
 
-export type ShapeResponse = {
-    shape: ScaleShape,
+export type ScaleShapeResponse = {
+    scaleShape: ScaleShape,
+}
+
+export type ChordShapeResponse = {
+    chordShape: ChordShape,
 }
 
 export type RegistrationFailure = {
