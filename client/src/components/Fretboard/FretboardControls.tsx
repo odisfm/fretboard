@@ -70,7 +70,7 @@ export function FretboardControls() {
     }, [fdContext.type, userData.prefs.scaleOutOpacity, userData.prefs.chordOutOpacity])
 
     return (
-        <div className={`flex gap-4 p-2 rounded-md bg-neutral-950`}>
+        <div className={`flex gap-4 p-2 rounded-md bg-neutral-950 overflow-x-auto`}>
             <div className={fieldsetClasses}>
                 <legend className={legendClasses}>Rotate</legend>
                 <Button onClick={() => {
