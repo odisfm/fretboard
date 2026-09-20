@@ -48,15 +48,12 @@ export function ChordDemo() {
     const chordContext = useChord()
     const [orientation, setOrientation] = useState<"horizontal" | "vertical">("horizontal");
     const [scrollToFret, setScrollToFret] = useState<null | number>(null);
-    const [fretboardZoom, setFretboardZoom] = useState<number>(1.5)
-    const [outShapeOpacity, setOutShapeOpacity] = useState<number>(.2)
     const [chordPickerOptions, setChordPickerOptions] = useState<ChordPickerOptions>({
         quality: "major", sus: null, augDim: null, fifth: "perfect", seventh: null,
         ninth: null, eleventh: null, thirteenth: null, add2: null, add4: null, add6: null
     })
     const [fitSavedShapes, setFitSavedShapes] = useState(false)
-    console.log({setFretboardZoom, setOutShapeOpacity,
-        fitSavedShapes, setFitSavedShapes}) // it's a surprise tool that will help us later
+    console.log({fitSavedShapes, setFitSavedShapes}) // it's a surprise tool that will help us later
 
     function _setChordPickerOptions(chordPickerOptions: ChordPickerOptions) {
         const intervals = getChordIntervalsFromOptions(chordPickerOptions)
@@ -139,10 +136,15 @@ export function ChordDemo() {
             <ChordPicker chordPickerOptions={chordPickerOptions} setChordPickerOptions={_setChordPickerOptions} />
 
             <FretboardDisplayContext
-                value={{zoom: fretboardZoom, variant: "main", outShapeOpacity, type: "chord"}}
+                value={{
+                    zoom: userData.prefs.fretboardZoom,
+                    variant: "main",
+                    outShapeOpacity: userData.prefs.chordOutOpacity,
+                    type: "chord"
+            }}
             >
                 <Fretboard
-                    orientation={orientation}
+                    orientation={userData.prefs.fretboardRotation}
                     startFret={1}
                     endFret={24}
                     scale={{

@@ -17,6 +17,10 @@ export const NoteLabelPrefChordSchema = z.union(
 
 export type NoteLabelPrefChord = z.infer<typeof NoteLabelPrefChordSchema>
 
+export const MINIMUM_FRETBOARD_ZOOM = 1.0
+export const MAXIMUM_FRETBOARD_ZOOM = 2.0
+export const MINIMUM_OUT_SHAPE_OPACITY = 0.0
+export const MAXIMUM_OUT_SHAPE_OPACITY = 1.0
 
 export const UserPrefSchema = z.object({
     updatedAt: z.coerce.date(),
@@ -24,9 +28,9 @@ export const UserPrefSchema = z.object({
     noteLabelScale: NoteLabelPrefScaleSchema,
     noteLabelChord: NoteLabelPrefChordSchema,
     tuningId: z.uuidv4().optional(),
-    fretboardZoom: z.number().min(1.0).max(2.0),
-    scaleOutOpacity: z.number().min(0.0).max(1.0),
-    chordOutOpacity: z.number().min(0.0).max(1.0),
+    fretboardZoom: z.number().min(MINIMUM_FRETBOARD_ZOOM).max(MAXIMUM_FRETBOARD_ZOOM),
+    scaleOutOpacity: z.number().min(MINIMUM_OUT_SHAPE_OPACITY).max(MAXIMUM_OUT_SHAPE_OPACITY),
+    chordOutOpacity: z.number().min(MINIMUM_OUT_SHAPE_OPACITY).max(MAXIMUM_OUT_SHAPE_OPACITY),
     scaleGen: z.object({
         sortBy: SortScaleShapesStrategySchema,
         filterSaved: z.boolean(),
@@ -39,7 +43,7 @@ export type UserPrefType = z.infer<typeof UserPrefSchema>
 
 
 export const defaultUserPrefs: UserPrefType = {
-    updatedAt: new Date(),
+    updatedAt: new Date("1970-01-01"),
     accidental: null,
     noteLabelScale: "note",
     noteLabelChord: "note",

@@ -47,12 +47,12 @@ export function NumberStepper(
                 variant={variant || "default"}
                 disabled={!canDecrement}
                 onClick={decrementFn}
-                styles={buttonStyles}
+                styles={`bg-neutral-900 ${buttonStyles}`}
             >
                 {decIcon ? decIcon : <FaMinus/>}
             </Button>
             { display &&
-                <div className={`flex items-center px-4 ${displayStyles}`}>
+                <div className={`flex items-center px-4 bg-neutral-800 ${displayStyles}`}>
                     <span>{text}</span>
                 </div>
             }
@@ -60,7 +60,7 @@ export function NumberStepper(
                 variant={variant || "default"}
                 disabled={!canIncrement}
                 onClick={incrementFn}
-                styles={buttonStyles}
+                styles={`bg-neutral-900 ${buttonStyles}`}
             >
                 {incIcon ? incIcon : <FaPlus/>}
             </Button>
