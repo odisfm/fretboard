@@ -14,6 +14,7 @@ import { Bs5CircleFill } from "react-icons/bs";
 import { RxFontRoman } from "react-icons/rx";
 import { MdMusicNote } from "react-icons/md";
 import Tooltip from "../generic/Tooltip.tsx";
+import {ScalePreview} from "../ScalePreview/ScalePreview.tsx";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
@@ -47,97 +48,103 @@ export function ScaleDemo() {
     }
 
     return (
-        <div className={`flex flex-col flex-1 gap-4 bg-neutral-900 rounded-md p-4`}>
-            <div className={`flex gap-4 items-center`}>
-                <span className={`font-bold`}>Scale</span>
-                <select
-                className={` bg-black px-2 py-1 rounded-md`}
-                onChange={(e) => {
-                    const idx = Number(e.target.value);
-                    scaleContext.setScale(userDataContext.scales[idx])
-                }}
-            >
-                {userDataContext.scales.map((scale, i) => (
-                    <option value={i} key={i}>{scale.name}</option>
-                ))}
-            </select>
-                <div className={`flex gap-1 justify-center mr-2`}>
-                    <ButtonGroup
-                    _children={["♭", "♮", "♯"].map(((symbol) => {
-                        return (<span>{symbol}</span>)
-                    }))}
-                    onClick={(i) => {
-                        switch (i) {
-                            case 0:
-                                scaleContext.setAccidentalPref("flats")
-                                break;
-                            case 1:
-                                scaleContext.setAccidentalPref(null)
-                                break;
-                            case 2:
-                                scaleContext.setAccidentalPref("sharps")
-                        }
-                    }}
-                    active={["flats", null, "sharps"].indexOf(scaleContext.accidentalPref)}
-                    styles={"w-10 h-7"}
-                />
-                    <Tooltip tooltipStyles={`bg-neutral-950`} children={
-                        <>
-                            <span className={`font-bold mb-2 block`}>Accidentals</span>
-                            <ul className={`[&_li]:flex [&_li]:items-center [&_li]:gap-1`}>
-                                <li>♭ prefer flats</li>
-                                <li>♮ no preference</li>
-                                <li>♯ prefer sharps</li>
-                            </ul>
-                        </>
-                    }/>
-                </div>
-                <div className={`flex gap-1 justify-center mr-2`}>
-                    <ButtonGroup
-                        _children={[
-                            <Bs5CircleFill/>,
-                            <MdMusicNote/>,
-                            <RxFontRoman/>,
-                        ]}
-                        onClick={(i) => {
-                            switch (i) {
-                                case 0:
-                                    scaleContext.setIntervalPref("nashville")
-                                    break;
-                                case 1:
-                                    scaleContext.setIntervalPref("note")
-                                    break;
-                                case 2:
-                                    scaleContext.setIntervalPref("interval")
-                                    break;
-                            }
-                        }}
-                        active={["nashville", "note", "interval"].indexOf(scaleContext.intervalPref)}
-                        styles={`w-10 h-7`}
-                    />
-                    <Tooltip tooltipStyles={`bg-neutral-950`} children={
-                        <div className={`flex flex-col gap-1`}>
-                            <span className={`font-bold mb-2 block`}>Note labels</span>
-                            <ul className={`[&_li]:flex [&_li]:items-center [&_li]:gap-1`}>
-                                <li><Bs5CircleFill/> Nashville</li>
-                                <li><MdMusicNote /> Letter</li>
-                                <li><RxFontRoman />Interval</li>
-                            </ul>
+        <div className={`min-w-0`}>
+            <div className={`flex flex-wrap flex-1 gap-4 bg-neutral-900 rounded-md p-4 min-w-0`}>
+
+                <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
+                    <div className={`overflow-x-scroll min-w-0`}>
+                        <ButtonGroup
+                            onClick={setTonicByIndex}
+                            _children={tonesStyled.map(((ts) => {
+                                return (
+                                    <span>{ts}</span>
+                                )
+                            }))}
+                            active={tones.indexOf(scaleContext.scale.tonic)}
+                            styles={`w-10`}
+                        />
+                    </div>
+                    <div className={`flex flex-wrap gap-4 items-center`}>
+                        <div className={`flex gap-1 justify-center mr-2`}>
+                            <ButtonGroup
+                                _children={["♭", "♮", "♯"].map(((symbol) => {
+                                    return (<span>{symbol}</span>)
+                                }))}
+                                onClick={(i) => {
+                                    switch (i) {
+                                        case 0:
+                                            scaleContext.setAccidentalPref("flats")
+                                            break;
+                                        case 1:
+                                            scaleContext.setAccidentalPref(null)
+                                            break;
+                                        case 2:
+                                            scaleContext.setAccidentalPref("sharps")
+                                    }
+                                }}
+                                active={["flats", null, "sharps"].indexOf(scaleContext.accidentalPref)}
+                                styles={"w-10 h-7"}
+                            />
+                            <Tooltip tooltipStyles={`bg-neutral-950`} children={
+                                <>
+                                    <span className={`font-bold mb-2 block`}>Accidentals</span>
+                                    <ul className={`[&_li]:flex [&_li]:items-center [&_li]:gap-1`}>
+                                        <li>♭ prefer flats</li>
+                                        <li>♮ no preference</li>
+                                        <li>♯ prefer sharps</li>
+                                    </ul>
+                                </>
+                            }/>
                         </div>
-                    }/>
+                        <div className={`flex gap-1 justify-center mr-2`}>
+                            <ButtonGroup
+                                _children={[
+                                    <Bs5CircleFill/>,
+                                    <MdMusicNote/>,
+                                    <RxFontRoman/>,
+                                ]}
+                                onClick={(i) => {
+                                    switch (i) {
+                                        case 0:
+                                            scaleContext.setIntervalPref("nashville")
+                                            break;
+                                        case 1:
+                                            scaleContext.setIntervalPref("note")
+                                            break;
+                                        case 2:
+                                            scaleContext.setIntervalPref("interval")
+                                            break;
+                                    }
+                                }}
+                                active={["nashville", "note", "interval"].indexOf(scaleContext.intervalPref)}
+                                styles={`w-10 h-7`}
+                            />
+                            <Tooltip tooltipStyles={`bg-neutral-950`} children={
+                                <div className={`flex flex-col gap-1`}>
+                                    <span className={`font-bold mb-2 block`}>Note labels</span>
+                                    <ul className={`[&_li]:flex [&_li]:items-center [&_li]:gap-1`}>
+                                        <li><Bs5CircleFill/> Nashville</li>
+                                        <li><MdMusicNote/> Letter</li>
+                                        <li><RxFontRoman/>Interval</li>
+                                    </ul>
+                                </div>
+                            }/>
+                        </div>
+
+                    </div>
                 </div>
 
+                <div className={`flex flex-col h-60 overflow-y-scroll overflow-x-clip rounded-lg`}>
+                    {userDataContext.scales.map((scale) => {
+                        return (
+                            <ScalePreview
+                                scale={{...scale, tonic: scaleContext.scale.tonic}}
+                                active={scale.id === scaleContext.scale.id}
+                            />
+                        )
+                    })}
+                </div>
             </div>
-            <ButtonGroup
-                onClick={setTonicByIndex}
-                _children={tonesStyled.map(((ts) => {
-                    return (
-                        <span>{ts}</span>
-                    )
-                }))}
-                active={tones.indexOf(scaleContext.scale.tonic)}
-                styles={`w-10`}
-            />
         </div>
     )
 }

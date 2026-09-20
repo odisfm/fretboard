@@ -5,7 +5,8 @@ const TONE_COUNT = TONES_SHARP.length // 12
 export function midiPitchToNoteName(
     midiPitch: number,
     useOctave: boolean = true,
-    accidentals: "sharps" | "flats" = "sharps"
+    accidentals: "sharps" | "flats" = "sharps",
+    formatAccidentals: boolean = false
 ): NoteName {
     if (!Number.isInteger(midiPitch)) {
         throw new Error("midiPitch must be integer")
@@ -22,6 +23,11 @@ export function midiPitchToNoteName(
 
     if (useOctave) {
         output += octave;
+    }
+
+    if (formatAccidentals) {
+        output = output.replace("#", "♯")
+        output = output.replace("b", "♭")
     }
 
     return output as NoteName;
