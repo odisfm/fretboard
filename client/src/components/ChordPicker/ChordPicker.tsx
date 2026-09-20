@@ -14,7 +14,9 @@ import {useMemo, useRef, useState} from "react";
 import type { ChordPickerOptions } from "../../ChordDemo.tsx";
 import Tooltip from "../generic/Tooltip.tsx";
 import Button from "../generic/Button.tsx";
-import {FaSearch} from "react-icons/fa";
+import {FaHandPaper, FaSearch} from "react-icons/fa";
+import {MdMusicNote} from "react-icons/md";
+import {RxFontRoman} from "react-icons/rx";
 import {getChordFromName} from "@fretboard/shared/utils/getChordFromName";
 import {getChordPickerOptionsFromChord} from "../../formulas/chordShapes/getChordPickerOptionsFromChord.ts";
 
@@ -328,16 +330,84 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
                 />
 
             </div>
-            <ButtonGroup
-                onClick={setRootByIndex}
-                _children={tonesStyled.map(((ts) => {
-                    return (
-                        <span>{ts}</span>
-                    )
-                }))}
-                active={tones.indexOf(chordContext.chord.root)}
-                styles={`w-10`}
-            />
+
+        <div className={`flex gap-8 items-center`}>
+            <div className={`flex gap-1 justify-center mr-2`}>
+                <ButtonGroup
+                    onClick={setRootByIndex}
+                    _children={tonesStyled.map(((ts) => {
+                        return (
+                            <span>{ts}</span>
+                        )
+                    }))}
+                    active={tones.indexOf(chordContext.chord.root)}
+                    styles={`w-10`}
+                />
+            <div className={`flex gap-1 justify-center mr-2`}>
+                <ButtonGroup
+                    _children={["♭", "♮", "♯"].map(((symbol) => {
+                        return (<span>{symbol}</span>)
+                    }))}
+                    onClick={(i) => {
+                        switch (i) {
+                            case 0:
+                                chordContext.setAccidentalPref("flats")
+                                break;
+                            case 1:
+                                chordContext.setAccidentalPref(null)
+                                break;
+                            case 2:
+                                chordContext.setAccidentalPref("sharps")
+                        }
+                    }}
+                    active={["flats", null, "sharps"].indexOf(chordContext.accidentalPref)}
+                    styles={"w-10 h-7"}
+                />
+                <Tooltip children={
+                    <>
+                        <span className={`font-bold mb-2 block`}>Accidentals</span>
+                        <ul>
+                            <li>♭ prefer flats</li>
+                            <li>♮ no preference</li>
+                            <li>♯ prefer sharps</li>
+                        </ul>
+                    </>
+                }/>
+            </div>
+                <ButtonGroup
+                    _children={[
+                        <FaHandPaper />,
+                        <MdMusicNote/>,
+                        <RxFontRoman/>,
+                    ]}
+                    onClick={(i) => {
+                        switch (i) {
+                            case 0:
+                                chordContext.setIntervalPref("finger")
+                                break;
+                            case 1:
+                                chordContext.setIntervalPref("note")
+                                break;
+                            case 2:
+                                chordContext.setIntervalPref("interval")
+                                break;
+                        }
+                    }}
+                    active={["finger", "note", "interval"].indexOf(chordContext.intervalPref)}
+                    styles={`w-10 h-7`}
+                />
+                <Tooltip children={
+                    <>
+                        <span className={`font-bold mb-2 block`}>Note labels</span>
+                        <ul>
+                            <li><FaHandPaper /> Fingering</li>
+                            <li><MdMusicNote /> Letter</li>
+                            <li><RxFontRoman />Interval</li>
+                        </ul>
+                    </>
+                }/>
+            </div>
         </div>
+    </div>
     )
 }
