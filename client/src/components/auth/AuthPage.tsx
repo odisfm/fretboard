@@ -94,14 +94,17 @@ export function AuthPage({mode}: {mode: Mode}) {
             PasswordSchema.parse(password)
         } catch (e) {
             const zError = e as z.ZodError
-            setNewPasswordIssues(zError.issues.map(x => x.message))
-            return
+            const issues = zError.issues.map(x => x.message)
+            setNewPasswordIssues(issues)
+            return issues
         }
         setNewPasswordIssues([])
+        return []
     }
 
     function validateForm() {
         if (!emailRef.current || !passwordRef.current) return setCanSubmit(false)
+        if (validatePassword(passwordRef.current.value).length === 0) return setCanSubmit(true)
         if (
             !z.email().validate(emailRef.current.value) ||
             !passwordRef.current.checkValidity() ||
