@@ -48,9 +48,7 @@ export function ScaleDemo() {
     }
 
     return (
-        <div className={`min-w-0`}>
             <div className={`flex flex-wrap flex-1 gap-4 bg-neutral-900 rounded-md p-4 min-w-0`}>
-
                 <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
                     <div className={`overflow-x-scroll min-w-0`}>
                         <ButtonGroup
@@ -134,7 +132,7 @@ export function ScaleDemo() {
                     </div>
                 </div>
 
-                <div className={`flex flex-col h-60 overflow-y-scroll overflow-x-clip rounded-lg`}>
+                <div className={`flex flex-col h-60 overflow-y-scroll overflow-x-clip rounded-lg ml-auto`}>
                     {userDataContext.scales.map((scale) => {
                         return (
                             <ScalePreview
@@ -145,6 +143,5 @@ export function ScaleDemo() {
                     })}
                 </div>
             </div>
-        </div>
     )
 }

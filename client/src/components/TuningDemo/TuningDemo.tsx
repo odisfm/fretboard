@@ -9,6 +9,7 @@ import {LexoRank} from "@dalet-oss/lexorank";
 import { IoAddCircle } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa";
 import type {Tuning} from "@fretboard/shared/types/tuning";
+import {TuningPreview} from "../TuningPreview/TuningPreview.tsx";
 
 type SegmentedTuningList = {
     instrument: string | null,
@@ -121,48 +122,8 @@ export default function TuningDemo() {
     }, [userDataContext.tunings])
 
     return (
-        <div className={`flex flex-col flex-1 gap-4 p-2 bg-neutral-900`}>
-            <div className={`flex gap-2`}>
-                <select
-                    value={userDataContext.tunings.findIndex((t) => t.id === tuning.id)}
-                    onChange={(event) => {
-                        const newTuning = userDataContext.tunings[Number(event.target.value)]
-                        tuningContext.setTuning(newTuning)
-                    }}
-                    className={`bg-black p-1 rounded-md self-start`}
-                >
-                    {segmentedTunings.map((instrument) => {
-                        let globalIndex = -1
-                        return (
-                            <optgroup label={instrument.instrument ? instrument.instrument : "Unlabelled instrument"}>
-                                {instrument.tunings.map((t) => {
-                                    globalIndex += 1
-                                    return (
-                                        <option key={globalIndex} value={globalIndex}>
-                                            {t.name ? t.name : "Unnamed tuning"}
-                                        </option>
-                                    )
-                                })}
-                            </optgroup>
-                        )
-                    })}
-                </select>
-                <Button
-                    onClick={createTuning}
-                    loading={createTuningWait}
-                    styles={`!bg-lime-700 hover:!bg-lime-600 w-10 justify-center`}
-                >
-                    <IoAddCircle />
-                </Button>
-                <Button
-                    onClick={deleteTuning}
-                    loading={deleteTuningWait}
-                    variant={"warning"}
-                >
-                    <FaTrash />
-                </Button>
-            </div>
-            <div className={`flex gap-2 items-center overflow-x-scroll w-full`}>
+        <div className={`flex flex-1 gap-4 p-4 bg-neutral-900 rounded-md`}>
+            <div className={`flex gap-2 items-center overflow-x-scroll `}>
                 <RangeMutator
                     insertString={() => insertString("bottom")}
                     deleteString={() => deleteString(0)}
@@ -183,6 +144,53 @@ export default function TuningDemo() {
                     insertString={() => insertString("top")}
                     deleteString={() => deleteString(tuning.strings.length - 1)}
                 />
+            </div>
+
+            <div className={`flex gap-2 min-w-0 ml-auto`}>
+                <div className={`flex flex-col gap-2 w-15 items-stretch mt-auto`}>
+                    <Button
+                        onClick={createTuning}
+                        loading={createTuningWait}
+                        styles={`!bg-lime-700 hover:!bg-lime-600 justify-center`}
+                    >
+                        <IoAddCircle/>
+                    </Button>
+                    <Button
+                        onClick={deleteTuning}
+                        loading={deleteTuningWait}
+                        variant={"warning"}
+                        styles={`justify-center`}
+                    >
+                        <FaTrash/>
+                    </Button>
+                </div>
+                <div className={`flex flex-col w-50 h-60 rounded-lg overflow-y-scroll bg-black`}>
+                    {segmentedTunings.map((instrument) => {
+                        return (
+                            <div className={`w-full flex flex-col`}>
+                                <div className={`p-2 bg-black font-bold text-right pr-4`}>
+                                    {instrument.instrument ? instrument.instrument : "Unlabelled instrument"}
+                                </div>
+                                {
+                                    instrument.tunings.map((tuning) => {
+                                        return (
+                                            <TuningPreview
+                                                tuning={tuning}
+                                                active={tuning.id === tuningContext.tuning.id}
+                                                onClick={(id) => {
+                                                    const tuning = userDataContext.tunings.find(
+                                                        (tuning) => tuning.id === id)
+                                                    if (!tuning) return
+                                                    tuningContext.setTuning(tuning)
+                                                }}
+                                            />
+                                        )
+                                    })
+                                }
+                            </div>
+                        )
+                    })}
+                </div>
             </div>
         </div>
     )
