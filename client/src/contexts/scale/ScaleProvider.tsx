@@ -1,16 +1,17 @@
 import {useMemo, useState} from "react";
 import type {NoteName, Scale} from "@fretboard/shared/types/scale";
-import {type AccidentalPrefType, type IntervalPrefType, ScaleContext} from "./ScaleContext.ts";
+import {ScaleContext} from "./ScaleContext.ts";
 import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName";
 import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import getScaleDegreeNumbers from "../../formulas/scaleShapes/getScaleDegreeNumbers.ts";
 import {TONES, TONES_FLAT, TONES_SHARP} from "@fretboard/shared/consts";
+import type {AccidentalPrefType, NoteLabelPrefScale} from "@fretboard/shared/types/userPrefs";
 
 export function ScaleProvider({initialScale, children}: {initialScale: Scale, children: React.ReactNode}) {
     const [scale, setScale] = useState<Scale>(initialScale)
     const [accidentalPref, setAccidentalPref] = useState<AccidentalPrefType>(null);
-    const [intervalPref, setIntervalPref] = useState<IntervalPrefType>(null);
+    const [intervalPref, setIntervalPref] = useState<NoteLabelPrefScale>("note");
 
     const degreesToPitches: Set<number>[] = useMemo(() => {
         const arr: Set<number>[] = []
@@ -28,7 +29,7 @@ export function ScaleProvider({initialScale, children}: {initialScale: Scale, ch
     }, [scale])
 
     const degreeNumbers: string[] = useMemo(() => {
-        return getScaleDegreeNumbers(scale.intervals, intervalPref || "nashville")
+        return getScaleDegreeNumbers(scale.intervals, intervalPref !== "note" ? intervalPref : "nashville")
     }, [scale.intervals, intervalPref])
 
     function _setAccidentalPref(accidentalPref: AccidentalPrefType) {

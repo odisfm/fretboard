@@ -105,14 +105,14 @@ export function ScaleDemo() {
                                     scaleContext.setIntervalPref("nashville")
                                     break;
                                 case 1:
-                                    scaleContext.setIntervalPref(null)
+                                    scaleContext.setIntervalPref("note")
                                     break;
                                 case 2:
                                     scaleContext.setIntervalPref("interval")
                                     break;
                             }
                         }}
-                        active={["nashville", null, "interval"].indexOf(scaleContext.intervalPref)}
+                        active={["nashville", "note", "interval"].indexOf(scaleContext.intervalPref)}
                         styles={`w-10 h-7`}
                     />
                     <Tooltip children={

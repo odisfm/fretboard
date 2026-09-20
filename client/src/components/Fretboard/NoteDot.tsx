@@ -135,7 +135,7 @@ export default function NoteDot(
     } else {
         if (fdContext.type === "scale") {
             switch (scaleContext.intervalPref) {
-                case null:
+                case "note":
                     text = midiPitchToNoteName(pitch, false, spelling)
                     break
                 case "nashville":
@@ -153,7 +153,6 @@ export default function NoteDot(
             }
         } else if (fdContext.type === "chord") {
             switch (chordContext.intervalPref) {
-                case null:
                 case "note":
                     text = midiPitchToNoteName(pitch, false, spelling)
                     break
