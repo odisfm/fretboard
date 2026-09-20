@@ -15,9 +15,10 @@ type Props = {
     active: number | null;
     fingerShape: FingerShape;
     index: number
+    showLabel: boolean;
 }
 
-export default function ShapeButton({onClick, setScrollToFret, fingerShape, index, active}: Props) {
+export default function ShapeButton({onClick, setScrollToFret, fingerShape, index, active, showLabel}: Props) {
     const userDataContext = useUserData()
     const fdContext = useFretboardDisplay()
     const featureContext = useFeature()
@@ -53,6 +54,16 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
 
     const favShapeFitted = isFav && fingerShape?.isAdjusted
 
+    const label = useMemo(() => {
+        if (!showLabel) return ""
+        if (fdContext.type === "scale") {
+            return `${fingerShape.scale?.tonic} ${fingerShape.scale?.name}${fingerShape.isAdjusted ? "*" : ""}`
+        } else if (fdContext.type === "chord") {
+            return `${fingerShape.chord?.root} ${fingerShape.chord?.quality}`
+        }
+        return ""
+    }, [fingerShape, fdContext.type, showLabel])
+
     return (
 
             <div
@@ -77,6 +88,9 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
                 >
                 <ShapePreview shape={fingerShape}/>
                 </Button>
+                {showLabel &&
+                    <span className={`text-sm font-light`}>{label}</span>
+                }
             </div>
     )
 }

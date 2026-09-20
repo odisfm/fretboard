@@ -16,6 +16,8 @@ import {isSameScale, isSameScaleShape, isSameTuning} from "@fretboard/shared/uti
 import {ShapeGenFilter} from "./components/Fretboard/ShapeGenFilter.tsx";
 import {fitShapeToNewTonic} from "./formulas/scaleShapes/fitShapeToNewTonic.ts";
 import {FretboardDisplayContext} from "./contexts/fretboardDisplay/FretboardDisplayContext.ts";
+import {ButtonGroup} from "./components/generic/ButtonGroup.tsx";
+import {BinaryToggle} from "./components/generic/BinaryToggle.tsx";
 
 function dedupeShapes(shapes: ScaleShape[]): ScaleShape[] {
     const result: ScaleShape[] = []
@@ -47,6 +49,8 @@ export default function FretboardDemo() {
     const [fitSavedShapes, setFitSavedShapes] = useState(true)
     const [sortScaleShapeStrategy, setSortScaleShapeStrategy] =
         useState<SortScaleShapesStrategy>(sortScaleShapesStrategies[0].strategy)
+    const [shapeMode, setShapeMode] = useState<"finder" | "saved">("finder")
+    const [onlyShapesInKey, setOnlyShapesInKey] = useState(false)
 
     const generatedShapes = useMemo(() => {
         let scaleShapes = generateScaleShapes(
@@ -62,21 +66,40 @@ export default function FretboardDemo() {
         let relevant: ScaleShape[] = []
 
         for (const s of userDataContext.scaleShapes) {
-            if (!fitSavedShapes) {
+            if ((shapeMode === "finder" && !fitSavedShapes)) {
                 if (!isSameScale(s.scale, scaleContext.scale, true)) continue
                 if (!isSameTuning(tuning, s.tuning, true)) continue
                 relevant.push(s)
             } else {
-                if (isSameScale(s.scale, scaleContext.scale, false)){
-                    if (isSameTuning(tuning, s.tuning, true)) {
-                        if (s.scale.tonic === scaleContext.scale.tonic) {
-                            relevant.push(s)
-                            continue
+                if (shapeMode === "finder") {
+                    if (isSameScale(s.scale, scaleContext.scale, false)) {
+                        if (isSameTuning(tuning, s.tuning, true)) {
+                            if (s.scale.tonic === scaleContext.scale.tonic) {
+                                relevant.push(s)
+                                continue
+                            }
+                            const result = fitShapeToNewTonic(s, scaleContext.scale.tonic)
+                            if (result) {
+                                relevant.push(result)
+                            }
                         }
-                        const result = fitShapeToNewTonic(s, scaleContext.scale.tonic)
-                        if (result) {
-                            relevant.push(result)
+                    }
+                } else if (shapeMode === "saved") {
+                    if (onlyShapesInKey) {
+                        if (isSameScale(s.scale, scaleContext.scale, false)) {
+                            if (fitSavedShapes) {
+                                const result = fitShapeToNewTonic(s, scaleContext.scale.tonic)
+                                if (result) {
+                                    relevant.push(result)
+                                }
+                            } else {
+                                if (s.scale.tonic === scaleContext.scale.tonic) {
+                                    relevant.push(s)
+                                }
+                            }
                         }
+                    } else {
+                        relevant.push(s)
                     }
                 }
             }
@@ -88,27 +111,44 @@ export default function FretboardDemo() {
         }
 
         return relevant
-    }, [userDataContext.scaleShapes, tuning, scaleContext.scale, filterSavedShapes, shapeGenOptions, fitSavedShapes])
+    }, [userDataContext.scaleShapes, tuning, scaleContext.scale,
+        filterSavedShapes, shapeGenOptions, fitSavedShapes, onlyShapesInKey, shapeMode])
 
     const scaleShapes: ScaleShape[] = useMemo(() => {
-        const dedupedSaved = dedupeShapes(relevantSavedShapes).sort((a, b) => {
-            if (a?.isAdjusted && b?.isAdjusted) return 0
-            else if (a?.isAdjusted && !b?.isAdjusted) return 1
-            else  return -1
-        })
+        let dedupedSaved = dedupeShapes(relevantSavedShapes)
+        if (shapeMode === "finder") {
+            dedupedSaved = dedupedSaved.sort((a, b) => {
+                if (a?.isAdjusted && b?.isAdjusted) return 0
+                else if (a?.isAdjusted && !b?.isAdjusted) return 1
+                else return -1
+            })
+        }
         const shapes: ScaleShape[] = [...dedupedSaved]
-        for (const gs of generatedShapes) {
-            if (!dedupedSaved.some(rs => isSameScaleShape(gs, rs))) {
-                shapes.push(gs)
+        if (shapeMode === "finder") {
+            for (const gs of generatedShapes) {
+                if (!dedupedSaved.some(rs => isSameScaleShape(gs, rs))) {
+                    shapes.push(gs)
+                }
             }
         }
         return shapes
-    }, [relevantSavedShapes, generatedShapes])
+    }, [relevantSavedShapes, generatedShapes, shapeMode])
 
     function _setActiveScaleShape(idx: number | null) {
+        if (idx === null) return setActiveScaleShapeIdx(idx)
+        const shape = scaleShapes.at(idx)
+        if (!shape) return setActiveScaleShapeIdx(null)
         setActiveScaleShapeIdx(idx)
+        if (shapeMode === "saved" && !onlyShapesInKey) {
+            scaleContext.setScale(shape.scale)
+        }
     }
 
+    const showLabels = useMemo(() => {
+        if (shapeMode === "finder") return false
+        if (onlyShapesInKey) return false
+        return true
+    }, [shapeMode, onlyShapesInKey])
 
     return (
         <>
@@ -134,13 +174,49 @@ export default function FretboardDemo() {
             </FretboardDisplayContext>
 
             <FretboardDisplayContext value={{variant: "preview", zoom: 1.0, outShapeOpacity: 0, type: "scale"}}>
-                <ShapePicker
+                <div className={`flex flex-col p-2 rounded-md bg-neutral-950 gap-2 min-h-60`}>
+                    <ShapePicker
                     onClick={_setActiveScaleShape}
                     active={activeScaleShapeIdx}
                     fingerShapes={scaleShapes}
                     setScrollToFret={setScrollToFret}
                     type={"scale"}
+                    showLabels={showLabels}
                 />
+                    <div className={`flex gap-4 items-start mt-auto min-h-15`}>
+                        <ButtonGroup
+                            _children={["Shape finder", "Saved shapes"]}
+                            onClick={(i) => {
+                                switch (i) {
+                                    case 0:
+                                        setShapeMode("finder")
+                                        break
+                                    case 1:
+                                        setShapeMode("saved")
+                                        break
+                                }
+                            }}
+                            active={(() => {
+                                if (shapeMode === "finder") return 0
+                                if (shapeMode === "saved") return 1
+                                return 0
+                            })()}
+                        />
+                        {shapeMode === "saved" &&
+                            <div className={`flex flex-col gap-2 text-xs font-light max-w-25`}>
+                                <BinaryToggle state={onlyShapesInKey} fn={() => {
+                                    setOnlyShapesInKey(!onlyShapesInKey)
+                                }}/>
+                                <legend className={`text-xs`}>
+                                    {`Only ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
+                                </legend>
+                                {fitSavedShapes && onlyShapesInKey &&
+                                <span className={`text-[.6rem]`}>Also transposing</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
             </FretboardDisplayContext>
 
             <ShapeGenFilter
