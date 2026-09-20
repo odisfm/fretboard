@@ -15,6 +15,7 @@ import { RxFontRoman } from "react-icons/rx";
 import { MdMusicNote } from "react-icons/md";
 import Tooltip from "../generic/Tooltip.tsx";
 import {ScalePreview} from "../ScalePreview/ScalePreview.tsx";
+import {ExpandableHeading} from "../ExpandableHeading.tsx";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
@@ -48,6 +49,7 @@ export function ScaleDemo() {
     }
 
     return (
+        <ExpandableHeading heading={"Scale"} collapsedHeading={`Scale | ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}>
             <div className={`flex flex-wrap flex-1 gap-4 bg-neutral-900 rounded-md p-4 min-w-0`}>
                 <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
                     <div className={`overflow-x-scroll min-w-0`}>
@@ -143,5 +145,6 @@ export function ScaleDemo() {
                     })}
                 </div>
             </div>
+        </ExpandableHeading>
     )
 }
