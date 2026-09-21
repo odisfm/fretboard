@@ -51,7 +51,17 @@ export function ScaleDemo() {
 
     return (
         <ExpandableHeading heading={"Scale"} collapsedHeading={`Scale | ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}>
-            <div className={`flex flex-wrap flex-1 gap-4 bg-neutral-900 rounded-md p-4 min-w-0`}>
+            <div className={`flex sm:flex-wrap md:flex-nowrap self-start gap-8 bg-neutral-900 rounded-md p-4 min-w-0 w-min`}>
+                <div className={`flex flex-col h-60 w-70 overflow-y-scroll overflow-x-clip rounded-lg`}>
+                    {userDataContext.scales.map((scale) => {
+                        return (
+                            <ScalePreview
+                                scale={{...scale, tonic: scaleContext.scale.tonic}}
+                                active={scale.id === scaleContext.scale.id}
+                            />
+                        )
+                    })}
+                </div>
                 <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
                     <h2 className={`text-3xl font-bold`}>
                         {`${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
@@ -137,17 +147,6 @@ export function ScaleDemo() {
                         </div>
 
                     </div>
-                </div>
-
-                <div className={`flex flex-col h-60 overflow-y-scroll overflow-x-clip rounded-lg ml-auto`}>
-                    {userDataContext.scales.map((scale) => {
-                        return (
-                            <ScalePreview
-                                scale={{...scale, tonic: scaleContext.scale.tonic}}
-                                active={scale.id === scaleContext.scale.id}
-                            />
-                        )
-                    })}
                 </div>
             </div>
         </ExpandableHeading>

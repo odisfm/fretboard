@@ -2,9 +2,10 @@ type Props = {
     label: string
     interval: string
     opacity?: number
+    styles?: string
 }
 
-export function ScaleDot({label, interval, opacity}: Props) {
+export function ScaleDot({label, interval, opacity, styles}: Props) {
     let intervalStyles = ""
 
     switch (interval) {
@@ -22,7 +23,7 @@ export function ScaleDot({label, interval, opacity}: Props) {
     return (
         <div
             className={`
-            h-6 w-6 flex items-center justify-center rounded-full text-xs font-bold ${intervalStyles}
+            h-6 w-6 flex items-center justify-center rounded-full text-xs font-bold ${intervalStyles} ${styles}
             `}
             style={{
                 opacity: `${opacity || 100}%`

@@ -6,6 +6,8 @@ import getScaleDegreeNumbers from "../../formulas/scaleShapes/getScaleDegreeNumb
 import {useScale} from "../../contexts/scale/useScale.ts";
 import {ScaleDot} from "../ScalePreview/ScaleDot.tsx";
 
+const dotStyles = `transition-colors transition-opacity`
+
 export function ScaleIntervalGrid({scale}: {scale: Scale}) {
     const scaleContext = useScale()
 
@@ -56,6 +58,7 @@ export function ScaleIntervalGrid({scale}: {scale: Scale}) {
             {nashvilleLabels.map((label, i) => {
                 return (
                     <ScaleDot
+                        styles={dotStyles}
                         label={label}
                         interval={scaleContext.intervalPref === "nashville" ? intervalLabels[i] : ""
                         }
@@ -66,6 +69,7 @@ export function ScaleIntervalGrid({scale}: {scale: Scale}) {
             {labels.map((label, i) => {
                 return (
                     <ScaleDot
+                        styles={dotStyles}
                         label={label}
                         interval={scaleContext.intervalPref === "note" ? intervalLabels[i] : ""
                             }
@@ -76,6 +80,7 @@ export function ScaleIntervalGrid({scale}: {scale: Scale}) {
             {intervalLabels.map((label, i) => {
                 return (
                     <ScaleDot
+                        styles={dotStyles}
                         label={label}
                         interval={scaleContext.intervalPref === "interval" ? intervalLabels[i] : ""}
                         opacity={scaleContext.intervalPref === "interval" ? 100 : 50}
