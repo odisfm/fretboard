@@ -28,7 +28,7 @@ export default function Fretboard(
         scrollToFret
     }: Props) {
     const fdContext = useFretboardDisplay()
-    const fretsToRender = (endFret - startFret) + 1
+    const fretsToRender = Math.max((endFret - startFret) + 1, 3)
     const fretRefs = useRef<(HTMLDivElement | null)[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
 

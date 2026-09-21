@@ -18,6 +18,7 @@ import {fitShapeToNewTonic} from "./formulas/scaleShapes/fitShapeToNewTonic.ts";
 import {FretboardDisplayContext} from "./contexts/fretboardDisplay/FretboardDisplayContext.ts";
 import {ButtonGroup} from "./components/generic/ButtonGroup.tsx";
 import {BinaryToggle} from "./components/generic/BinaryToggle.tsx";
+import {ShapePickerContainer} from "./components/containers/ShapePickerContainer.tsx";
 
 function dedupeShapes(shapes: ScaleShape[]): ScaleShape[] {
     const result: ScaleShape[] = []
@@ -174,7 +175,7 @@ export default function FretboardDemo() {
             </FretboardDisplayContext>
 
             <FretboardDisplayContext value={{variant: "preview", zoom: 1.0, outShapeOpacity: 0, type: "scale"}}>
-                <div className={`flex flex-col p-2 rounded-md bg-neutral-950 gap-2 min-h-60`}>
+                <ShapePickerContainer >
                     <ShapePicker
                     onClick={_setActiveScaleShape}
                     active={activeScaleShapeIdx}
@@ -182,6 +183,7 @@ export default function FretboardDemo() {
                     setScrollToFret={setScrollToFret}
                     type={"scale"}
                     showLabels={showLabels}
+                    shapeMode={shapeMode}
                 />
                     <div className={`flex flex-wrap gap-4 items-start mt-auto min-h-15`}>
                         <ButtonGroup
@@ -218,7 +220,7 @@ export default function FretboardDemo() {
                             }
                         </div>
                     </div>
-                </div>
+                </ShapePickerContainer>
             </FretboardDisplayContext>
 
             <ShapeGenFilter

@@ -18,6 +18,11 @@ import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameChord, isSameChordShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 import {ChordFilters} from "./components/ChordFilters/ChordFilters.tsx";
 import {v4 as createUuid} from "uuid";
+import {ShapePickerContainer} from "./components/containers/ShapePickerContainer.tsx";
+import {ButtonGroup} from "./components/generic/ButtonGroup.tsx";
+import {BinaryToggle} from "./components/generic/BinaryToggle.tsx";
+import {styleNoteName} from "@fretboard/shared/utils/styleNoteName";
+import {fitChordShapeToNewTonic} from "./formulas/chordShapes/fitChordToNewTonic.ts";
 
 function dedupeShapes(shapes: ChordShape[]): ChordShape[] {
     const result: ChordShape[] = []
@@ -63,6 +68,8 @@ export function ChordDemo() {
     const [chordShapeFilters, setChordShapeFilters] = useState<GenerateChordShapeOptions>(
         defaultGenerateChordShapeOptions
     )
+    const [onlyShapesOnRoot, setOnlyShapesOnRoot] = useState(false)
+    const [shapeMode, setShapeMode] = useState<"finder" | "saved">("finder")
     console.log({fitSavedShapes, setFitSavedShapes}) // it's a surprise tool that will help us later
 
     function _setChordPickerOptions(chordPickerOptions: ChordPickerOptions) {
@@ -87,28 +94,73 @@ export function ChordDemo() {
     const relevantSavedShapes: ChordShape[] = useMemo(() => {
         const relevant: ChordShape[] = []
         for (const s of userData.chordShapes) {
-            // todo: fit saved shapes
-            if (isSameChord(s.chord, chordContext.chord)) {
-                if (isSameTuning(s.tuning, tuning)) {
+            if (shapeMode === "finder") {
+                if (isSameChord(s.chord, chordContext.chord)) {
+                    if (isSameTuning(s.tuning, tuning)) {
+                        if (s.chord.root === chordContext.chord.root) {
+                            relevant.push(s)
+                        } else if (fitSavedShapes) {
+                            const result = fitChordShapeToNewTonic(s, chordContext.chord.root)
+                            if (result) relevant.push(result)
+                        }
+                    }
+                } else {
+                    relevant.push(s)
+                }
+            } else if (shapeMode === "saved") {
+                if (onlyShapesOnRoot) {
+                    if (isSameChord(s.chord, chordContext.chord)) {
+                        if (isSameTuning(s.tuning, tuning)) {
+                            if (s.chord.root === chordContext.chord.root) {
+                                relevant.push(s)
+                            } else if (fitSavedShapes) {
+                                const result = fitChordShapeToNewTonic(s, chordContext.chord.root)
+                                if (result) relevant.push(result)
+                            }
+                        }
+                    }
+                } else {
                     relevant.push(s)
                 }
             }
         }
 
         return relevant
-    }, [userData.chordShapes, tuning, chordContext.chord])
+    }, [userData.chordShapes, tuning, chordContext.chord, fitSavedShapes, onlyShapesOnRoot, shapeMode])
 
     const chordShapes: ChordShape[] = useMemo(() => {
         const dedupedSaved = dedupeShapes(relevantSavedShapes)
-        const shapes: ChordShape[] = [...dedupedSaved]
-        for (const gs of generatedShapes) {
-            if (!dedupedSaved.some(rs => isSameChordShape(gs, rs))) {
-                shapes.push(gs)
+        let shapes: ChordShape[] = [...dedupedSaved]
+        if (filterSavedShapes) {
+            shapes = shapes.filter((shape) => {
+                if (!chordShapeFilters.barres && shape.barres.length) return false
+                if (chordShapeFilters.openStrings) {
+                    for (const p of shape.shape) {
+                        if (p.fret === 0) return false
+                    }
+                }
+                if (chordShapeFilters.lowFret && shape.lowFret < chordShapeFilters.lowFret) return false
+                if (chordShapeFilters.highFret && shape.highFret > chordShapeFilters.highFret) return false
+                if (chordShapeFilters.fingers) {
+                    for (const p of shape.shape) {
+                        if (p.finger && p.finger > chordShapeFilters.fingers) return false
+                    }
+                }
+
+                return true
+            })
+        }
+        if (shapeMode === "finder") {
+            for (const gs of generatedShapes) {
+                if (!dedupedSaved.some(rs => isSameChordShape(gs, rs))) {
+                    shapes.push(gs)
+                }
             }
         }
+
         return shapes
 
-        }, [relevantSavedShapes, generatedShapes])
+        }, [relevantSavedShapes, generatedShapes, shapeMode, filterSavedShapes, chordShapeFilters])
 
     useEffect(() => {
         (async () => {
@@ -132,6 +184,12 @@ export function ChordDemo() {
             chordContext.setChordShape(chordShapes[shapeIdx])
         }
     }
+
+    const showLabels = useMemo(() => {
+        if (shapeMode === "finder") return false
+        if (onlyShapesOnRoot) return false
+        return true
+    }, [shapeMode, onlyShapesOnRoot])
 
     return (
         <>
@@ -169,14 +227,54 @@ export function ChordDemo() {
             >
             </Button>
             <FretboardDisplayContext value={{zoom: 1, variant: "preview", outShapeOpacity: 0, type: "chord"}}>
-                <ShapePicker
-                    onClick={(idx) => {_setActiveShapeIdx(idx)}}
-                    active={activeShapeIdx}
-                    fingerShapes={chordShapes}
-                    setScrollToFret={setScrollToFret}
-                    type={"chord"}
-                    showLabels={false}
-                />
+                <ShapePickerContainer>
+                    <ShapePicker
+                        onClick={(idx) => {_setActiveShapeIdx(idx)}}
+                        active={activeShapeIdx}
+                        fingerShapes={chordShapes}
+                        setScrollToFret={setScrollToFret}
+                        type={"chord"}
+                        showLabels={showLabels}
+                        shapeMode={shapeMode}
+                    />
+
+                    <div className={`flex flex-wrap gap-4 items-start mt-auto min-h-15`}>
+                        <ButtonGroup
+                            _children={["Shape finder", "Saved shapes"]}
+                            onClick={(i) => {
+                                switch (i) {
+                                    case 0:
+                                        setShapeMode("finder")
+                                        break
+                                    case 1:
+                                        setShapeMode("saved")
+                                        break
+                                }
+                            }}
+                            active={(() => {
+                                if (shapeMode === "finder") return 0
+                                if (shapeMode === "saved") return 1
+                                return 0
+                            })()}
+                        />
+                        <div className={`flex gap-2 min-w-0 overflow-x-scroll`}>
+                            {shapeMode === "saved" &&
+                                <div className={`flex flex-col gap-2 text-xs font-light max-w-25`}>
+                                    <BinaryToggle state={onlyShapesOnRoot} fn={() => {
+                                        setOnlyShapesOnRoot(!onlyShapesOnRoot)
+                                    }}/>
+                                    <legend className={`text-xs`}>
+                                        {`Only ${styleNoteName(chordContext.chord.root)}${chordContext.chord.quality}`}
+                                    </legend>
+                                    {fitSavedShapes && onlyShapesOnRoot &&
+                                        <span className={`text-[.6rem]`}>Also transposing</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                </ShapePickerContainer>
             </FretboardDisplayContext>
             <ChordFilters
                 chordShapeFilters={chordShapeFilters}
