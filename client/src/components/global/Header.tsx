@@ -9,7 +9,10 @@ export function Header() {
     return (
         <header className={`bg-black p-2 flex gap-2`}>
             <Link to={"/"} className={`mr-auto py-1 px-2 rounded-md hover:bg-neutral-800`}>
-                <h1 className={`font-bold text-lg`}>fretboard</h1>
+                <h1 className={`font-bold text-2xl`}>
+                    <span className={`text-white/100`}>fret</span>
+                    <span className={`text-white/80`}>yorb</span>
+                </h1>
             </Link>
             <NetworkStatus/>
             { authContext.auth ?
