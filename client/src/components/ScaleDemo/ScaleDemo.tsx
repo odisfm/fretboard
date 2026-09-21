@@ -17,10 +17,17 @@ import Tooltip from "../generic/Tooltip.tsx";
 import {ScalePreview} from "../ScalePreview/ScalePreview.tsx";
 import {ExpandableHeading} from "../ExpandableHeading.tsx";
 import {ScaleIntervalGrid} from "./ScaleIntervalGrid.tsx";
+import Button from "../generic/Button.tsx";
+import {PiSpeakerNoneFill} from "react-icons/pi";
+import {useMemo} from "react";
+import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
+import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
+import {useAudio} from "../../contexts/audio/useAudio.tsx";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
     const userDataContext = useUserData()
+    const audioContext = useAudio()
     let tones: string[]
     let tonesStyled: string[]
     switch(scaleContext.accidentalPref) {
@@ -48,6 +55,18 @@ export function ScaleDemo() {
     function setTonicByIndex(i: number) {
         setTonic(tones[i] as NoteName)
     }
+
+    const audioPitches: string[] = useMemo(() => {
+        const midiPitches: number[] = []
+        let lastPitch = indexForNoteName(scaleContext.scale.tonic) + 48
+        midiPitches.push(lastPitch)
+        for (const i of scaleContext.scale.intervals) {
+            midiPitches.push(lastPitch + i)
+            lastPitch = lastPitch + i
+        }
+
+        return midiPitches.map((p) => midiPitchToNoteName(p))
+    }, [scaleContext.scale])
 
     return (
         <ExpandableHeading
@@ -77,7 +96,17 @@ export function ScaleDemo() {
                     <h2 className={`text-3xl font-bold`}>
                         {`${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
                     </h2>
-                    <ScaleIntervalGrid scale={scaleContext.scale} />
+                    <div className={`flex gap-2 items-center`}>
+                        <ScaleIntervalGrid scale={scaleContext.scale}/>
+                        <Button
+                            variant={"subtle"}
+                            onClick={() => {
+                                audioContext.playNotes(audioPitches, "8n", 0.3, false)
+                            }}
+                        >
+                            <PiSpeakerNoneFill />
+                        </Button>
+                    </div>
                     <div className={`overflow-x-scroll min-w-0 mt-auto`}>
                         <ButtonGroup
                             onClick={setTonicByIndex}

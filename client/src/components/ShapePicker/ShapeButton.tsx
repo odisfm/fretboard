@@ -9,6 +9,9 @@ import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardD
 import {useFeature} from "../../contexts/feature/useFeature.ts";
 import type {ChordShape} from "@fretboard/shared/types/chord";
 import {styleNoteName} from "@fretboard/shared/utils/styleNoteName";
+import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
+import {useAudio} from "../../contexts/audio/useAudio.tsx";
+import {PiSpeakerNoneFill} from "react-icons/pi";
 
 type Props = {
     onClick: (index: number) => void;
@@ -23,6 +26,7 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
     const userDataContext = useUserData()
     const fdContext = useFretboardDisplay()
     const featureContext = useFeature()
+    const audioContext = useAudio()
     const isFav = useMemo(() => {
         let arr
         if (featureContext.feature === "scale") arr = userDataContext.scaleShapes
@@ -68,6 +72,18 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
         return ""
     }, [fingerShape, fdContext.type, showLabel])
 
+    const pitches: string[] = useMemo(() => {
+        const pitches: string[] = []
+        if (fdContext.type === "scale") return []
+        else if (fdContext.type === "chord") {
+            for (const pos of fingerShape.shape) {
+                const pitch = fingerShape.tuning.strings[pos.stringIndex] + pos.fret
+                pitches.push(midiPitchToNoteName(pitch))
+            }
+        }
+        return pitches
+    }, [fdContext.type, fingerShape])
+
     return (
 
             <div
@@ -80,6 +96,16 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
                         styles={`self-start`}
                         extraHeartStyles={`${favShapeFitted && `!text-lime-400`}`}
                     />
+                    {pitches.length > 0 &&
+                        <Button
+                            variant={"subtle"}
+                            onClick={() => {
+                                audioContext.playNotes(pitches, "1b", 0.3, true)
+                            }}
+                        >
+                            <PiSpeakerNoneFill />
+                        </Button>
+                    }
                     <span className={`ml-auto text-xs font-bold`}><sup>#</sup>{`${index + 1}`}</span>
                 </div>
                 <Button
