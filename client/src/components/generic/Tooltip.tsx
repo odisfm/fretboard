@@ -1,21 +1,28 @@
 import {FaQuestion, FaExclamation} from "react-icons/fa";
 import {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
+import {createPortal} from "react-dom";
 
 type Props = {
     icon?: "bang" | "question"
     children?: React.ReactNode
     text?: string
-    iconStyles?: string,
-    tooltipStyles?: string,
-}
+    iconStyles?: string
+    tooltipStyles?: string
+};
 
-type Side = { x: "left" | "right"; y: "top" | "bottom" };
+type Pos = { top: number; left: number; transform: string };
 
-function getSide(el: HTMLElement): Side {
-    const rect = el.getBoundingClientRect();
+const GAP = 8;
+
+function getPos(el: HTMLElement): Pos {
+    const r = el.getBoundingClientRect();
+    const alignLeft = r.left + r.width / 2 < window.innerWidth / 2;
+    const below = r.top + r.height / 2 < window.innerHeight / 2;
+
     return {
-        x: rect.left + rect.width / 2 < window.innerWidth / 2 ? "left" : "right",
-        y: rect.top + rect.height / 2 < window.innerHeight / 2 ? "top" : "bottom",
+        left: alignLeft ? r.left : r.right,
+        top: below ? r.bottom + GAP : r.top - GAP,
+        transform: `translate(${alignLeft ? "0" : "-100%"}, ${below ? "0" : "-100%"})`,
     };
 }
 
@@ -27,63 +34,67 @@ export default function Tooltip({
                                     tooltipStyles = "",
                                 }: Props) {
     const ref = useRef<HTMLDivElement>(null);
-    const [side, setSide] = useState<Side>({x: "left", y: "top"});
-    const [manualVisible, setManualVisible] = useState<boolean>(false);
+    const [pos, setPos] = useState<Pos | null>(null);
+    const [hovered, setHovered] = useState(false);
+    const [manualVisible, setManualVisible] = useState(false);
 
-    const updateSide = useCallback(() => {
-        if (ref.current) setSide(getSide(ref.current));
+    const open = hovered || manualVisible;
+
+    const updatePos = useCallback(() => {
+        if (ref.current) setPos(getPos(ref.current));
     }, []);
 
     useLayoutEffect(() => {
-        updateSide();
-        window.addEventListener("resize", updateSide);
-        // capture phase so scrolling inside any container also recomputes
-        window.addEventListener("scroll", updateSide, true);
+        if (!open) return;
+        updatePos();
+        window.addEventListener("resize", updatePos);
+        window.addEventListener("scroll", updatePos, true);
         return () => {
-            window.removeEventListener("resize", updateSide);
-            window.removeEventListener("scroll", updateSide, true);
+            window.removeEventListener("resize", updatePos);
+            window.removeEventListener("scroll", updatePos, true);
         };
-    }, [updateSide]);
+    }, [open, updatePos]);
 
     useEffect(() => {
-        function dismissOnClickOutside() {
-            setManualVisible(false)
-        }
-
-        if (manualVisible) {
-            document.addEventListener("click", dismissOnClickOutside);
-        } else {
-            document.removeEventListener("click", dismissOnClickOutside);
-        }
+        if (!manualVisible) return;
+        const dismiss = () => setManualVisible(false);
+        document.addEventListener("click", dismiss);
+        return () => document.removeEventListener("click", dismiss);
     }, [manualVisible]);
 
-    const horizontal = side.x === "left" ? "left-0" : "right-0";
-    const vertical = side.y === "top" ? "top-full mt-2" : "bottom-full mb-2";
-
     return (
-        <div className="inline-flex mt-1" ref={ref} onPointerEnter={updateSide}>
-            <div className={`
-                relative h-3 text-xs aspect-square rounded-full group
-                bg-black hover:bg-white text-white hover:text-black flex items-center justify-center
-                ${iconStyles}
-            `}
-                 onClick={(e) => {
-                     e.stopPropagation();
-                     setManualVisible(!manualVisible)
-                 }}
+        <div className="inline-flex mt-1">
+            <div
+                ref={ref}
+                className={`
+                    h-3 text-xs aspect-square rounded-full
+                    bg-black hover:bg-white text-white hover:text-black
+                    flex items-center justify-center ${iconStyles}
+                `}
+                onPointerEnter={() => setHovered(true)}
+                onPointerLeave={() => setHovered(false)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setManualVisible(v => !v);
+                }}
             >
                 {icon === "question" && <FaQuestion size={10}/>}
                 {icon === "bang" && <FaExclamation size={12}/>}
-                <div className={`
-                    absolute ${vertical} ${horizontal}
-                    w-50 max-w-[50dvw]
-                    invisible group-hover:visible ${manualVisible && "!visible"}
-                    p-4 bg-neutral-900 text-white z-[1000] ${tooltipStyles}
-                `}
+            </div>
+
+            {open && pos && createPortal(
+                <div
+                    style={{top: pos.top, left: pos.left, transform: pos.transform}}
+                    className={`
+                        fixed w-50 max-w-[50dvw] p-4
+                        bg-neutral-900 text-white z-[1000] pointer-events-none
+                        ${tooltipStyles}
+                    `}
                 >
                     {children ?? text}
-                </div>
-            </div>
+                </div>,
+                document.body
+            )}
         </div>
-    )
+    );
 }
