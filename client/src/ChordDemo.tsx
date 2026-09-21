@@ -17,6 +17,7 @@ import type {ChordShape} from "@fretboard/shared/types/chord";
 import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameChord, isSameChordShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
 import {ChordFilters} from "./components/ChordFilters/ChordFilters.tsx";
+import {v4 as createUuid} from "uuid";
 
 function dedupeShapes(shapes: ChordShape[]): ChordShape[] {
     const result: ChordShape[] = []
@@ -69,6 +70,7 @@ export function ChordDemo() {
         chordContext.setChord({
             ...chordContext.chord,
             intervals: intervals,
+            id: createUuid()
         })
         setChordPickerOptions(chordPickerOptions)
     }

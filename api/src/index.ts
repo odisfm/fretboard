@@ -8,6 +8,7 @@ import {db} from "@fretboard/shared";
 import {authRouter} from "./routes/auth";
 import {chordShapeRouter} from "./routes/chordShape";
 import {prefsRouter} from "./routes/prefs";
+import {chordRouter} from "./routes/chord";
 
 export const app = createHono()
 
@@ -45,5 +46,6 @@ app.route("/user-data", testUserDataRouter)
 app.route("/tuning", tuningRouter)
 app.route("/scale-shape", scaleShapeRouter)
 app.route("/chord-shape", chordShapeRouter)
+app.route("/chord", chordRouter)
 app.route("/auth", authRouter)
 app.route("/prefs", prefsRouter)

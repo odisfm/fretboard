@@ -1,7 +1,7 @@
 import {ScaleSchema, type ScaleShape, ScaleShapeSchema} from "./scale";
 import {type Tuning, TuningSchema} from "./tuning";
 import * as z from "zod";
-import {type ChordShape, ChordShapeSchema} from "./chord";
+import {type Chord, ChordSchema, type ChordShape, ChordShapeSchema} from "./chord";
 import {UserPrefSchema} from "./userPrefs";
 
 export const TestUserDataSchema = z.object({
@@ -9,6 +9,7 @@ export const TestUserDataSchema = z.object({
     tunings: z.array(TuningSchema),
     scaleShapes: z.array(ScaleShapeSchema),
     chordShapes: z.array(ChordShapeSchema),
+    chords: z.array(ChordSchema),
     prefs: UserPrefSchema
 })
 
@@ -20,6 +21,10 @@ export type TuningResponse = {
 
 export type ScaleShapeResponse = {
     scaleShape: ScaleShape,
+}
+
+export type ChordResponse = {
+    chord: Chord
 }
 
 export type ChordShapeResponse = {

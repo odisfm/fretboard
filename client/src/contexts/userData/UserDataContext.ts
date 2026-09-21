@@ -13,11 +13,11 @@ type UserDataContextValue = {
     scaleShapes: ScaleShape[]
     chordShapes: ChordShape[]
     chords: Chord[]
-    setChords: (chords: Chord[]) => void
     connectionStatus: boolean
     initialised: boolean,
     toggleSavedScaleShape: (shape: ScaleShape) => void,
     toggleSavedChordShape: (shape: ChordShape) => void,
+    toggleSavedChord: (chord: Chord) => void,
     waitOnServer: boolean,
     prefs: UserPrefType,
     setPrefs: (value: UserPrefType) => void,
