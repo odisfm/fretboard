@@ -183,7 +183,7 @@ export default function FretboardDemo() {
                     type={"scale"}
                     showLabels={showLabels}
                 />
-                    <div className={`flex gap-4 items-start mt-auto min-h-15`}>
+                    <div className={`flex flex-wrap gap-4 items-start mt-auto min-h-15`}>
                         <ButtonGroup
                             _children={["Shape finder", "Saved shapes"]}
                             onClick={(i) => {
@@ -202,19 +202,21 @@ export default function FretboardDemo() {
                                 return 0
                             })()}
                         />
-                        {shapeMode === "saved" &&
-                            <div className={`flex flex-col gap-2 text-xs font-light max-w-25`}>
-                                <BinaryToggle state={onlyShapesInKey} fn={() => {
-                                    setOnlyShapesInKey(!onlyShapesInKey)
-                                }}/>
-                                <legend className={`text-xs`}>
-                                    {`Only ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
-                                </legend>
-                                {fitSavedShapes && onlyShapesInKey &&
-                                <span className={`text-[.6rem]`}>Also transposing</span>
-                                }
-                            </div>
-                        }
+                        <div className={`flex gap-2 min-w-0 overflow-x-scroll`}>
+                            {shapeMode === "saved" &&
+                                <div className={`flex flex-col gap-2 text-xs font-light max-w-25`}>
+                                    <BinaryToggle state={onlyShapesInKey} fn={() => {
+                                        setOnlyShapesInKey(!onlyShapesInKey)
+                                    }}/>
+                                    <legend className={`text-xs`}>
+                                        {`Only ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
+                                    </legend>
+                                    {fitSavedShapes && onlyShapesInKey &&
+                                        <span className={`text-[.6rem]`}>Also transposing</span>
+                                    }
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </FretboardDisplayContext>

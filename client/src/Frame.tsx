@@ -10,7 +10,7 @@ export function Frame() {
     const pathname = location.pathname;
     return (
             <UserDataProvider>
-                <div className={`max-w-[100vw]`}>
+                <div className={`max-w-[100vw] min-w-0`}>
                     <Header />
                     <FeatureProvider initialFeature={pathname.startsWith("/chord") ? "chord" : "scale"}>
                     <AudioProvider>

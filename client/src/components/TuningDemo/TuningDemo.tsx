@@ -168,8 +168,8 @@ export default function TuningDemo() {
                         })}
                     </div>
                 </div>
-                <div className={`flex flex-col gap-6 min-w-0`}>
-                    <div className={`min-h-10`}>
+                <div className={`flex flex-col gap-2 min-w-0`}>
+                    <div className={`min-h-8`}>
                         {!renamingTuning ?
                             <h2 className={`text-3xl font-bold`}>
                                 {tuning.name || "Unnamed tuning"}
@@ -193,6 +193,7 @@ export default function TuningDemo() {
                             </form>
                         }
                     </div>
+                    <h3 className={`text-sm font-bold text-white/70`}>{tuning.instrument || ""}</h3>
 
                     <div className={`flex gap-2 items-stretch`}>
                         <Button

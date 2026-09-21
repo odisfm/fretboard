@@ -70,55 +70,75 @@ export function FretboardControls() {
     }, [fdContext.type, userData.prefs.scaleOutOpacity, userData.prefs.chordOutOpacity])
 
     return (
-        <div className={`flex gap-4 p-2 rounded-md bg-neutral-950 overflow-x-auto min-w-0 w-min`}>
-            <div className={fieldsetClasses}>
-                <legend className={legendClasses}>Rotate</legend>
-                <Button onClick={() => {
-                    if (userData.prefs.fretboardRotation === "vertical") {
-                        userData.setPrefs({...userData.prefs, fretboardRotation: "horizontal"})
-                    } else {
-                        userData.setPrefs({...userData.prefs, fretboardRotation: "vertical"})
-                }}}
+        <div className={`flex gap-4 p-2 rounded-md bg-neutral-950`}>
+            <div className={`flex gap-2 overflow-x-scroll`}>
+                <div className={fieldsetClasses}>
+                    <legend className={legendClasses}>Rotate</legend>
+                    <Button onClick={() => {
+                        if (userData.prefs.fretboardRotation === "vertical") {
+                            userData.setPrefs({...userData.prefs, fretboardRotation: "horizontal"})
+                        } else {
+                            userData.setPrefs({...userData.prefs, fretboardRotation: "vertical"})
+                        }
+                    }}
                     >
-                    <FaRotate />
-                </Button>
+                        <FaRotate/>
+                    </Button>
 
-            </div>
-            <div className={fieldsetClasses}>
-                <legend className={legendClasses}>Zoom</legend>
-                <NumberStepper
-                    display={true}
-                    value={userData.prefs.fretboardZoom}
-                    incrementFn={() => incrementFretboardZoom(1)}
-                    decrementFn={() => incrementFretboardZoom(-1)}
-                    variant={"subtle"}
-                    lowerBound={MINIMUM_FRETBOARD_ZOOM}
-                    upperBound={MAXIMUM_FRETBOARD_ZOOM}
-                    displayStyles={``}
-                    buttonStyles={``}
-                    valueDisplayFn={(value): string => {
-                        const num = value as number;
-                        return num.toFixed(1)
-                    }}
-                />
-            </div>
-            <div className={fieldsetClasses}>
-                <legend className={legendClasses}>Non-shape opacity</legend>
-                <NumberStepper
-                    display={true}
-                    value={outShapeOpacity}
-                    incrementFn={() => incrementOutShapeOpacity(1)}
-                    decrementFn={() => incrementOutShapeOpacity(-1)}
-                    variant={"subtle"}
-                    lowerBound={MINIMUM_OUT_SHAPE_OPACITY}
-                    upperBound={MAXIMUM_OUT_SHAPE_OPACITY}
-                    displayStyles={``}
-                    buttonStyles={``}
-                    valueDisplayFn={(value): string => {
-                        const num = value as number;
-                        return num.toFixed(1)
-                    }}
-                />
+                </div>
+                <div className={fieldsetClasses}>
+                    <legend className={legendClasses}>Zoom</legend>
+                    <NumberStepper
+                        display={true}
+                        value={userData.prefs.fretboardZoom}
+                        incrementFn={() => incrementFretboardZoom(1)}
+                        decrementFn={() => incrementFretboardZoom(-1)}
+                        variant={"subtle"}
+                        lowerBound={MINIMUM_FRETBOARD_ZOOM}
+                        upperBound={MAXIMUM_FRETBOARD_ZOOM}
+                        displayStyles={``}
+                        buttonStyles={``}
+                        valueDisplayFn={(value): string => {
+                            const num = value as number;
+                            return num.toFixed(1)
+                        }}
+                    />
+                </div>
+                <div className={fieldsetClasses}>
+                    <legend className={legendClasses}>Non-shape opacity</legend>
+                    <NumberStepper
+                        display={true}
+                        value={outShapeOpacity}
+                        incrementFn={() => incrementOutShapeOpacity(1)}
+                        decrementFn={() => incrementOutShapeOpacity(-1)}
+                        variant={"subtle"}
+                        lowerBound={MINIMUM_OUT_SHAPE_OPACITY}
+                        upperBound={MAXIMUM_OUT_SHAPE_OPACITY}
+                        displayStyles={``}
+                        buttonStyles={``}
+                        valueDisplayFn={(value): string => {
+                            const num = value as number;
+                            return num.toFixed(1)
+                        }}
+                    />
+                </div><div className={fieldsetClasses}>
+                    <legend className={legendClasses}>Non-shape opacity</legend>
+                    <NumberStepper
+                        display={true}
+                        value={outShapeOpacity}
+                        incrementFn={() => incrementOutShapeOpacity(1)}
+                        decrementFn={() => incrementOutShapeOpacity(-1)}
+                        variant={"subtle"}
+                        lowerBound={MINIMUM_OUT_SHAPE_OPACITY}
+                        upperBound={MAXIMUM_OUT_SHAPE_OPACITY}
+                        displayStyles={``}
+                        buttonStyles={``}
+                        valueDisplayFn={(value): string => {
+                            const num = value as number;
+                            return num.toFixed(1)
+                        }}
+                    />
+                </div>
             </div>
         </div>
     )
