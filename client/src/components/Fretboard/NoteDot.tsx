@@ -173,7 +173,7 @@ export default function NoteDot(
 
     if (zeroFretType) {
         if (zeroFretType === "dead") {
-            return <RxCross2 size={40}/>
+            return <RxCross2 size={15 * fdContext.zoom}/>
         }
         if (zeroFretType === "irrelevant") {
             return null
