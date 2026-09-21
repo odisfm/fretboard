@@ -13,11 +13,11 @@ export function Header() {
             </Link>
             <NetworkStatus/>
             { authContext.auth ?
-                <Button onClick={authContext.logOut}>
+                <Button onClick={authContext.logOut} variant={"subtle"}>
                     log out
                 </Button>
                 :
-                <Button onClick={() => navigate("/login")}>
+                <Button onClick={() => navigate("/login")} variant={"subtle"}>
                     log in
                 </Button>
             }

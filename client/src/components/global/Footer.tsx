@@ -5,7 +5,7 @@ const linkButtonStyles = `p-2 rounded-md border-2 border-transparent hover:borde
 
 export function Footer() {
     return (
-        <footer className={`w-full bg-black px-4 py-2 flex items-center gap-2`}>
+        <footer className={`w-full bg-black px-8 py-2 flex items-center gap-2`}>
             <span className={`font-light text-xs mr-auto`}>
                 made by <a href={"https://odis.fm"} className={`font-bold hover:underline`}>odis</a>
             </span>

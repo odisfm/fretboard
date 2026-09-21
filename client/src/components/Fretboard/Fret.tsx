@@ -129,7 +129,7 @@ export default function Fret(
 
     return (
     <div
-        className={`grid border-neutral-300
+        className={`grid border-neutral-300 isolate 
               ${fdContext.variant === "main" && `
                 ${isZeroFret && orientation === "horizontal" && `border-r-4`}
                 ${isZeroFret && orientation === "vertical" && `border-b-4`}
