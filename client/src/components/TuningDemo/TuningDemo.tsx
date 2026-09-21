@@ -137,7 +137,18 @@ export default function TuningDemo() {
     }, [userDataContext.tunings])
 
     return (
-        <ExpandableHeading heading={"Tuning"} collapsedHeading={`Tuning | ${tuning.name}`}>
+        <ExpandableHeading
+            heading={"Tuning"}
+            collapsedHeading={`Tuning | ${tuning.name}`}
+            expanded={userDataContext.prefs.moduleVisibility.tuning}
+            onToggle={() => userDataContext.setPrefs({
+                ...userDataContext.prefs,
+                moduleVisibility: {
+                    ...userDataContext.prefs.moduleVisibility,
+                    tuning: !userDataContext.prefs.moduleVisibility.tuning,
+                }
+            })}
+        >
             <div className={`flex flex-wrap md:flex-nowrap gap-8 p-4 bg-neutral-900 rounded-md w-min max-w-full`}>
                 <div className={`flex gap-2`}>
                     <div className={`flex flex-col w-70 h-60 rounded-lg overflow-y-scroll overflow-x-hidden bg-black`}>

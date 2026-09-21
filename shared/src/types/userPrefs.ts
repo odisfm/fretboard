@@ -36,6 +36,11 @@ export const UserPrefSchema = z.object({
         filterSaved: z.boolean(),
         transposeSaved: z.boolean(),
     }),
+    moduleVisibility: z.object({
+        tuning: z.boolean(),
+        scale: z.boolean(),
+        chord: z.boolean(),
+    }),
     fretboardRotation: z.union([z.literal("horizontal"), z.literal("vertical")])
 })
 
@@ -55,6 +60,11 @@ export const defaultUserPrefs: UserPrefType = {
         sortBy: "lowToHighFretToString",
         filterSaved: false,
         transposeSaved: true
+    },
+    moduleVisibility: {
+      tuning: true,
+      scale: true,
+      chord: true,
     },
     fretboardRotation: "horizontal"
 }

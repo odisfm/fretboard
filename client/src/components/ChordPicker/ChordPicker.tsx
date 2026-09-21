@@ -20,6 +20,7 @@ import {RxFontRoman} from "react-icons/rx";
 import {getChordFromName} from "@fretboard/shared/utils/getChordFromName";
 import {getChordPickerOptionsFromChord} from "../../formulas/chordShapes/getChordPickerOptionsFromChord.ts";
 import { ExpandableHeading } from "../ExpandableHeading.tsx";
+import {useUserData} from "../../contexts/userData/useUserData.tsx";
 
 export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     chordPickerOptions: ChordPickerOptions,
@@ -30,6 +31,7 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     let tonesStyled: string[]
     const chordNameSearchRef = useRef<HTMLInputElement | null>(null);
     const [badChordNameSearch, setBadChordNameSearch] = useState(false)
+    const userDataContext = useUserData()
 
     switch(chordContext.accidentalPref) {
         case "sharps":
@@ -101,7 +103,18 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
 
 
     return (
-        <ExpandableHeading heading={"Chord"} collapsedHeading={`Chord | ${chordName}`}>
+        <ExpandableHeading
+            heading={"Chord"}
+            collapsedHeading={`Chord | ${chordName}`}
+            expanded={userDataContext.prefs.moduleVisibility.chord}
+            onToggle={() => userDataContext.setPrefs({
+                ...userDataContext.prefs,
+                moduleVisibility: {
+                    ...userDataContext.prefs.moduleVisibility,
+                    chord: !userDataContext.prefs.moduleVisibility.chord,
+                }
+            })}
+        >
             <div className={`flex flex-col gap-4 rounded-md bg-neutral-900 p-4 min-w-0 w-full`}>
                 <div className={`flex flex-wrap gap-2 mb-10 max-w-full`}>
                     <div className={`flex flex-col gap-2 min-w-70`}>
