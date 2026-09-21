@@ -6,8 +6,11 @@ import {midiPitchToNoteName} from "./midiPitchToNoteName";
 export function getChordNames(
     root: NoteName,
     intervals: number[],
-    shouldThrow?: false
+    shouldThrow?: boolean,
+    includeRoot?: boolean
 ): string[] {
+    shouldThrow = shouldThrow === undefined ? false : shouldThrow;
+    includeRoot = includeRoot === undefined ? true : includeRoot;
     const noteNames: NoteName[] = [root];
     for (const i of intervals) {
         noteNames.push(midiPitchToNoteName((indexForNoteName(root) + i) % 12, false))
@@ -26,6 +29,9 @@ export function getChordNames(
         if (detected.endsWith("M")) {
             detectedNames[i] = `${detected.slice(0, -1)}`
         }
+        if (!includeRoot) {
+            detectedNames[i] = detectedNames[i].replace(root, "")
+        }
     }
 
     return detectedNames;
@@ -34,9 +40,12 @@ export function getChordNames(
 export function getChordName(
     root: NoteName,
     intervals: number[],
-    shouldThrow?: false
+    shouldThrow?: boolean,
+    includeRoot?: boolean
 ): string | null {
-    const detected = getChordNames(root, intervals, shouldThrow);
+    shouldThrow = shouldThrow === undefined ? false : shouldThrow;
+    includeRoot = includeRoot === undefined ? true : includeRoot;
+    const detected = getChordNames(root, intervals, shouldThrow, includeRoot);
     if (detected?.length) {
         return detected[0]
     } else {

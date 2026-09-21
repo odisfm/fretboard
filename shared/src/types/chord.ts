@@ -6,7 +6,8 @@ export const ChordSchema = z.object({
     id: z.uuidv4(),
     quality: z.string(),
     intervals: z.array(z.number()),
-    root: NoteNameSchema
+    root: NoteNameSchema,
+    order: z.string().optional(),
 })
 
 export type Chord = z.infer<typeof ChordSchema>;

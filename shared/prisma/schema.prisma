@@ -19,6 +19,7 @@ model User {
   scaleShapes ScaleShape[]
   createdAt   DateTime     @default(now())
   sessions    Session[]
+  chords      Chord[]
   chordShapes ChordShape[]
   prefs       Json
 }
@@ -49,6 +50,15 @@ model Scale {
 }
 
 model ScaleShape {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Chord {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

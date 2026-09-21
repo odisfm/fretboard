@@ -32,6 +32,11 @@ testUserDataRouter.get("/", needsAuth, async (c) => {
                 orderBy: [
                     {createdAt: "asc"}
                 ]
+            },
+            chords: {
+                orderBy: [
+                    {createdAt: "asc"}
+                ]
             }
         }
     })
@@ -39,10 +44,10 @@ testUserDataRouter.get("/", needsAuth, async (c) => {
         return c.json({error: 'User not found'}, 404)
     }
 
-    const {scales, scaleShapes, tunings, chordShapes} = formatBulkUserData(userRecord)
+    const {scales, scaleShapes, tunings, chordShapes, chords} = formatBulkUserData(userRecord)
 
     return c.json({
-        scales, tunings, scaleShapes, chordShapes, prefs: userRecord.prefs as unknown as UserPrefType
+        scales, tunings, scaleShapes, chordShapes, chords, prefs: userRecord.prefs as unknown as UserPrefType
     } satisfies TestUserDataResponse, 200)
 
 
@@ -136,6 +141,31 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
                 `;
             }
 
+            if (update.chords.length > 0) {
+                const values = update.chords.map(s =>
+                    Prisma.sql`(${s.id}, ${userId}, ${JSON.stringify({...s})}::jsonb)`
+                );
+                await tx.$executeRaw`
+                    INSERT INTO "Chord" (id, "userId", data)
+                    VALUES ${Prisma.join(values)} ON CONFLICT (id) DO
+                    UPDATE
+                        SET data = EXCLUDED.data, "userId" = EXCLUDED."userId"
+                `;
+                const chordIds = update.chords.map(s => s.id);
+                await tx.$executeRaw`
+                    DELETE
+                    FROM "Chord"
+                    WHERE "userId" = ${userId}
+                      AND id NOT IN (${Prisma.join(chordIds)})
+                `;
+            } else {
+                await tx.$executeRaw`
+                    DELETE
+                    FROM "Chord"
+                    WHERE "userId" = ${userId}
+                `;
+            }
+
             if (update.chordShapes.length > 0) {
                 const values = update.chordShapes.map(s =>
                     Prisma.sql`(${s.id}, ${userId}, ${JSON.stringify({...s})}::jsonb)`
@@ -189,6 +219,11 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
                 orderBy: [
                     {createdAt: "asc"}
                 ]
+            },
+            chords: {
+                orderBy: [
+                    {createdAt: "asc"}
+                ]
             }
         }
     })
@@ -196,11 +231,11 @@ testUserDataRouter.post("/", needsAuth, async (c) => {
         return c.json({error: 'User not found'}, 404)
     }
 
-    const {scales, scaleShapes, tunings, chordShapes} = formatBulkUserData(userRecord)
+    const {scales, scaleShapes, tunings, chords, chordShapes} = formatBulkUserData(userRecord)
 
     const end = performance.now()
 
     return c.json({
-        scales, scaleShapes, tunings, chordShapes, prefs: userRecord.prefs as unknown as UserPrefType
+        scales, scaleShapes, tunings, chords, chordShapes, prefs: userRecord.prefs as unknown as UserPrefType
     } satisfies TestUserDataResponse, 200)
 })

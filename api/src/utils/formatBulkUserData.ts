@@ -2,10 +2,10 @@ import {ScaleSchema, ScaleShapeSchema} from "@fretboard/shared/types/scale";
 import {sortByLexorank} from "@fretboard/shared/utils/sortByLexorank";
 import {TuningSchema} from "@fretboard/shared/types/tuning";
 import type {UserGetPayload} from "@fretboard/shared/prisma/models/User";
-import {ChordShapeSchema} from "@fretboard/shared/types/chord";
+import {ChordSchema, ChordShapeSchema} from "@fretboard/shared/types/chord";
 
 type UserRecord = UserGetPayload<{
-    include: {scales: true, scaleShapes: true, tunings: true, chordShapes: true}
+    include: {scales: true, scaleShapes: true, tunings: true, chords: true, chordShapes: true}
 }>
 
 export function formatBulkUserData(userRecord: UserRecord) {
@@ -45,6 +45,18 @@ export function formatBulkUserData(userRecord: UserRecord) {
         return sortByLexorank(a, b)
     })
 
+    let chords = userRecord.chords.map((s) => {
+        const obj = {
+            ...s.data as object,
+            id: s.id,
+            updatedAt: s.updatedAt,
+        }
+        return ChordSchema.parse(obj)
+    })
+    chords = chords.sort((a, b) => {
+        return sortByLexorank(a, b)
+    })
+
     let chordShapes = userRecord.chordShapes.map((s) => {
         const obj = {
             ...s.data as object,
@@ -57,5 +69,5 @@ export function formatBulkUserData(userRecord: UserRecord) {
         return sortByLexorank(a, b)
     })
 
-    return {scales, scaleShapes, tunings, chordShapes}
+    return {scales, scaleShapes, tunings, chords, chordShapes}
 }

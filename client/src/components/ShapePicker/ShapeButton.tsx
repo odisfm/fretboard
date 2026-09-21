@@ -4,10 +4,11 @@ import FavButton from "../generic/FavButton.tsx";
 import {useUserData} from "../../contexts/userData/useUserData.tsx";
 import {useMemo} from "react";
 import type {FingerShape} from "@fretboard/shared/types/fingerShape";
-import type {ScaleShape} from "@fretboard/shared/types/scale";
+import type {NoteName, ScaleShape} from "@fretboard/shared/types/scale";
 import {useFretboardDisplay} from "../../contexts/fretboardDisplay/useFretboardDisplay.tsx";
 import {useFeature} from "../../contexts/feature/useFeature.ts";
 import type {ChordShape} from "@fretboard/shared/types/chord";
+import {styleNoteName} from "@fretboard/shared/utils/styleNoteName";
 
 type Props = {
     onClick: (index: number) => void;
@@ -59,7 +60,10 @@ export default function ShapeButton({onClick, setScrollToFret, fingerShape, inde
         if (fdContext.type === "scale") {
             return `${fingerShape.scale?.tonic} ${fingerShape.scale?.name}${fingerShape.isAdjusted ? "*" : ""}`
         } else if (fdContext.type === "chord") {
-            return `${fingerShape.chord?.root} ${fingerShape.chord?.quality}`
+            return `
+            ${styleNoteName(fingerShape.chord?.root as NoteName || "")}${fingerShape.chord?.quality}
+            ${fingerShape.isAdjusted ? "*" : ""}
+            `
         }
         return ""
     }, [fingerShape, fdContext.type, showLabel])

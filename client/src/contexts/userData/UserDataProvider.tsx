@@ -16,6 +16,7 @@ import {ChordProvider} from "../chord/ChordProvider.tsx";
 import type {ChordShape} from "@fretboard/shared/types/chord";
 import {defaultChords} from "@fretboard/shared/scripts/onboarding/defaultChords";
 import {defaultUserPrefs, type UserPrefType} from "@fretboard/shared/types/userPrefs";
+import {isSameChord} from "@fretboard/shared/utils/isSameStructure";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BACKOFF_BASE = 500
@@ -94,6 +95,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     const [deletedScaleShapes, setDeletedScaleShapes] = usePersistedState<string[]>(
         "deletedScaleShapes", () => readLocal<string[]>("deletedScaleShapes", [])
     );
+    const [deletedChords, setDeletedChords] = usePersistedState<string[]>(
+        "deletedChords", () => readLocal<string[]>("deletedChords", [])
+    );
     const [deletedChordShapes, setDeletedChordShapes] = usePersistedState<string[]>(
         "deletedChordShapes", () => readLocal<string[]>("deletedChordShapes", [])
     );
@@ -113,8 +117,10 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     const tuningsRef = useRef(tunings)
     const scaleShapesRef = useRef(scaleShapes)
     const scalesRef = useRef(scales)
+    const chordsRef = useRef(chords)
     const deletedTuningsRef = useRef(deletedTunings)
     const deletedScaleShapesRef = useRef(deletedScaleShapes)
+    const deletedChordsRef = useRef(deletedChords)
     const chordShapesRef = useRef(chordShapes)
     const deletedChordShapesRef = useRef(deletedChordShapes)
     const prevAuthRef = useRef(authContext.auth)
@@ -123,11 +129,17 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         tuningsRef.current = tunings
         scaleShapesRef.current = scaleShapes
         scalesRef.current = scales
+        chordsRef.current = chords
+        deletedChordsRef.current = deletedChords
         deletedTuningsRef.current = deletedTunings
         deletedScaleShapesRef.current = deletedScaleShapes
         chordShapesRef.current = chordShapes
         deletedChordShapesRef.current = deletedChordShapes
-    }, [tunings, scaleShapes, scales, deletedTunings, deletedScaleShapes, chordShapes, deletedChordShapes])
+    }, [
+        tunings, scaleShapes, scales, deletedTunings,
+        deletedScaleShapes, chordShapes, deletedChordShapes,
+        chords, deletedChords
+    ])
 
     const runMutation = useCallback(async <T,>(
         setState: Dispatch<SetStateAction<T>>,
@@ -222,6 +234,31 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         )
     }, [runMutation, setScaleShapes, setDeletedScaleShapes])
 
+    const toggleSavedChord = useCallback((chord: Chord) => {
+        const isSaved = chordsRef.current.some(s => isSameChord(s, chord))
+        if (isSaved) {
+            return runMutation(
+                setChords,
+                prev => prev.filter(s => s.id !== chord.id),
+                () => fetch(`${API_URL}/chord`, {
+                    method: "DELETE",
+                    body: JSON.stringify(chord),
+                    credentials: "include",
+                }),
+                {onOffline: () => setDeletedChords(prev => [...prev, chord.id])}
+            )
+        }
+        return runMutation(
+            setChords,
+            prev => [...prev, chord],
+            () => fetch(`${API_URL}/chord`, {
+                method: "PUT",
+                body: JSON.stringify(chord),
+                credentials: "include",
+            }),
+        )
+    }, [runMutation, setChords, setDeletedChords])
+
     const toggleSavedChordShape = useCallback((shape: ChordShape) => {
         const isSaved = chordShapesRef.current.some(s => s.id === shape.id)
         if (isSaved) {
@@ -273,6 +310,8 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             setScaleShapes(data.scaleShapes)
             setDeletedTunings([])
             setDeletedScaleShapes([])
+            setChords(data.chords)
+            setDeletedChords([])
             setChordShapes([])
             setDeletedChordShapes([])
             setNeedsReconcile(false)
@@ -283,12 +322,23 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             return true
         }
 
-        const {reconciledTunings, reconciledScales, reconciledScaleShapes, reconciledChordShapes} = reconcileUserData(
+        const {
+            reconciledTunings,
+            reconciledScales,
+            reconciledScaleShapes,
+            reconciledChords,
+            reconciledChordShapes
+
+        } = reconcileUserData(
+
             tuningsRef.current, data.tunings,
             scaleShapesRef.current, data.scaleShapes,
             scalesRef.current, data.scales,
+            chordsRef.current, data.chords,
             chordShapesRef.current, data.chordShapes,
-            deletedTuningsRef.current, deletedScaleShapesRef.current, [], deletedChordShapesRef.current,
+            deletedTuningsRef.current, deletedScaleShapesRef.current, [],
+            deletedChordsRef.current, deletedChordShapesRef.current,
+
         )
 
         const newestPrefs = data.prefs.updatedAt > prefs.updatedAt ? data.prefs : prefs
@@ -300,6 +350,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
                     tunings: reconciledTunings,
                     scaleShapes: reconciledScaleShapes,
                     scales: reconciledScales,
+                    chords: reconciledChords,
                     chordShapes: reconciledChordShapes,
                     prefs: newestPrefs
                 }),
@@ -315,6 +366,8 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             setScaleShapes(json.scaleShapes)
             setDeletedTunings([])
             setDeletedScaleShapes([])
+            setChords(json.chords)
+            setDeletedChords([])
             setChordShapes(json.chordShapes)
             setDeletedChordShapes([])
             setPrefs(newestPrefs)
@@ -336,7 +389,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
 
     }, [
         authContext, setTunings, setScales, setScaleShapes, setDeletedTunings, setDeletedScaleShapes,
-        setChordShapes, setDeletedChordShapes, prefs, setPrefs
+        setChords, setDeletedChords, setChordShapes, setDeletedChordShapes, prefs, setPrefs
     ])
 
     useEffect(() => {
@@ -374,13 +427,16 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             setScaleShapes([])
             setDeletedTunings([])
             setDeletedScaleShapes([])
+            setChords([])
+            setDeletedChords([])
             setChordShapes([])
             setDeletedChordShapes([])
             setNeedsReconcile(false)
             setDataVersion(v => v + 1)
         }
     }, [authContext.auth, setTunings, setScales, setScaleShapes,
-        setDeletedTunings, setDeletedScaleShapes, setChordShapes, setDeletedChordShapes])
+        setDeletedTunings, setDeletedScaleShapes,
+        setChords, setDeletedChords, setChordShapes, setDeletedChordShapes])
 
     const _setPrefs = useCallback(async (value: UserPrefType) => {
         const newPrefs = {
@@ -407,9 +463,9 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
             deleteTuning,
             updateTuning,
             chordShapes,
-            chords,
-            setChords,
             toggleSavedChordShape,
+            chords,
+            toggleSavedChord,
             connectionStatus,
             initialised,
             toggleSavedScaleShape,

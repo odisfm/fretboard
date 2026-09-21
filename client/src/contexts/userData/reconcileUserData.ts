@@ -1,22 +1,30 @@
 import type {Tuning} from "@fretboard/shared/types/tuning";
 import type {ScaleShape, Scale} from "@fretboard/shared/types/scale";
-import type {ChordShape} from "@fretboard/shared/types/chord";
+import type {ChordShape, Chord} from "@fretboard/shared/types/chord";
+
 
 export function reconcileUserData(
     localTunings: Tuning[], remoteTunings: Tuning[],
     localScaleShapes: ScaleShape[], remoteScaleShapes: ScaleShape[],
     localScales: Scale[], remoteScales: Scale[],
+    localChords: Chord[], remoteChords: Chord[],
     localChordShapes: ChordShape[], remoteChordShapes: ChordShape[],
-    deletedTunings: string[], deletedScaleShapes: string[], deletedScales: string[], deletedChordShapes: string[],
+    deletedTunings: string[],
+    deletedScaleShapes: string[],
+    deletedScales: string[],
+    deletedChords: string[],
+    deletedChordShapes: string[],
 ) {
     let reconciledTunings: Tuning[] = [];
     let reconciledScaleShapes: ScaleShape[] = [];
     let reconciledScales: Scale[] = [];
+    let reconciledChords: Chord[] = [];
     let reconciledChordShapes: ChordShape[] = [];
 
     reconciledTunings = deleteFromList(deletedTunings, remoteTunings) as Tuning[];
     reconciledScaleShapes = deleteFromList(deletedScaleShapes, remoteScaleShapes) as ScaleShape[];
     reconciledScales = deleteFromList(deletedScales, remoteScales) as Scale[]
+    reconciledChords = deleteFromList(deletedChords, remoteChords) as Chord[];
     reconciledChordShapes = deleteFromList(deletedChordShapes, remoteChordShapes) as ChordShape[];
 
     for (const lt of localTunings) {
@@ -52,6 +60,13 @@ export function reconcileUserData(
         }
     }
 
+    for (const lc of localChords) {
+        const idx = reconciledChords.findIndex((c) => c.id === lc.id)
+        if (idx === -1) {
+            reconciledChords.push(lc)
+        }
+    }
+
     for (const ls of localChordShapes) {
         const idx = reconciledChordShapes.findIndex((s) => s.id === ls.id)
         if (idx === -1) {
@@ -64,7 +79,7 @@ export function reconcileUserData(
     }
 
     return {
-        reconciledTunings, reconciledScaleShapes, reconciledScales, reconciledChordShapes
+        reconciledTunings, reconciledScaleShapes, reconciledScales, reconciledChords, reconciledChordShapes
     }
 }
 
@@ -72,13 +87,7 @@ type IdHaver = {
     id: string;
 }
 
-function deleteFromList(deleteList: string[], list: IdHaver[]): IdHaver[] {
-    const pruned = [...list];
-    for (let i = 0; i < list.length; i++) {
-        if (deleteList.includes(list[i].id)) {
-            pruned.splice(i, 1);
-            i -= 1
-        }
-    }
-    return pruned
+function deleteFromList<T extends IdHaver>(deleteList: string[], list: T[]): T[] {
+    const toDelete = new Set(deleteList);
+    return list.filter(item => !toDelete.has(item.id));
 }

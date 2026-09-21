@@ -21,6 +21,9 @@ import {getChordFromName} from "@fretboard/shared/utils/getChordFromName";
 import {getChordPickerOptionsFromChord} from "../../formulas/chordShapes/getChordPickerOptionsFromChord.ts";
 import { ExpandableHeading } from "../ExpandableHeading.tsx";
 import {useUserData} from "../../contexts/userData/useUserData.tsx";
+import {ChordHeartButton} from "./ChordHeartButton.tsx";
+import {ChordPreview} from "./ChordPreview.tsx";
+import {styleNoteName} from "@fretboard/shared/utils/styleNoteName";
 
 export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     chordPickerOptions: ChordPickerOptions,
@@ -83,7 +86,8 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
     }
 
     const chordName = useMemo(() => {
-        return getChordName(chordContext.chord.root, chordContext.chord.intervals)
+        const base = getChordName(chordContext.chord.root, chordContext.chord.intervals)
+        return styleNoteName(base as NoteName)
     }, [chordContext.chord])
 
     function setChordByName() {
@@ -116,24 +120,40 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
             })}
         >
             <div className={`flex flex-col gap-4 rounded-md bg-neutral-900 p-4 min-w-0 w-full`}>
+                <div className={`flex gap-4`}>
+                <div className={`flex flex-col h-60 w-70 overflow-y-scroll overflow-x-clip rounded-lg`}>
+                    {userDataContext.chords.map((chord) => {
+                        return (
+                            <ChordPreview
+                                chord={{...chord, root: chordContext.chord.root}}
+                                active={chord.id === chordContext.chord.id}
+                            />
+                        )
+                    })}
+                </div>
                 <div className={`flex flex-wrap gap-2 mb-10 max-w-full`}>
                     <div className={`flex flex-col gap-2 min-w-70`}>
-                        <div className={`flex`}>
-                            <h2 className={`font-bold text-3xl`}>{chordName || `${chordContext.chord.root}?`}</h2>
+                        <div className={`flex gap-4`}>
+                            <h2 className={`font-bold text-3xl`}>{chordName || `${styleNoteName(chordContext.chord.root)}?`}</h2>
                             {!chordName && <Tooltip text={"Couldn't determine a name for this chord"}/>}
+                            <ChordHeartButton chord={chordContext.chord}/>
                         </div>
-                        <form onSubmit={(e) => {e.preventDefault(); setChordByName();}}>
-                            <label htmlFor={"chordNameSearch"} className={`text-xs font-light`}>search by name</label>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            setChordByName();
+                        }}>
+                            <label htmlFor={"chordNameSearch"} className={`text-xs font-light`}>search by
+                                name</label>
                             <div className={`flex gap-1`}>
                                 <input
                                     name={"chordNameSearch"}
                                     id={"chordNameSearch"}
-                                    placeholder={chordName || "Fmaj11"}
+                                    placeholder={styleNoteName(chordName as NoteName) || "Fmaj11"}
                                     className={`p-1 bg-black rounded-md ${badChordNameSearch && `border-1 border-red-500/50`}`}
                                     ref={chordNameSearchRef}
                                 />
                                 <Button type={"submit"} variant={"subtle"}>
-                                    <FaSearch />
+                                    <FaSearch/>
                                 </Button>
                             </div>
                         </form>
@@ -141,22 +161,22 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
 
                     <div className={`flex min-w-0 overflow-x-scroll gap-2 mt-4`}>
                         <ButtonGroup
-                        orientation={"vertical"}
-                        _children={["-", "Major", "minor"]}
-                        onClick={(i) => {
-                            let quality: "major" | "minor" | null
-                            if (i === 0) quality = null
-                            else if (i === 1) quality = "major"
-                            else quality = "minor"
-                            setChordPickerOptions({...chordPickerOptions, quality})
-                        }}
-                        active={(() => {
-                            const option = chordPickerOptions.quality
-                            if (option === null) return 0
-                            if (option === "major") return 1
-                            else return 2
-                        })()}
-                    />
+                            orientation={"vertical"}
+                            _children={["-", "Major", "minor"]}
+                            onClick={(i) => {
+                                let quality: "major" | "minor" | null
+                                if (i === 0) quality = null
+                                else if (i === 1) quality = "major"
+                                else quality = "minor"
+                                setChordPickerOptions({...chordPickerOptions, quality})
+                            }}
+                            active={(() => {
+                                const option = chordPickerOptions.quality
+                                if (option === null) return 0
+                                if (option === "major") return 1
+                                else return 2
+                            })()}
+                        />
                         <ButtonGroup
                             orientation={"vertical"}
                             _children={["-", "sus2", "sus4"]}
@@ -348,6 +368,7 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
                         /></div>
 
                 </div>
+            </div>
 
             <div className={`flex sm:flex-wrap md:flex-nowrap gap-4 items-center`}>
                 <div className={`
