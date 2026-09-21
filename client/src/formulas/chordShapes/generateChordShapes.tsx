@@ -3,7 +3,13 @@ import type {Tuning} from "@fretboard/shared/types/tuning";
 import {allIndicesForNoteName} from "@fretboard/shared/utils/allIndicesForNoteName";
 import {v4 as uuid} from "uuid";
 
-export type generateChordShapesOptions = {
+export const MINIMUM_FINGERS = 1
+export const MAXIMUM_FINGERS = 4
+export const MINIMUM_FRET_SPAN = 0
+export const MAXIMUM_FRET_SPAN = 10
+
+
+export type GenerateChordShapeOptions = {
     omissions: number[],
     openStrings: boolean,
     barres: boolean,
@@ -12,6 +18,17 @@ export type generateChordShapesOptions = {
     rootIsBass: true,
     lowFret: number,
     highFret: number,
+}
+
+export const defaultGenerateChordShapeOptions: GenerateChordShapeOptions = {
+    omissions: [],
+    openStrings: false,
+    barres: true,
+    fingers: 4,
+    fretSpan: 3,
+    rootIsBass: true,
+    lowFret: 0,
+    highFret: 24,
 }
 
 const FINGERS: readonly Finger[] = [1, 2, 3, 4]
@@ -57,7 +74,7 @@ type PartialShape = {
  */
 export function planFingering(
     positions: ChordPosition[],
-    options: generateChordShapesOptions
+    options: GenerateChordShapeOptions
 ): FingeringResult {
     // A hand has four fretting fingers however generous the option is.
     const budget = Math.min(options.fingers, FINGERS.length)
@@ -164,7 +181,7 @@ export function assignFingers(positions: ChordPosition[], fingering: Fingering):
 export function generateChordShapes(
     chord: Chord,
     tuning: Tuning,
-    options: generateChordShapesOptions
+    options: GenerateChordShapeOptions
 ): ChordShape[] {
     const rootIndices = allIndicesForNoteName(chord.root)
 

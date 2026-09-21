@@ -11,7 +11,7 @@ export function BinaryToggle({state, fn}: Props) {
     return (
         <button
             className={`
-            group mt-1.5 flex rounded-md w-15 h-5 bg-neutral-800 
+            group flex rounded-md w-15 h-5 bg-neutral-800 
             ${state ? "justify-end" : "justify-start"}
             cursor-pointer
             `}
