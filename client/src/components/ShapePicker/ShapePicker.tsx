@@ -21,7 +21,10 @@ export default function ShapePicker({fingerShapes, onClick, active, setScrollToF
                         onClick(null)
                     }}
                     variant={active === null ? "default" : "subtle"}
-                    styles={`w-20 flex flex-col items-center justify-center p-4 border-2! border-white/10! `}
+                    styles={`
+                    self-center h-min w-20 flex flex-col items-center justify-center p-4 border-2! border-white/10! 
+                    py-4
+                    `}
                 >
                     <FaPalette/>
                     <span>{"Whole fretboard"}</span>
@@ -33,7 +36,8 @@ export default function ShapePicker({fingerShapes, onClick, active, setScrollToF
                 }
                 <Virtuoso
                     horizontalDirection
-                    style={{height: 200, flex: 1}}
+                    style={{height: 250, flex: 1}}
+                    className={`overflow-y-hidden`}
                     data={fingerShapes}
                     computeItemKey={(index) => index}
                     itemContent={(index, shape) => (

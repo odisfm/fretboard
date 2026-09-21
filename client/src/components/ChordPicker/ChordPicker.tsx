@@ -102,9 +102,9 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
 
     return (
         <ExpandableHeading heading={"Chord"} collapsedHeading={`Chord | ${chordName}`}>
-            <div className={`flex flex-col gap-4 rounded-md bg-neutral-900 p-4`}>
-                <div className={`flex flex-wrap gap-2`}>
-                    <div className={`flex flex-col gap-2 min-w-50`}>
+            <div className={`flex flex-col gap-4 rounded-md bg-neutral-900 p-4 min-w-0 w-min`}>
+                <div className={`flex sm:flex-wrap md:flex-nowrap gap-2 mb-10`}>
+                    <div className={`flex flex-col gap-2 min-w-70`}>
                         <div className={`flex`}>
                             <h2 className={`font-bold text-3xl`}>{chordName || `${chordContext.chord.root}?`}</h2>
                             {!chordName && <Tooltip text={"Couldn't determine a name for this chord"}/>}

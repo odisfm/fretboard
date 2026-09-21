@@ -138,18 +138,47 @@ export default function TuningDemo() {
 
     return (
         <ExpandableHeading heading={"Tuning"} collapsedHeading={`Tuning | ${tuning.name}`}>
-            <div className={`flex flex-wrap md:flex-nowrap gap-4 p-4 bg-neutral-900 rounded-md w-min max-w-full`}>
+            <div className={`flex flex-wrap md:flex-nowrap gap-8 p-4 bg-neutral-900 rounded-md w-min max-w-full`}>
+                <div className={`flex gap-2`}>
+                    <div className={`flex flex-col w-70 h-60 rounded-lg overflow-y-scroll overflow-x-hidden bg-black`}>
+                        {segmentedTunings.map((instrument) => {
+                            return (
+                                <div className={`w-full flex flex-col`}>
+                                    <div className={`p-2 bg-black font-bold text-right pr-4`}>
+                                        {instrument.instrument ? instrument.instrument : "Unlabelled instrument"}
+                                    </div>
+                                    {
+                                        instrument.tunings.map((tuning) => {
+                                            return (
+                                                <TuningPreview
+                                                    tuning={tuning}
+                                                    active={tuning.id === tuningContext.tuning.id}
+                                                    onClick={(id) => {
+                                                        const tuning = userDataContext.tunings.find(
+                                                            (tuning) => tuning.id === id)
+                                                        if (!tuning) return
+                                                        tuningContext.setTuning(tuning)
+                                                    }}
+                                                />
+                                            )
+                                        })
+                                    }
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
                 <div className={`flex flex-col gap-6 min-w-0`}>
                     <div className={`min-h-10`}>
                         {!renamingTuning ?
-                        <h2 className={`text-3xl font-bold`}>
-                            {tuning.name || "Unnamed tuning"}
-                        </h2>
-                        :
+                            <h2 className={`text-3xl font-bold`}>
+                                {tuning.name || "Unnamed tuning"}
+                            </h2>
+                            :
                             <form
                                 onSubmit={(e) => {
-                                e.preventDefault()
-                                renameTuning()
+                                    e.preventDefault()
+                                    renameTuning()
                                 }}
                                 className={`p-1 rounded-md bg-black`}
                             >
@@ -217,36 +246,6 @@ export default function TuningDemo() {
                                 deleteString={() => deleteString(tuning.strings.length - 1)}
                             />
                         </div>
-                    </div>
-                </div>
-
-                <div className={`flex gap-2`}>
-                    <div className={`flex flex-col w-50 h-60 rounded-lg overflow-y-scroll bg-black`}>
-                        {segmentedTunings.map((instrument) => {
-                            return (
-                                <div className={`w-full flex flex-col`}>
-                                    <div className={`p-2 bg-black font-bold text-right pr-4`}>
-                                        {instrument.instrument ? instrument.instrument : "Unlabelled instrument"}
-                                    </div>
-                                    {
-                                        instrument.tunings.map((tuning) => {
-                                            return (
-                                                <TuningPreview
-                                                    tuning={tuning}
-                                                    active={tuning.id === tuningContext.tuning.id}
-                                                    onClick={(id) => {
-                                                        const tuning = userDataContext.tunings.find(
-                                                            (tuning) => tuning.id === id)
-                                                        if (!tuning) return
-                                                        tuningContext.setTuning(tuning)
-                                                    }}
-                                                />
-                                            )
-                                        })
-                                    }
-                                </div>
-                            )
-                        })}
                     </div>
                 </div>
             </div>
