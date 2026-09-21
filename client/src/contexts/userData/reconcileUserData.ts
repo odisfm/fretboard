@@ -87,13 +87,7 @@ type IdHaver = {
     id: string;
 }
 
-function deleteFromList(deleteList: string[], list: IdHaver[]): IdHaver[] {
-    const pruned = [...list];
-    for (let i = 0; i < list.length; i++) {
-        if (deleteList.includes(list[i].id)) {
-            pruned.splice(i, 1);
-            i -= 1
-        }
-    }
-    return pruned
+function deleteFromList<T extends IdHaver>(deleteList: string[], list: T[]): T[] {
+    const toDelete = new Set(deleteList);
+    return list.filter(item => !toDelete.has(item.id));
 }
