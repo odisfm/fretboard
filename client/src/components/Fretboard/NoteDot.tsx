@@ -206,7 +206,8 @@ export default function NoteDot(
                 style={{
                     height: `${diameter}px`,
                     width: `${diameter}px`,
-                    opacity: `${visibility === "dim" ? fdContext.outShapeOpacity * 100 : 100}%`
+                    opacity: `${visibility === "dim" ? fdContext.outShapeOpacity * 100 : 100}%`,
+                    fontSize: `${11 * fdContext.zoom}px`
                 }}
             >
                 {variant === "main" && <span>{text}</span>}
