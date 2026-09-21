@@ -4,7 +4,11 @@ import {useTuning} from "./contexts/tuning/useTuning.ts";
 import {useEffect, useMemo, useState} from "react";
 import Button from "./components/generic/Button.tsx";
 import ShapePicker from "./components/ShapePicker/ShapePicker.tsx";
-import {generateChordShapes} from "./formulas/chordShapes/generateChordShapes.tsx";
+import {
+    defaultGenerateChordShapeOptions,
+    type GenerateChordShapeOptions,
+    generateChordShapes
+} from "./formulas/chordShapes/generateChordShapes.tsx";
 import {useChord} from "./contexts/chord/useChord.ts";
 import {chordIntervalsToScaleIntervals} from "@fretboard/shared/utils/chordIntervalsToScaleIntervals"
 import {ChordPicker} from "./components/ChordPicker/ChordPicker.tsx";
@@ -12,6 +16,7 @@ import {getChordIntervalsFromOptions} from "./formulas/chordShapes/getChordInter
 import type {ChordShape} from "@fretboard/shared/types/chord";
 import {useUserData} from "./contexts/userData/useUserData.tsx";
 import {isSameChord, isSameChordShape, isSameTuning} from "@fretboard/shared/utils/isSameStructure";
+import {ChordFilters} from "./components/ChordFilters/ChordFilters.tsx";
 
 function dedupeShapes(shapes: ChordShape[]): ChordShape[] {
     const result: ChordShape[] = []
@@ -52,7 +57,11 @@ export function ChordDemo() {
         quality: "major", sus: null, augDim: null, fifth: "perfect", seventh: null,
         ninth: null, eleventh: null, thirteenth: null, add2: null, add4: null, add6: null
     })
-    const [fitSavedShapes, setFitSavedShapes] = useState(false)
+    const [fitSavedShapes, setFitSavedShapes] = useState(true)
+    const [filterSavedShapes, setFilterSavedShapes] = useState(false)
+    const [chordShapeFilters, setChordShapeFilters] = useState<GenerateChordShapeOptions>(
+        defaultGenerateChordShapeOptions
+    )
     console.log({fitSavedShapes, setFitSavedShapes}) // it's a surprise tool that will help us later
 
     function _setChordPickerOptions(chordPickerOptions: ChordPickerOptions) {
@@ -69,18 +78,9 @@ export function ChordDemo() {
         return generateChordShapes(
             chordContext.chord,
             tuning,
-            {
-                fretSpan: 3,
-                openStrings: false,
-                omissions: [],
-                barres: true,
-                rootIsBass: true,
-                fingers: 4,
-                lowFret: 0,
-                highFret: 24
-            }
+            chordShapeFilters
         )
-    }, [tuning, chordContext.chord])
+    }, [tuning, chordContext.chord, chordShapeFilters])
 
     const relevantSavedShapes: ChordShape[] = useMemo(() => {
         const relevant: ChordShape[] = []
@@ -176,6 +176,14 @@ export function ChordDemo() {
                     showLabels={false}
                 />
             </FretboardDisplayContext>
+            <ChordFilters
+                chordShapeFilters={chordShapeFilters}
+                setChordShapeFilters={setChordShapeFilters}
+                filterSavedShapes={filterSavedShapes}
+                setFilterSavedShapes={setFilterSavedShapes}
+                fitSavedShapes={fitSavedShapes}
+                setFitSavedShapes={setFitSavedShapes}
+            />
         </>
     )
 }
