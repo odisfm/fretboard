@@ -4,17 +4,17 @@ type NewChord = Omit<Chord, "id" | "order">
 
 export const defaultChords: NewChord[] = [
     {
-        quality: "Major",
+        quality: "",
         root: "C",
         intervals: [4, 7]
     },
     {
-        quality: "minor",
+        quality: "min",
         root: "C",
         intervals: [3, 7]
     },
     {
-        quality: "Maj7",
+        quality: "maj7",
         root: "C",
         intervals: [4, 7, 11]
     },
