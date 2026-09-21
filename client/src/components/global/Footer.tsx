@@ -17,7 +17,7 @@ export function Footer() {
                     <MdEmail/>
                 </a>
                 <a
-                    href={`https://github.com/odisfm/fretboard`}
+                    href={`https://github.com/odisfm/fretyorb`}
                     target={'_blank'}
                     className={linkButtonStyles}
                 >
