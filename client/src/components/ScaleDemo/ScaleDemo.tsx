@@ -50,7 +50,18 @@ export function ScaleDemo() {
     }
 
     return (
-        <ExpandableHeading heading={"Scale"} collapsedHeading={`Scale | ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}>
+        <ExpandableHeading
+            heading={"Scale"}
+            collapsedHeading={`Scale | ${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
+            expanded={userDataContext.prefs.moduleVisibility.scale}
+            onToggle={() => userDataContext.setPrefs({
+                ...userDataContext.prefs,
+                moduleVisibility: {
+                    ...userDataContext.prefs.moduleVisibility,
+                    scale: !userDataContext.prefs.moduleVisibility.scale
+                }
+            })}
+        >
             <div className={`flex sm:flex-wrap md:flex-nowrap self-start gap-8 bg-neutral-900 rounded-md p-4 min-w-0 w-min`}>
                 <div className={`flex flex-col h-60 w-70 overflow-y-scroll overflow-x-clip rounded-lg`}>
                     {userDataContext.scales.map((scale) => {
