@@ -8,6 +8,7 @@ import {AuthPage} from "./components/auth/AuthPage.tsx";
 import {AuthProvider} from "./contexts/auth/AuthProvider.tsx";
 import {ChordDemo} from "./ChordDemo.tsx";
 import {App} from "./App.tsx";
+import {CustomScale} from "./components/CustomScale/CustomScale.tsx";
 
 const router = createBrowserRouter([
     {
@@ -20,7 +21,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/scale",
-                element: <App><FretboardDemo /></App>
+                element: <App><FretboardDemo /></App>,
+            },
+            {
+                path: "/scale/new",
+                element: <CustomScale />
             },
             {
                 path: "/chord",

@@ -23,6 +23,8 @@ import {useMemo} from "react";
 import {midiPitchToNoteName} from "@fretboard/shared/utils/midiPitchToNoteName";
 import {indexForNoteName} from "@fretboard/shared/utils/indexForNoteName";
 import {useAudio} from "../../contexts/audio/useAudio.tsx";
+import {Link} from "react-router";
+import {FaPlusCircle} from "react-icons/fa";
 
 export function ScaleDemo() {
     const scaleContext = useScale()
@@ -91,6 +93,13 @@ export function ScaleDemo() {
                             />
                         )
                     })}
+                    <Link
+                        to={`/scale/new`}
+                        className={`flex items-center gap-2 px-2 py-4 bg-neutral-900 hover:bg-neutral-800 cursor-pointer`}
+                    >
+                        <FaPlusCircle className={`text-lime-600`}/>
+                        <span>Add custom scale</span>
+                    </Link>
                 </div>
                 <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
                     <h2 className={`text-3xl font-bold`}>
