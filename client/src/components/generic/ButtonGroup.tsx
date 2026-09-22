@@ -3,6 +3,7 @@ import Button from './Button'
 
 type Props = Omit<ButtonProps, 'onClick' | 'disabled'> & {
     active?: number
+    actives?: boolean[]
     onClick: (i: number) => void
     _children: React.ReactNode[]
     activeStyles?: string
@@ -14,13 +15,17 @@ type Props = Omit<ButtonProps, 'onClick' | 'disabled'> & {
 
 export function ButtonGroup(
     {
-        orientation, active, onClick, _children, activeStyles,
+        orientation, active, actives, onClick, _children, activeStyles,
         inactiveStyles, styles, variant, loading, disabled, containerStyles
     }: Props) {
     const _variant = variant || 'unstyled'
     const _activeStyles = activeStyles || `bg-white text-black !hover:bg-white hover:text-black font-bold`
     const _inactiveStyles = inactiveStyles || `bg-neutral-950 text-white hover:bg-neutral-800`
     const _orientation = orientation || 'horizontal'
+
+    if (active !== undefined && actives !== undefined) {
+        throw new Error("Specify only `active` or `actives`")
+    }
 
     return (
         <div className={`flex ${_orientation === "vertical" && `flex-col`} ${containerStyles}`}>
@@ -45,13 +50,19 @@ export function ButtonGroup(
                         theseStyles += `!rounded-none`
                     }
                 }
+                let thisActive = false
+                if (active === i) {
+                    thisActive = true
+                } else if (actives && actives[i]) {
+                    thisActive = true
+                }
 
                 return (
                     <Button
                         onClick={() => onClick(i)}
                         variant={_variant}
                         styles={`
-                          justify-center ${styles} ${i === active ? _activeStyles : _inactiveStyles} ${theseStyles}
+                          justify-center ${styles} ${thisActive ? _activeStyles : _inactiveStyles} ${theseStyles}
                         `}
                         loading={loading}
                         disabled={disabled ? disabled[i] : false}
