@@ -6,6 +6,7 @@ import type {UserPrefType} from "@fretboard/shared/types/userPrefs";
 
 type UserDataContextValue = {
     scales: Scale[]
+    addScale: (scale: Scale) => void
     tunings: Tuning[]
     createTuning: (tuning: Tuning) => Promise<Tuning | void>
     deleteTuning: (tuning: Tuning) => Promise<void>

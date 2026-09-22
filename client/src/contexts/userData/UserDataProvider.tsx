@@ -171,6 +171,19 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
         }
     }, [])
 
+    const addScale = useCallback(async (scale: Scale) => {
+        await runMutation(
+            setScales,
+            prev => [...prev, scale],
+            () => fetch(`${API_URL}/scale`, {
+                method: "POST",
+                body: JSON.stringify(scale),
+                credentials: "include"
+            }),
+        )
+        return scale
+    }, [runMutation, setScales])
+
     const createTuning = useCallback(async (tuning: Tuning) => {
         await runMutation(
             setTunings,
@@ -457,6 +470,7 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     return (
         <UserDataContext value={{
             scales,
+            addScale,
             tunings,
             scaleShapes,
             createTuning,
