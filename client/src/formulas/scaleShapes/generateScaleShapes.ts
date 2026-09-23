@@ -74,9 +74,10 @@ export function generateScaleShapes(
                 }
                 const lastPos = thisShape.shape.at(-1)!
                 const thisScaleIndex = (lastPos.scaleIndex + 1) % scaleDegreeCount
-                const thisFretJump = scale.intervals[(thisScaleIndex - 1) % scaleDegreeCount]
+                const thisFretJump = scale.intervals[(thisScaleIndex - 1 + scaleDegreeCount) % scaleDegreeCount]
                 const thisFret = lastPos.fret + thisFretJump
 
+                if (thisFret < 0) break
                 if (thisFret > tuning.fretCount) break
                 if (thisFret - prevShape.lowFret > options.maxFretSpan) break
 
@@ -145,6 +146,11 @@ export function generateScaleShapes(
                 const thisVal = tuning.strings[lastPos.stringIndex] + lastPos.fret + thisJump
                 const thisFret = thisVal - zeroFret
 
+                if (thisFret < 0 || thisFret > tuning.fretCount) {
+                    nextBaseShapes.push(thisShape)
+                    continue
+                }
+
                 if (thisShape.highFret - thisFret > options.maxFretSpan || thisFret - thisShape.lowFret > options.maxFretSpan) {
                     // need to check lowFret too in case this string is tuned higher than the last
                     nextBaseShapes.push(thisShape)
@@ -169,7 +175,7 @@ export function generateScaleShapes(
                     const thisJump = scale.intervals[(thisScaleIndex - 1 + scaleDegreeCount) % scaleDegreeCount]
                     const thisFret = lastPos.fret + thisJump
 
-                    if (thisFret > tuning.fretCount){
+                    if (thisFret < 0 || thisFret > tuning.fretCount){
                         break
                     }
 
