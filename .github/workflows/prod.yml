@@ -1,0 +1,25 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy" to confirm'
+        required: true
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    if: github.event.inputs.confirm == 'deploy'
+    uses: ./.github/workflows/ci.yml
+
+  deploy-prod:
+    needs: ci
+    if: github.event.inputs.confirm == 'deploy'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+    secrets: inherit

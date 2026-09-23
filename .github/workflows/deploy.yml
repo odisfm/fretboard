@@ -1,0 +1,89 @@
+name: Build and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+      APP_NAME: ${{ secrets.APP_NAME }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: opentofu/setup-opentofu@v1
+
+      - name: setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: install dependencies
+        run: |
+          npm ci
+
+      - name: apply db migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd shared
+          npx prisma migrate deploy
+
+      - name: tofu vars
+        working-directory: infra
+        run: |
+          touch terraform.tfvars
+          echo "environment = \"${{ inputs.environment }}\"" >> terraform.tfvars
+          echo "lambda_db_url = \"${{ secrets.DATABASE_URL_IPV6 }}\"" >> terraform.tfvars
+          echo "domain_name = \"${{ secrets.DATABASE_URL_IPV6 }}\"" >> terraform.tfvars
+
+      - name: tofu init
+        working-directory: infra
+        run: |
+          tofu init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=${{ inputs.environment }}.tfstate"
+
+      - name: build api
+        run: |
+          cd shared
+          npx prisma generate
+          cd ../api
+          npm run build:lambda
+
+      - name: deploy aws
+        id: deploy_aws
+        working-directory: infra
+        run: |
+          tofu apply -auto-approve
+          echo "cloudfront_url=$(tofu output -raw cloudfront_url)" >> "$GITHUB_OUTPUT"
+          echo "cloudfront_id=$(tofu output -raw cloudfront_id)" >> "$GITHUB_OUTPUT"
+          echo "frontend_bucket=$(tofu output -raw frontend_bucket_name)" >> "$GITHUB_OUTPUT"
+
+      - name: build frontend
+        working-directory: client
+        env:
+          VITE_API_URL: /api
+        run: |
+          npx vite build
+
+      - name: deploy frontend
+        working-directory: client
+        run: |
+          aws s3 sync dist/ "s3://${{ steps.deploy_aws.outputs.frontend_bucket }}" --delete
+
+      - name: invalidate cloudfront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.deploy_aws.outputs.cloudfront_id }}" \
+            --paths "/index.html"
