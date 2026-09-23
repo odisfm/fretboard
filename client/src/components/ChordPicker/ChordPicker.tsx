@@ -87,6 +87,7 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
 
     const chordName = useMemo(() => {
         const base = getChordName(chordContext.chord.root, chordContext.chord.intervals)
+        if (!base) return "?"
         return styleNoteName(base as NoteName)
     }, [chordContext.chord])
 
