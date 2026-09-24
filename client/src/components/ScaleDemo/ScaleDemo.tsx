@@ -83,8 +83,8 @@ export function ScaleDemo() {
                 }
             })}
         >
-            <div className={`flex sm:flex-wrap md:flex-nowrap self-start gap-8 bg-neutral-900 rounded-md p-4 min-w-0 w-min`}>
-                <div className={`flex flex-col h-60 w-70 overflow-y-scroll overflow-x-clip rounded-lg`}>
+            <div className={`flex flex-wrap md:flex-nowrap self-start gap-8 bg-neutral-900 rounded-md p-4 min-w-0 w-min`}>
+                <div className={`flex flex-col  h-60 w-70 overflow-y-scroll overflow-x-clip rounded-lg`}>
                     {userDataContext.scales.map((scale) => {
                         return (
                             <ScalePreview
@@ -101,7 +101,7 @@ export function ScaleDemo() {
                         <span>Add custom scale</span>
                     </Link>
                 </div>
-                <div className={`flex flex-col gap-4 min-w-0 rounded-lg overflow-hidden`}>
+                <div className={`flex flex-col gap-4 min-w-0 w-min rounded-lg overflow-hidden`}>
                     <h2 className={`text-3xl font-bold`}>
                         {`${scaleContext.scale.tonic} ${scaleContext.scale.name}`}
                     </h2>
@@ -116,7 +116,7 @@ export function ScaleDemo() {
                             <PiSpeakerNoneFill />
                         </Button>
                     </div>
-                    <div className={`overflow-x-scroll min-w-0 mt-auto`}>
+                    <div className="overflow-x-auto w-0 min-w-full md:w-min mt-auto">
                         <ButtonGroup
                             onClick={setTonicByIndex}
                             _children={tonesStyled.map(((ts) => {

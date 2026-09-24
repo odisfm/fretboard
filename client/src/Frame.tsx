@@ -14,7 +14,7 @@ export function Frame() {
                     <Header />
                     <FeatureProvider initialFeature={pathname.startsWith("/chord") ? "chord" : "scale"}>
                     <AudioProvider>
-                        <main className={`p-4 bg-neutral-950`}>
+                        <main className={`p-1 md:p-4 bg-neutral-950`}>
                                 <Outlet/>
                         </main>
                     </AudioProvider>
