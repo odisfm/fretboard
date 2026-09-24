@@ -1,8 +1,8 @@
 import {useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction} from "react";
 import {type TestUserDataResponse, type TuningResponse} from "@fretboard/shared/types/apiResponses"
-import type {Scale, ScaleShape} from "@fretboard/shared/types/scale";
-import type {Tuning} from "@fretboard/shared/types/tuning";
-import type {Chord} from "@fretboard/shared/types/chord"
+import {type Scale, ScaleSchema, type ScaleShape, ScaleShapeSchema} from "@fretboard/shared/types/scale";
+import {type Tuning, TuningSchema} from "@fretboard/shared/types/tuning";
+import {type Chord, ChordSchema, ChordShapeSchema} from "@fretboard/shared/types/chord"
 import {UserDataContext} from "./UserDataContext.ts";
 import {TuningProvider} from "../tuning/TuningProvider.tsx";
 import {ScaleProvider} from "../scale/ScaleProvider.tsx";
@@ -15,16 +15,26 @@ import {LexoRank} from "@dalet-oss/lexorank";
 import {ChordProvider} from "../chord/ChordProvider.tsx";
 import type {ChordShape} from "@fretboard/shared/types/chord";
 import {defaultChords} from "@fretboard/shared/scripts/onboarding/defaultChords";
-import {defaultUserPrefs, type UserPrefType} from "@fretboard/shared/types/userPrefs";
+import {defaultUserPrefs, UserPrefSchema, type UserPrefType} from "@fretboard/shared/types/userPrefs";
 import {isSameChord} from "@fretboard/shared/utils/isSameStructure";
+import * as z from "zod";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BACKOFF_BASE = 500
 const BACKOFF_CAP = 1000 * 120
 
-function readLocal<T>(key: string, fallback: T): T {
+function readLocal<T>(key: string, fallback: T, schema?: z.ZodType): T {
     try {
         const raw = localStorage.getItem(key);
+        try {
+            if (schema && raw) {
+                return schema.parse(JSON.parse(raw)) as T
+            }
+        } catch (e) {
+            console.error(e)
+            console.error(`Stored value for key "${key}" failed to validate against ${schema}`)
+            return fallback
+        }
         return raw ? (JSON.parse(raw) as T) : fallback;
     } catch (e) {
         console.error(`Failed to read "${key}" from localStorage`, e);
@@ -68,41 +78,41 @@ export function UserDataProvider({children}: {children: React.ReactNode}) {
     const authContext = useAuth();
 
     const [tunings, setTunings] = usePersistedState<Tuning[]>("tunings", () => {
-        const stored = readLocal<Tuning[]>("tunings", []);
+        const stored = readLocal<Tuning[]>("tunings", [], z.array(TuningSchema));
         if (stored.length) return stored;
         return authContext.auth ? [] : buildDefaultTunings();
     });
     const [scales, setScales] = usePersistedState<Scale[]>("scales", () => {
-        const stored = readLocal<Scale[]>("scales", []);
+        const stored = readLocal<Scale[]>("scales", [], z.array(ScaleSchema));
         if (stored.length) return stored;
         return authContext.auth ? [] : buildDefaultScales();
     });
     const [chords, setChords] = usePersistedState<Chord[]>("chords", () => {
-        const stored = readLocal<Chord[]>("chords", []);
+        const stored = readLocal<Chord[]>("chords", [], z.array(ChordSchema));
         if (stored.length) return stored;
         return authContext.auth ? [] : buildDefaultChords();
     });
     const [scaleShapes, setScaleShapes] = usePersistedState<ScaleShape[]>("scaleShapes", () =>
-        readLocal<ScaleShape[]>("scaleShapes", [])
+        readLocal<ScaleShape[]>("scaleShapes", [], z.array(ScaleShapeSchema))
     );
     const [chordShapes, setChordShapes] = usePersistedState<ChordShape[]>("chordShapes", () =>
-        readLocal<ChordShape[]>("chordShapes", [])
+        readLocal<ChordShape[]>("chordShapes", [], z.array(ChordShapeSchema))
     );
 
     const [deletedTunings, setDeletedTunings] = usePersistedState<string[]>(
-        "deletedTunings", () => readLocal<string[]>("deletedTunings", [])
+        "deletedTunings", () => readLocal<string[]>("deletedTunings", [], z.array(z.uuidv4()))
     );
     const [deletedScaleShapes, setDeletedScaleShapes] = usePersistedState<string[]>(
-        "deletedScaleShapes", () => readLocal<string[]>("deletedScaleShapes", [])
+        "deletedScaleShapes", () => readLocal<string[]>("deletedScaleShapes", [], z.array(z.uuidv4()))
     );
     const [deletedChords, setDeletedChords] = usePersistedState<string[]>(
-        "deletedChords", () => readLocal<string[]>("deletedChords", [])
+        "deletedChords", () => readLocal<string[]>("deletedChords", [], z.array(z.uuidv4()))
     );
     const [deletedChordShapes, setDeletedChordShapes] = usePersistedState<string[]>(
-        "deletedChordShapes", () => readLocal<string[]>("deletedChordShapes", [])
+        "deletedChordShapes", () => readLocal<string[]>("deletedChordShapes", [], z.array(z.uuidv4()))
     );
     const [prefs, setPrefs] = usePersistedState<UserPrefType>("prefs", () => {
-        return readLocal<UserPrefType>("prefs", defaultUserPrefs)
+        return readLocal<UserPrefType>("prefs", defaultUserPrefs, UserPrefSchema)
     });
     const [connectionStatus, setConnectionStatus] = useState(true)
     const [waitOnServer, setWaitOnServer] = useState(false)
