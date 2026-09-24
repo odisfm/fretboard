@@ -19,6 +19,8 @@ jobs:
       APP_NAME: ${{ secrets.APP_NAME }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_IPV6: ${{ secrets.DATABASE_URL_IPV6 }}
     steps:
       - uses: actions/checkout@v4
 
