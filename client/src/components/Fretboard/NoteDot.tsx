@@ -184,16 +184,16 @@ export default function NoteDot(
     if (!barre) {
         roundingClass = "rounded-full  "
     } else if (barre === "top") {
-        roundingClass = "rounded-b-full"
+        roundingClass = fdContext.orientation === "horizontal" ? "rounded-b-full" : "rounded-l-full"
     } else if (barre === "bottom") {
-        roundingClass = "rounded-t-full "
+        roundingClass = fdContext.orientation === "horizontal" ? "rounded-t-full" : "rounded-r-full"
     } else {
         roundingClass = " "
     }
 
     return (
         <div className={`
-        cursor-pointer mt-2 h-full
+        cursor-pointer mt-2 ${fdContext.orientation === "horizontal" ? "h-full" : "w-full"}
         ${barre && `bg-neutral-400/50 ${roundingClass}`}`}
                 onClick={() => {
                     if (fdContext.variant === "main") audioContext.playNote(midiPitchToNoteName(pitch))
@@ -201,7 +201,9 @@ export default function NoteDot(
         >
             <div
                 className={`
-                flex items-center justify-center ${theseClasses} rounded-full text-xs h-7 w-7`
+                relative flex items-center justify-center ${theseClasses} rounded-full text-xs h-7 w-7
+                ${(fdContext.variant === "main" && fdContext.orientation === "vertical") && "left-3"}
+                `
             }
                 style={{
                     height: `${diameter}px`,
