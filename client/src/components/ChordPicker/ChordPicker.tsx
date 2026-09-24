@@ -101,9 +101,9 @@ export function ChordPicker({chordPickerOptions, setChordPickerOptions}: {
             return;
         }
         setBadChordNameSearch(false)
-        chordContext.setChord(chord)
         const options = getChordPickerOptionsFromChord(chord)
         setChordPickerOptions(options)
+        chordContext.setChord(chord)
     }
 
 
