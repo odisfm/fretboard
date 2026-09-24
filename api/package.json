@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build:lambda": "node esbuild.config.ts",
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "lint": "eslint .",
