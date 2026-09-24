@@ -5,7 +5,8 @@ export type FretboardDisplayContextValue = {
     variant: FretboardDisplayVariant,
     zoom: number,
     outShapeOpacity: number,
-    type: "scale" | "chord"
+    type: "scale" | "chord",
+    orientation: "horizontal" | "vertical"
 }
 
 export const FretboardDisplayContext =

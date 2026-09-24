@@ -199,7 +199,8 @@ export function ChordDemo() {
                     zoom: userData.prefs.fretboardZoom,
                     variant: "main",
                     outShapeOpacity: userData.prefs.chordOutOpacity,
-                    type: "chord"
+                    type: "chord",
+                    orientation: userData.prefs.fretboardRotation
             }}
             >
                 <Fretboard
@@ -225,7 +226,7 @@ export function ChordDemo() {
                 variant={"subtle"}
             >
             </Button>
-            <FretboardDisplayContext value={{zoom: 1, variant: "preview", outShapeOpacity: 0, type: "chord"}}>
+            <FretboardDisplayContext value={{zoom: 1, variant: "preview", outShapeOpacity: 0, type: "chord", orientation: "horizontal"}}>
                 <ShapePickerContainer>
                     <ShapePicker
                         onClick={(idx) => {_setActiveShapeIdx(idx)}}

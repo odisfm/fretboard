@@ -87,7 +87,7 @@ export default function Fret(
         unitWidth *= (fdContext.zoom * .7)
     } else if (orientation === "vertical") {
         unitWidth *= fdContext.zoom
-        unitLength *= (fdContext.zoom * .7)
+        unitLength *= (fdContext.zoom * 1)
     }
     if (isZeroFret && fdContext.type === "chord") {
         unitLength *= .7

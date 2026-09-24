@@ -160,7 +160,8 @@ export default function FretboardDemo() {
                     zoom: userDataContext.prefs.fretboardZoom,
                     variant: "main",
                     outShapeOpacity: userDataContext.prefs.scaleOutOpacity,
-                    type: "scale"
+                    type: "scale",
+                    orientation: userDataContext.prefs.fretboardRotation
             }}
             >
                 <Fretboard
@@ -174,7 +175,7 @@ export default function FretboardDemo() {
                 />
             </FretboardDisplayContext>
 
-            <FretboardDisplayContext value={{variant: "preview", zoom: 1.0, outShapeOpacity: 0, type: "scale"}}>
+            <FretboardDisplayContext value={{variant: "preview", zoom: 1.0, outShapeOpacity: 0, type: "scale", orientation: "horizontal"}}>
                 <ShapePickerContainer >
                     <ShapePicker
                     onClick={_setActiveScaleShape}
