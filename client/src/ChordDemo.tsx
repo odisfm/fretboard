@@ -171,7 +171,6 @@ export function ChordDemo() {
         for (const p of replacingShape.shape) {
             if (p.fret && p.fret < lowFret) lowFret = p.fret
         }
-        setScrollToFret(lowFret > 3 ? lowFret : 0)
         })()
     }, [generatedShapes, activeShapeIdx])
 
