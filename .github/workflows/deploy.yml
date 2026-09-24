@@ -18,6 +18,7 @@ jobs:
       DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
       APP_NAME: ${{ secrets.APP_NAME }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
     steps:
       - uses: actions/checkout@v4
 
