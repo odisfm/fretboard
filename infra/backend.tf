@@ -7,7 +7,7 @@ data "aws_iam_role" "lambda_exec_role" {
 }
 
 resource "aws_lambda_function" "api" {
-  function_name    = "api-${var.environment}"
+  function_name    = "${var.app_name}-api-${var.environment}"
   filename         = local.api_lambda_zip
   source_code_hash = filebase64sha256(local.api_lambda_zip)
   handler          = "lambda.handler"

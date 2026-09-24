@@ -16,7 +16,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 }
 
 resource "aws_cloudfront_origin_access_control" "frontend" {
-  name                              = "frontend-${var.environment}-oac"
+  name                              = "${var.app_name}-frontend-${var.environment}-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
@@ -106,14 +106,14 @@ resource "aws_cloudfront_distribution" "main" {
 }
 
 resource "aws_cloudfront_function" "strip_api_prefix" {
-  name    = "strip-api-prefix-${var.environment}"
+  name    = "strip-api-prefix-${var.app_name}-${var.environment}"
   runtime = "cloudfront-js-2.0"
   publish = true
   code    = file("${path.module}/functions/strip-api-prefix.js")
 }
 
 resource "aws_cloudfront_function" "spa_fallback" {
-  name    = "spa-fallback-${var.environment}"
+  name    = "spa-fallback-${var.app_name}-${var.environment}"
   runtime = "cloudfront-js-2.0"
   publish = true
   code    = file("${path.module}/functions/spa-fallback.js")

@@ -4,7 +4,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "frontend_bucket" {
-  bucket           = "frontend-${var.environment}-${local.bucket_suffix}"
+  bucket           = "frontend-${var.app_name}-${var.environment}-${local.bucket_suffix}"
   bucket_namespace = "account-regional"
 }
 
