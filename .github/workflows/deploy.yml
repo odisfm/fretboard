@@ -46,7 +46,8 @@ jobs:
           touch terraform.tfvars
           echo "environment = \"${{ inputs.environment }}\"" >> terraform.tfvars
           echo "lambda_db_url = \"${{ secrets.DATABASE_URL_IPV6 }}\"" >> terraform.tfvars
-          echo "domain_name = \"${{ secrets.DATABASE_URL_IPV6 }}\"" >> terraform.tfvars
+          echo "domain_name = \"${{ secrets.DOMAIN_NAME }}\"" >> terraform.tfvars
+          echo "app_name = \"${{ secrets.APP_NAME }}\"" >> terraform.tfvars
 
       - name: tofu init
         working-directory: infra
